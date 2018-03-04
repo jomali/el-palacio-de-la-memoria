@@ -1,0 +1,433 @@
+!% -SDX
+!% +language_name=Spanish
+!% $list
+
+!!==============================================================================
+!!
+!!	EL PALACIO DE LA MEMORIA
+!!
+!!==============================================================================
+!!
+!!	Archivo:		palacio.inf
+!!	Autor(es):		J. Francisco Martín <jfm.lisaso@gmail.com>
+!!	Idioma:			ES (Español)
+!!	Sistema:		Inform-INFSP 6
+!!	Plataforma:		Máquina-Z/Glulx
+!!	Versión:		0.0
+!!	Fecha:			2018/03/04
+!!
+!!------------------------------------------------------------------------------
+!!
+!!	Este archivo forma parte del relato interactivo
+!!	EL PALACIO DE LA MEMORIA.
+!!
+!!	EL PALACIO DE LA MEMORIA es software libre: usted puede
+!!	redistribuirlo y/o modificarlo bajo los términos de la Licencia
+!!	Pública General GNU publicada por la Fundación para el Software
+!!	Libre, ya sea la versión 3 de la Licencia, o (a su elección)
+!!	cualquier versión posterior.
+!!
+!!	EL PALACIO DE LA MEMORIA se distribuye con la esperanza de que sea
+!!	útil, pero SIN GARANTÍA ALGUNA; ni siquiera la garantía implícita
+!!	MERCANTIL o de APTITUD PARA UN PROPÓSITO DETERMINADO. Consulte los
+!!	detalles de la Licencia Pública General GNU para más información.
+!!
+!!	Debería haber recibido una copia de la Licencia Pública General GNU
+!!	junto a EL PALACIO DE LA MEMORIA. En caso contrario, consulte
+!!	<http://www.gnu.org/licenses/>.
+!!
+!!	Copyright (c) 2018, J. Francisco Martín
+!!
+!!------------------------------------------------------------------------------
+!!
+!!	HISTORIAL DE VERSIONES
+!!
+!!	0.0: 2018/03/04	Inicio de desarrollo.
+!!
+!!------------------------------------------------------------------------------
+!!
+!!	TABLA DE CONTENIDOS
+!!
+!!	1)	Constantes y variables globales de la obra
+!!	2)	Reemplazos de rutinas utilizadas por la librería Inform
+!!	3)	Librerías y extensiones (parte 1 de 2)
+!!	4)	Puntos de entrada Glk con GWindows (sólo en GLULX)
+!!	5)	Librerías y extensiones (parte 2 de 2)
+!!	6)	Puntos de entrada de la obra
+!!	7)	Otras rutinas
+!!	8)	Gramática estándar y extendida
+!!	9)	Definición de atributos, clases y objetos
+!!
+!!------------------------------------------------------------------------------
+
+
+!!==============================================================================
+!!
+!!	1)	Constantes y variables globales de la obra
+!!
+!!------------------------------------------------------------------------------
+!!	-	Información bibliográfica
+!!	-	Constantes de la librería Inform
+!!	-	Variables usadas por la librería de mensajes por defecto
+!!------------------------------------------------------------------------------
+
+!!------------------------------------------------------------------------------
+!! Información bibliográfica.
+!!------------------------------------------------------------------------------
+
+Constant Story
+"El palacio de la memoria";
+
+Constant Headline
+"Una ficción interactiva. Copyright (c) 2018^
+Por José Francisco Martín Lisaso";
+
+Constant Checking 0;
+Release 0;						! v0.0
+
+Default _grammatical_inflection = 2;
+Default FIRST_PERSON_PRESENT = 1;
+Default SECOND_PERSON_PRESENT = 1;
+Default THIRD_PERSON_PRESENT = 1;
+Default FIRST_PERSON_PAST = 1;
+Default SECOND_PERSON_PAST = 1;
+Default THIRD_PERSON_PAST = 1;
+Default FIRST_PERSON_FUTURE = 1;
+Default SECOND_PERSON_FUTURE = 1;
+Default THIRD_PERSON_FUTURE = 1;
+[ lm_as_; ];
+[ lm_estas; ];
+[ IsPluralNoun; ];
+[ SpanishNominativePronoun; ];
+
+!!------------------------------------------------------------------------------
+!! Constantes de la librería Inform.
+!!------------------------------------------------------------------------------
+
+Constant MANUAL_PRONOUNS;		! Los pronoms. refieren a objetos ya mencionados
+Constant MAX_CARRIED 3;			! Máx. de objetos que se pueden llevar en mano
+Constant NO_PLACES;				! Acciones LUGARES y OBJETOS desactivadas
+Constant NO_SCORE;				! No se lleva conteo de puntuación
+!! Constant SIN_MENSAJES;			! Se omiten los mensajes por defecto de la lib.
+!! Constant WITHOUT_DIRECTIONS;	! Se omiten las dir. por defecto de la lib.
+
+!!------------------------------------------------------------------------------
+!! Variables usadas por la librería de mensajes por defecto.
+!!------------------------------------------------------------------------------
+
+!! Global FORMER__TX	= "tu antiguo ~yo~";
+!! Global YOURSELF__TX	= "ti mismo";
+!! Global CANTGO__TX	= "No puedes ir por ahí.";
+!! Global IS__TX		= " ves";
+!! Global ARE__TX		= " ves";
+!! Global IS2__TX		= "ves ";
+!! Global ARE2__TX		= "ves ";
+!! Global YOU__TX		= "Tú";
+!! Global PARTICULA_TE	= "te";
+
+
+!!==============================================================================
+!!
+!!	2)	Reemplazos de rutinas utilizadas por la librería Inform
+!!
+!!------------------------------------------------------------------------------
+
+!! Replace Banner;					! Créditos generales de la aplicación
+!! Replace DrawStatusLine;			! Dibuja la barra de estado
+!! Replace ExamineSub;				! Rutina para la acción ##Examine
+!! Replace GetGNAOfObject;			! Rutina para obtener el GNA de un objeto
+!! Replace LMode1Sub;				! Lookmode 1: Breve
+!! Replace LMode2Sub;				! Lookmode 2: Largo (establecido por defecto)
+!! Replace LMode3Sub;				! Lookmode 3: Superbreve
+!! Replace LookSub;				! Rutina para la acción ##Look
+!! Replace VersionSub;				! Créditos detallados de la aplicación
+
+
+!!==============================================================================
+!!
+!!	3)	Librerías y extensiones (parte 1 de 2)
+!!
+!!------------------------------------------------------------------------------
+
+#Ifdef TARGET_GLULX;
+!! Include "gwindefs.h";			! GWindows: Definiciones
+#Endif; ! TARGET_GLULX;
+
+Include "Parser.h";				! Decodifica la entrada del teclado
+!! Include "SpanishLM.h";			! Mensajes de la librería
+!! Include ">palacio_lib.inf";		! Personalizaciones de la librería Inform
+!! Include ">palacio_langLM.inf";	! Mensajes personalizados de la librería
+Include ">palacio_langOM.inf";	! Mensajes de los objetos
+
+#Ifdef TARGET_GLULX;
+!! Include "gwincls.h";			! GWindows: Window Class Framework
+#Endif; ! TARGET_GLULX;
+
+
+!!==============================================================================
+!!
+!!	4)	Puntos de entrada Glk con GWindows (sólo en GLULX)
+!!
+!!------------------------------------------------------------------------------
+!!	GWindows hace uso de los puntos de entrada Glk por defecto por lo cuál
+!!	define los suyos propios para reemplazar aquellos de la librería:
+!!	-	GWindowsGlkEvent(): Reemplaza HandleGlkEvent()
+!!	-	GWindowsGlkIdentify(): Reemplaza IdentifyGlkObject()
+!!------------------------------------------------------------------------------
+
+#Ifdef TARGET_GLULX;
+
+!!------------------------------------------------------------------------------
+!! Punto de entrada para manejar eventos Glk con la librería GWindows.
+!! Reemplaza al habitual 'HandleGlkEvent()'.
+!!
+!!	@param {array} ev - Array con la información acerca del evento Glk que se
+!!		ha producido
+!!	@param {integer} context - 0 si el evento se ha producido durante una
+!!		entrada de línea (como ante introducción de un comando normal; la
+!!		aplicación debe esperar a que el usuario pulse INTRO antes de dar
+!!		respuesta a la entrada). 1 si se ha producido durante una entrada de
+!!		carácter (como sucede en los menús, por ejemplo; la aplicación responde
+!!		ante cada pulsación de tecla)
+!!	@param {array} abortres
+!!	@returns {integer}
+!!------------------------------------------------------------------------------
+[ GWindowsGlkEvent ev context abortres;
+	ev = context + abortres; ! (por evitar alertas del compilador)
+];
+
+!!------------------------------------------------------------------------------
+!! 'GWindowsGlkIdentify() permite conocer qué objetos Glk existen; útil para
+!! gestionar las directivas RESTORE, RESTART y UNDO puesto que, al utilizar
+!! estas entradas, las variables globales con objetos Glk pueden contener
+!! valores desfasados y erróneos.
+!!
+!!	@param phase
+!!	@param type
+!!	@param ref
+!!	@param rock
+!!------------------------------------------------------------------------------
+[ GWindowsGlkIdentify phase type ref rock;
+	phase = type + ref + rock; ! (por evitar alertas del compilador)
+];
+
+#Endif; ! TARGET_GLULX;
+
+
+!!==============================================================================
+!!
+!!	5)	Librerías y extensiones (parte 2 de 2)
+!!
+!!------------------------------------------------------------------------------
+
+Include "VerbLib.h";			! Define cómo trabajan las acciones
+
+
+!!==============================================================================
+!!
+!!	6)	Puntos de entrada de la obra
+!!
+!!------------------------------------------------------------------------------
+!!	-	AfterPrompt()
+!!	-	BeforeParsing()
+!!	-	Initialise()
+!!	-	InScope()
+!!	-	PrintVerb()
+!!	-	UnknownVerb()
+!!------------------------------------------------------------------------------
+
+!!------------------------------------------------------------------------------
+!! Punto de entrada invocado justo tras la impresión del inductor (prompt); es
+!! decir, después de que todas las impresiones en pantalla derivadas del turno
+!! actual hayan finalizado.
+!!
+!!	@returns Nada
+!!------------------------------------------------------------------------------
+[ AfterPrompt; ];
+
+!!------------------------------------------------------------------------------
+!! Permite manipular la entrada de usuario antes de que sea analizada por la
+!! librería. Es invocada después de que el sistema haya leído la entrada de
+!! texto y haya definido ya las tablas 'buffer' y 'parser', pero aún no ha
+!! hecho nada más salvo establecer el contador de palabras 'wn' a 1. La rutina
+!! puede manipular estas tablas libremente mientras permanezcan consistentes la
+!! una con la otra, y puede dejar el contador de palabras en cualquier punto.
+!!
+!!	@returns Nada
+!!------------------------------------------------------------------------------
+[ BeforeParsing; ];
+
+!!------------------------------------------------------------------------------
+!! Inicializaciones del relato. Esta rutina es obligatoria y, entre otras
+!! posibles inicializaciones, DEBE ESTABLECER LA LOCALIDAD INICIAL del usuario
+!! (o el objeto accesible ---contenedor o soporte--- en el que empieza).
+!!
+!!	@returns {boolean|integer} Verdadero o falso para continuar con la
+!!		ejecución normal de la aplicación, o 2 para suprimir la impresión de
+!!		los créditos, que de otra manera se imprimirían inmediatamente después
+!!		de llamar a la rutina
+!!------------------------------------------------------------------------------
+[ Initialise;
+	EraseWindow();
+
+	!! Comprobaciones del intérprete -------------------------------------------
+	#Ifdef TARGET_GLULX;
+	#Endif; ! TARGET_GLULX;
+
+	!! Inicializaciones para la VM Glulx ---------------------------------------
+	#Ifdef TARGET_GLULX;
+	#Endif; ! TARGET_
+
+	!! Inicializaciones de la obra ---------------------------------------------
+	location = limbo;			! Establece la localidad inicial
+	lookmode = 2;				! Lookmode largo
+	return 0;
+];
+
+!!------------------------------------------------------------------------------
+!! Definición del foco del usuario; permite cambiar en el sistema la definición
+!! de lo que se encuentra al alcance del PC. Utiliza las rutinas de la librería
+!! 'ScopeWithin()' y 'PlaceInScope()' para establecer cuál debería ser el foco.
+!!
+!!	@returns {boolean} Falso para indicar al sistema que añada todos los
+!!		objetos que suelen estar por defecto al alcance, o verdadero para
+!!		indicar que no se debe añadir nada más al alcance
+!!------------------------------------------------------------------------------
+[ InScope person
+	item;
+	!! Aseguramos que la localidad actual esté siempre en el foco del PJ:
+	PlaceInScope(real_location);
+	!! En la oscuridad, se mueven al foco todos aquellos objetos que hayan sido
+	!! manipulados ya previamente por el PC:
+	if ((person == player) && (location == thedark)) {
+		objectloop(item in parent(self))
+			if (item has moved) PlaceInScope(item);
+	}
+
+	return false;
+];
+
+!!------------------------------------------------------------------------------
+!! Permite cambiar el verbo que imprime el sistema al hacer al usuario
+!! preguntas del tipo: "Intenta de nuevo porque sólo se pudo entender que
+!! quieres <lo que sea>.", en caso de que se haya definido alguna acción
+!! inusual por medio de la rutina 'UnknownVerb()'.
+!!
+!!	@param {address} word - Dirección de diccionario del verbo
+!!	@returns {boolean} Verdadero para indicar al sistema que se ha imprimido la
+!!		forma modificada del verbo, o falso para continuar con la ejecución
+!!		normal y que el sistema imprima el verbo de la forma habitual
+!!------------------------------------------------------------------------------
+[ PrintVerb word; ];
+
+!!------------------------------------------------------------------------------
+!! Invocada por el sistema cuando se encuentra con un verbo desconocido, de
+!! forma que pueda cambiarse por uno definido en el relato.
+!!
+!!	@returns {boolean} Falso para permitir que el sistema continúe con la
+!!		ejecución normal e imprima un mensaje de error, o un valor de
+!!		diccionario del verbo a utilizar en lugar del verbo desconocido
+!!------------------------------------------------------------------------------
+[ UnknownVerb; ];
+
+
+!!==============================================================================
+!!
+!!	7)	Otras rutinas
+!!
+!!------------------------------------------------------------------------------
+!!	-	EraseWindow()
+!!	-	TopHolder()
+!!------------------------------------------------------------------------------
+
+!!------------------------------------------------------------------------------
+!! Deja la ventana en blanco.
+!!
+!!	@returns {boolean} Verdadero
+!!	@version 1.0
+!!------------------------------------------------------------------------------
+[ EraseWindow;
+    #Ifdef TARGET_ZCODE;
+    @erase_window -1;
+    #Ifnot; ! TARGET_GLULX
+    if (gg_quotewin) {
+		glk($0024, gg_quotewin, 0); ! close_window
+		gg_quotewin = 0;
+    }
+    glk($002A, gg_mainwin); ! window_clear
+    if (gg_statuswin) glk($002A, gg_statuswin); ! window_clear
+    #Endif;
+	return true;
+];
+
+!!------------------------------------------------------------------------------
+!! Dado un objeto como parámetro, retorna su antecesor más lejano en el árbol
+!! de objetos del modelo de mundo.
+!!
+!!	@param {Object} obj - Objeto del que se desea averiguar su antecesor
+!!		más lejano
+!!	@returns {Object} Antecesor más lejano del objeto pasado como parámetro
+!!	@version 1.0
+!!------------------------------------------------------------------------------
+[ TopHolder obj
+	aux;
+	while (parent(obj) ~= 0) {
+		aux = ObjectScopedBySomething(obj);
+		if (aux == 0) aux = parent(obj);
+		obj = aux;
+	}
+	return obj;
+];
+
+
+!!==============================================================================
+!!
+!!	8)	Gramática estándar y extendida
+!!
+!!------------------------------------------------------------------------------
+!!	IMPORTANTE: Los mensajes de algunas de las acciones que se añaden requieren
+!!	la extensión 'SpanishLM.h'. Acciones añadidas o modificadas:
+!!	-	##LMode2
+!!	-	##NoSuchVerb --- Permite eliminar las acciones:
+!!		-	##Sorry
+!!	-	##TalkOn / ##TalkTo
+!!------------------------------------------------------------------------------
+
+Include "SpanishG.h";			! Gramática española
+!Include "SpanishEG.h";			! Gramática española extendida
+
+!!------------------------------------------------------------------------------
+!! ##LMode2
+!!------------------------------------------------------------------------------
+
+Extend only 'normal' replace
+    *								-> LMode2
+;
+
+!!------------------------------------------------------------------------------
+!! ##NoSuchVerb
+!!------------------------------------------------------------------------------
+!! Permite eliminar acciones definidas automáticamente por la librería Inform.
+!! Código extraído de <http://www.firthworks.com/roger/informfaq/vv.html#6>.
+!!------------------------------------------------------------------------------
+
+[ Anything; ! Se ignora el resto de la entrada de usuario
+	while (NextWordStopped() ~= -1);
+	return GPR_PREPOSITION;
+];
+
+Extend	'perdona' replace
+	* Anything						-> NoSuchVerb
+;
+
+[ NoSuchVerbSub; return ParserError(VERB_PE); ];
+
+
+!!==============================================================================
+!!
+!!	9)	Definición de atributos, clases y objetos
+!!
+!!------------------------------------------------------------------------------
+
+Include ">palacio_classes.inf";
+Include ">palacio_objects.inf";
