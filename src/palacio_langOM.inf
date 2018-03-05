@@ -12,12 +12,79 @@
 [ LanguageOM obj n x1;
 	switch (obj) {
 
+cocina: switch (n) {
+1:	! ##Examine
+print "Espaciosa y bien iluminada. Su padre ha debido ir añadiendo muebles y electrodomésticos conforme los iba necesitando, atendiendo posiblemente antes a la funcionalidad que al aspecto del conjunto. El resultado es un collage; aparatos de aspecto moderno y minimalista como un frigorífico con acabado en acero brillante se combinan con una antigua cocina de leña en hierro forjado negro o un gran armario en madera tallada con motivos florales, y la gran mesa de comedor situada en medio de la cocina está rodeada de varias sillas, la mayoría de diseños diferentes. Cuenta con puertas al salón y a una terraza trasera, a este y norte respectivamente.";
+new_line;
+return true;
+}
+
+dungeon_master: switch (n) {
+1:
+print "La casa se levantaba sobre un pequeño promontorio, a apenas una treintena de pasos de las frías aguas del Cantábrico.
+^^
+Durante años Silvia había vivido en aquella casa. Recordaba cuando era niña y, desde la terraza en la parte de atrás, descendía cuidadosamente por entre las rocas con la ayuda de sus padres hasta la cala al pie del promontorio. Los cangrejos se apresuraban a escabullirse bajo la arena al verlos llegar. Recordaba a su madre explicándole que lo hacían porque eran un poquito vergonzosos.
+^^
+Recordaba a su padre y a sus tíos insistiendo en que no debía tener miedo a la enfermedad, que todo saldría bien. Recordaba el ligero temblor de su voz al decirle aquello, las miradas perdidas. Recordaba cuando tenía once años y nada salió bien. Durante mucho tiempo, después de que muriese su madre, siguió bajando a menudo hasta la cala ella sola, intentando escabullirse allí del mundo.
+^^
+Al terminar el instituto se fue a estudiar a una ciudad diferente y más tarde encontró trabajo y construyó su vida lejos de aquel lugar.
+^^
+Ahora su padre había muerto también y la casa se había quedado vacía. Ya nadie visitaba la pequeña cala.
+^^
+Sólo los cangrejos.";
+new_line;
+return true;
+2:
+print "@<<Y entro en los campos y anchos palacios de la memoria, donde están los tesoros de innumerables imágenes de toda clase de cosas acarreadas por los sentidos.@>>^
+--- San Agustín. Confesiones, libro décimo, capítulo VIII.";
+new_line;
+return true;
+}
+
 limbo: switch (n) {
 1:	! ##Examine (A)
 print "Est", (lm_estas) player, " más allá de la barrera casi insuperable que separa la realidad de todo lo demás. Un lugar etéreo, donde la vida, la materia y la vitalidad no son necesariamente constantes; un lugar donde el el tiempo y el espacio no existen tal y como los capta nuestro ser despierto...";
 return true;
 2:	! ##Examine (B - primera vez)
 print " ¿Qué? ¿Cómo?... ¿cómo he llegado aquí?";
+return true;
+}
+
+patio: switch (n) {
+1:	! ##Examine
+print "Un acceso de hormigón de unos veinte metros de longitud comunica la puerta principal de la casa, al norte, con la carretera, hacia el sureste. El coche de Silvia está aparcado frente a la puerta. Deslumbra bajo el sol, proyectando reflejos molestos en el rostro mujer.";
+new_line;
+return true;
+}
+
+recibidor: switch (n) {
+1:	! ##Examine (A - Parte 1/2, con la puerta cerrada)
+print "La luz del exterior se cuela por una cristalera de colores que hay junto a la puerta principal, bañando el pequeño recibidor en una mezcla de azules, amarillos, verdes y rojos, como el vitral de una iglesia.";
+return true;
+2:	! ##Examine (B - Parte 1/2, con la puerta abierta)
+print "La brillante luz del exterior se cuela por la puerta abierta y por una cristalera de colores que hay junto ella, bañando el pequeño recibidor de una mezcla de los blancos directos del sol y de los azules, amarillos, verdes y rojos que llegan por el filtro del cristal tintado.";
+return true;
+3:	! ##Examine (C - Parte 2/2)
+print "Frente a la puerta, al norte, un corto pasillo conduce hasta el salón. Hay una cómoda apoyada contra la pared.";
+new_line;
+return true;
+}
+
+salon: switch (n) {
+1:	! ##Examine
+print "Desde el otro lado de los ventanales laterales el paisaje marino parece penetrar la estancia con el romper de las olas. Como virtualmente ocurre en todas las casas, el sofá parece ser el centro de gravedad de todo el salón; colocado de manera que se puede contemplar con la misma facilidad tanto el mar tras los ventanales como el televisor. Varias estanterías atestadas de libros y un mueble bar completan este paréntesis entre el recibidor, al sur, y las puertas de doble hoja que conducen al oeste hasta la cocina.";
+new_line;
+return true;
+}
+
+silvia: switch (n) {
+2:	! ##Dance (A - por primera vez)
+print "Es a Carmen a quien le gusta andar bailoteando por la casa. Sonríe al recordarla afirmando ser una virtuosa de la ~bio-danza~ y, como para demostrarlo, retorcerse contra la pared con un movimiento absurdo... payasa.";
+new_line;
+return true;
+3:	! ##Dance (B)
+print "Nunca ha sido capaz de ponerse a bailar esa ~bio-danza~ de Carmen.";
+new_line;
 return true;
 }
 

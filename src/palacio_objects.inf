@@ -44,13 +44,33 @@
 !!	0.0: 2018/03/04	Inicio de desarrollo.
 !!
 !!------------------------------------------------------------------------------
+!!
+!!	TABLA DE CONTENIDOS
+!!
+!!	1)	Dungeon Master / Limbo
+!!	2)	Baño
+!!	3)	Cala de los cangrejos
+!!	4)	Cocina
+!!	5)	Dormitorio principal
+!!	6)	Habitación multiusos
+!!	7)	Pasillo de la segunda planta
+!!	8)	Patio delantero
+!!	9)	Recibidor
+!!	10)	Salón
+!!	11)	Taller
+!!	12)	Terraza trasera
+!!
+!!------------------------------------------------------------------------------
 
 
 !!==============================================================================
 !!
-!!	1)	Limbo
+!!	1)	Dungeon Master / Limbo
 !!
 !!------------------------------------------------------------------------------
+
+Object	dungeon_master ""
+;
 
 Room	limbo "En algún lugar"
  with	name_f	'babia',
@@ -64,3 +84,198 @@ Room	limbo "En algún lugar"
 		],
 		clarification 0,
  has	male;
+
+NPC		-> silvia "Silvia"
+ with	name_f	'personaje' 'protagonista' 'silvia',
+		gender	G_FEMENINO,
+		adjectives 'principal',
+		description [; <<Inv>>; ],
+ has	female proper;
+
+
+!!==============================================================================
+!!
+!!	2)	Baño
+!!
+!!------------------------------------------------------------------------------
+
+Indoors	banno "Baño"
+ with	name_f	'estancia' 'habitacion',
+		name_m	'aseo' 'bano',
+		gender	G_FEMENINO,
+ has	female;
+
+
+!!==============================================================================
+!!
+!!	3)	Cala de los cangrejos
+!!
+!!------------------------------------------------------------------------------
+
+Outdoors	cala "Cala de los cangrejos"
+ with	name_f	'abra' 'bahia' 'cala' 'caleta' 'costa' 'ensenada' 'orilla'
+				'playa' 'rada',
+		name_m	'ancon' 'grao' 'litoral',
+		gender	G_FEMENINO,
+		adjectives 'cangrejos',
+ has	female;
+
+
+!!==============================================================================
+!!
+!!	4)	Cocina
+!!
+!!------------------------------------------------------------------------------
+
+Indoors	cocina "cocina"
+ with	name_f	'cocina' 'estancia' 'habitacion',
+		gender	G_FEMENINO,
+		description [;
+			return O__M(self, 1);
+		],
+		e_to	salon,
+ has	female;
+
+
+!!==============================================================================
+!!
+!!	5)	Dormitorio principal
+!!
+!!------------------------------------------------------------------------------
+
+Indoors	dormitorio "Dormitorio principal"
+ with	name_f	'estancia' 'habitacion',
+		name_m	'cuarto' 'dormitorio',
+		gender	G_MASCULINO,
+		adjectives 'principal',
+ has	male;
+
+
+!!==============================================================================
+!!
+!!	6)	Habitación multiusos
+!!
+!!------------------------------------------------------------------------------
+
+Indoors	habitacion "Habitación multiusos"
+ with	name_f	'estancia' 'habitacion',
+		name_m	'cuarto',
+		gender	G_FEMENINO,
+ has	female;
+
+
+!!==============================================================================
+!!
+!!	7)	Pasillo de la segunda planta
+!!
+!!------------------------------------------------------------------------------
+
+Indoors	pasillo "Pasillo de la segunda planta"
+ with	name_f	'estancia' 'habitacion',
+		name_m	'corredor' 'pasillo',
+		gender	G_MASCULINO,
+ has	male;
+
+
+!!==============================================================================
+!!
+!!	8)	Patio delantero
+!!
+!!------------------------------------------------------------------------------
+
+Indoors	patio "Patio delantero"
+ with	name_f	'entrada' 'terraza',
+		name_m	'corral' 'patio',
+		gender	G_MASCULINO,
+		adjectives 'delantera' 'delantero',
+		description [;
+			return O__M(self, 1);
+		],
+		n_to	puerta_delantera,
+		in_to	[; return self.n_to(); ],
+ has	male;
+
+Furniture	puerta_delantera "puerta"
+ with	name_f	'puerta',
+		gender	G_FEMENINO,
+		adjectives 'delantera',
+ has	door female ~open;
+
+
+!!==============================================================================
+!!
+!!	9)	Recibidor
+!!
+!!------------------------------------------------------------------------------
+
+Indoors	recibidor "Recibidor"
+ with	name_f	'antesala' 'estancia' 'habitacion',
+		name_m	'hall' 'recibidor' 'vestibulo',
+		gender	G_MASCULINO,
+		initial [
+			previous_style;
+			if (self hasnt visited) {
+				O__M(dungeon_master, 1);
+				KeyCharPrimitive();
+				EraseWindow();
+				previous_style = TextFormatter.get_current_style();
+				TextFormatter.use_quote();
+				O__M(dungeon_master, 2);
+				TextFormatter.use(previous_style);
+				return true;
+			}
+		],
+		description [;
+			if (puerta_delantera hasnt open) O__M(self, 1);
+			else O__M(self, 2);
+			print " ";
+			return O__M(self, 3);
+		],
+		n_to	salon,
+		s_to	puerta_delantera,
+		out_to	[; return self.s_to(); ],
+ has	male;
+
+
+!!==============================================================================
+!!
+!!	10)	Salón
+!!
+!!------------------------------------------------------------------------------
+
+Indoors	salon "Salón"
+ with	name_f	'estancia' 'habitacion' 'sala',
+		name_m	'comedor' 'salon',
+		gender	G_MASCULINO,
+		description [;
+			return O__M(self, 1);
+		],
+		s_to	recibidor,
+		w_to	cocina,
+ has	male;
+
+
+!!==============================================================================
+!!
+!!	11)	Taller
+!!
+!!------------------------------------------------------------------------------
+
+Indoors	taller "Taller"
+ with	name_m	'cuarto' 'taller',
+		gender	G_MASCULINO,
+ has	male;
+
+
+!!==============================================================================
+!!
+!!	12)	Terraza trasera
+!!
+!!------------------------------------------------------------------------------
+
+Outdoors	terraza "Terraza trasera"
+ with	name_f	'terraza',
+		name_m	'mirador' 'patio',
+		gender	G_FEMENINO,
+		adjectives 'trasera' 'trasero',
+ has	female;

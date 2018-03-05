@@ -1,5 +1,8 @@
-!% -SDX
+!% -SD
 !% +language_name=Spanish
+!% $MAX_LABELS=5000
+!% $MAX_STATIC_DATA=15000
+!% $MAX_ZCODE_SIZE=75000
 !% $list
 
 !!==============================================================================
@@ -67,12 +70,13 @@
 !!
 !!------------------------------------------------------------------------------
 !!	-	Información bibliográfica
-!!	-	Constantes de la librería Inform
-!!	-	Variables usadas por la librería de mensajes por defecto
+!!	-	Definiciones de la librería Inform
+!!	-	Definiciones de la extensión 'textStyles'
+!!	-	Definiciones de la librería de mensajes 'SpanishLM'
 !!------------------------------------------------------------------------------
 
 !!------------------------------------------------------------------------------
-!! Información bibliográfica.
+!!	Información bibliográfica
 !!------------------------------------------------------------------------------
 
 Constant Story
@@ -85,45 +89,38 @@ Por José Francisco Martín Lisaso";
 Constant Checking 0;
 Release 0;						! v0.0
 
-Default _grammatical_inflection = 2;
-Default FIRST_PERSON_PRESENT = 1;
-Default SECOND_PERSON_PRESENT = 1;
-Default THIRD_PERSON_PRESENT = 1;
-Default FIRST_PERSON_PAST = 1;
-Default SECOND_PERSON_PAST = 1;
-Default THIRD_PERSON_PAST = 1;
-Default FIRST_PERSON_FUTURE = 1;
-Default SECOND_PERSON_FUTURE = 1;
-Default THIRD_PERSON_FUTURE = 1;
-[ lm_as_; ];
-[ lm_estas; ];
-[ IsPluralNoun; ];
-[ SpanishNominativePronoun; ];
-
 !!------------------------------------------------------------------------------
-!! Constantes de la librería Inform.
+!!	Definiciones de la librería Inform
 !!------------------------------------------------------------------------------
 
 Constant MANUAL_PRONOUNS;		! Los pronoms. refieren a objetos ya mencionados
 Constant MAX_CARRIED 3;			! Máx. de objetos que se pueden llevar en mano
 Constant NO_PLACES;				! Acciones LUGARES y OBJETOS desactivadas
 Constant NO_SCORE;				! No se lleva conteo de puntuación
-!! Constant SIN_MENSAJES;			! Se omiten los mensajes por defecto de la lib.
-!! Constant WITHOUT_DIRECTIONS;	! Se omiten las dir. por defecto de la lib.
+Constant SIN_MENSAJES;			! Se omiten los mensajes por defecto de la lib.
+Constant WITHOUT_DIRECTIONS;	! Se omiten las dir. por defecto de la lib.
 
 !!------------------------------------------------------------------------------
-!! Variables usadas por la librería de mensajes por defecto.
+!!	Definiciones de la extensión 'textStyles'
 !!------------------------------------------------------------------------------
 
-!! Global FORMER__TX	= "tu antiguo ~yo~";
-!! Global YOURSELF__TX	= "ti mismo";
-!! Global CANTGO__TX	= "No puedes ir por ahí.";
-!! Global IS__TX		= " ves";
-!! Global ARE__TX		= " ves";
-!! Global IS2__TX		= "ves ";
-!! Global ARE2__TX		= "ves ";
-!! Global YOU__TX		= "Tú";
-!! Global PARTICULA_TE	= "te";
+Constant TEXT_STYLE_PARSER_PREFIX "[";
+Constant TEXT_STYLE_PARSER_STYLE TEXT_STYLE_STRESSED;
+Constant TEXT_STYLE_PARSER_SUFIX "]";
+
+!!------------------------------------------------------------------------------
+!!	Definiciones de la librería de mensajes 'SpanishLM'
+!!------------------------------------------------------------------------------
+
+Global FORMER__TX	= "tu antiguo ~yo~";
+Global YOURSELF__TX	= "ti mismo";
+Global CANTGO__TX	= "No puedes ir por ahí.";
+Global IS__TX		= " ves";
+Global ARE__TX		= " ves";
+Global IS2__TX		= "ves ";
+Global ARE2__TX		= "ves ";
+Global YOU__TX		= "Tú";
+Global PARTICULA_TE	= "te";
 
 
 !!==============================================================================
@@ -132,15 +129,17 @@ Constant NO_SCORE;				! No se lleva conteo de puntuación
 !!
 !!------------------------------------------------------------------------------
 
-!! Replace Banner;					! Créditos generales de la aplicación
-!! Replace DrawStatusLine;			! Dibuja la barra de estado
-!! Replace ExamineSub;				! Rutina para la acción ##Examine
-!! Replace GetGNAOfObject;			! Rutina para obtener el GNA de un objeto
-!! Replace LMode1Sub;				! Lookmode 1: Breve
-!! Replace LMode2Sub;				! Lookmode 2: Largo (establecido por defecto)
-!! Replace LMode3Sub;				! Lookmode 3: Superbreve
-!! Replace LookSub;				! Rutina para la acción ##Look
-!! Replace VersionSub;				! Créditos detallados de la aplicación
+Replace Banner;					! Créditos generales de la aplicación
+Replace ChangePlayer;			! Rutina para cambiar el objeto PC
+Replace DrawStatusLine;			! Dibuja la barra de estado
+Replace ExamineSub;				! Rutina para la acción ##Examine
+Replace GetGNAOfObject;			! Rutina para obtener el GNA de un objeto
+Replace LanguageDirection;		! Imprime el nombre de las direcciones
+Replace LMode1Sub;				! Lookmode 1: Breve
+Replace LMode2Sub;				! Lookmode 2: Largo (establecido por defecto)
+Replace LMode3Sub;				! Lookmode 3: Superbreve
+Replace LookSub;				! Rutina para la acción ##Look
+Replace VersionSub;				! Créditos detallados de la aplicación
 
 
 !!==============================================================================
@@ -154,9 +153,10 @@ Constant NO_SCORE;				! No se lleva conteo de puntuación
 #Endif; ! TARGET_GLULX;
 
 Include "Parser.h";				! Decodifica la entrada del teclado
-!! Include "SpanishLM.h";			! Mensajes de la librería
-!! Include ">palacio_lib.inf";		! Personalizaciones de la librería Inform
-!! Include ">palacio_langLM.inf";	! Mensajes personalizados de la librería
+Include "SpanishLM.h";			! Mensajes de la librería
+Include "textStyles.h";			! Selección de estilo de los textos
+Include ">palacio_lib.inf";		! Personalizaciones de la librería Inform
+Include ">palacio_langLM.inf";	! Mensajes personalizados de la librería
 Include ">palacio_langOM.inf";	! Mensajes de los objetos
 
 #Ifdef TARGET_GLULX;
@@ -173,10 +173,10 @@ Include ">palacio_langOM.inf";	! Mensajes de los objetos
 !!	define los suyos propios para reemplazar aquellos de la librería:
 !!	-	GWindowsGlkEvent(): Reemplaza HandleGlkEvent()
 !!	-	GWindowsGlkIdentify(): Reemplaza IdentifyGlkObject()
+!!	-	InitGWindows(): Reemplaza InitGlkWindow()
 !!------------------------------------------------------------------------------
 
 #Ifdef TARGET_GLULX;
-
 !!------------------------------------------------------------------------------
 !! Punto de entrada para manejar eventos Glk con la librería GWindows.
 !! Reemplaza al habitual 'HandleGlkEvent()'.
@@ -211,6 +211,28 @@ Include ">palacio_langOM.inf";	! Mensajes de los objetos
 	phase = type + ref + rock; ! (por evitar alertas del compilador)
 ];
 
+!!------------------------------------------------------------------------------
+!! TODO - Documentación
+!!
+!!	@param winrock
+!!	@returns {boolean}
+!!------------------------------------------------------------------------------
+[ InitGlkWindow winrock;
+    TextFormatter.initialise_style_hints(winrock);
+
+	!! Para continuar con el proceso normal de la librería:
+    return false;
+];
+
+!!------------------------------------------------------------------------------
+!! TODO - Documentación
+!!
+!!	@param winrock
+!!	@returns {boolean}
+!!------------------------------------------------------------------------------
+[ InitGWindows winrock;
+	winrock++; ! (por evitar alertas del compilador)
+];
 #Endif; ! TARGET_GLULX;
 
 
@@ -279,9 +301,11 @@ Include "VerbLib.h";			! Define cómo trabajan las acciones
 	#Endif; ! TARGET_
 
 	!! Inicializaciones de la obra ---------------------------------------------
-	location = limbo;			! Establece la localidad inicial
+	SetGrammaticalInflection(THIRD_PERSON_PRESENT);
+	ChangePlayer(silvia);		! Establece el PC (player character)
+	location = recibidor;		! Establece la localidad inicial
 	lookmode = 2;				! Lookmode largo
-	return 0;
+	return 2;					! Evita la impresión inicial del banner
 ];
 
 !!------------------------------------------------------------------------------
@@ -337,6 +361,7 @@ Include "VerbLib.h";			! Define cómo trabajan las acciones
 !!
 !!------------------------------------------------------------------------------
 !!	-	EraseWindow()
+!!	-	Handle_SCENERY_PE()
 !!	-	TopHolder()
 !!------------------------------------------------------------------------------
 
@@ -358,6 +383,21 @@ Include "VerbLib.h";			! Define cómo trabajan las acciones
     if (gg_statuswin) glk($002A, gg_statuswin); ! window_clear
     #Endif;
 	return true;
+];
+
+!!------------------------------------------------------------------------------
+!! Para errores SCENERY (el usuario a utilizado una palabra de la propiedad
+!! NAME de la localidad actual) provocados por una operación de tipo EXAMINAR,
+!! se lanza la acción ##Look que imprime una descripción de la localidad.
+!!------------------------------------------------------------------------------
+[ Handle_SCENERY_PE;
+	if (action_to_be == ##Examine or ##Search or ##Consult) {
+		<Look>;
+		InformLibrary.end_turn_sequence();
+		return true;
+	}
+	print_ret (parser) "No es necesario referirse a eso para terminar
+	la historia.";
 ];
 
 !!------------------------------------------------------------------------------
@@ -394,7 +434,7 @@ Include "VerbLib.h";			! Define cómo trabajan las acciones
 !!------------------------------------------------------------------------------
 
 Include "SpanishG.h";			! Gramática española
-!Include "SpanishEG.h";			! Gramática española extendida
+Include "SpanishEG.h";			! Gramática española extendida
 
 !!------------------------------------------------------------------------------
 !! ##LMode2

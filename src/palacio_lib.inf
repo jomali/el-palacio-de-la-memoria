@@ -159,6 +159,8 @@
 !! extensión de GWindows y no la barra de estado definida aquí, de manera que
 !! esta rutina queda inutilizada).
 !!
+!! TODO - Revisar utilización del array '_AlmacenDeTexto_'.
+!!
 !!	@override parserm.h
 !!	@version 1.0
 !!------------------------------------------------------------------------------
@@ -306,111 +308,111 @@ Attribute described; ! Indica si un objeto ha sido descrito al jugador
 !!	@returns {string} Una palabra que se corresponde con la acción 'x'
 !!	@version 1.0
 !!------------------------------------------------------------------------------
-[ GetActionVerb x;
-	switch (x) {
-		!! GROUP 2 ACTIONS: Usually work, given the right circumstances.
-		##Close:		return "Cerrar";
-		##Disrobe:		return "Desvestir";
-		##Drop:			return "Dejar";
-		##Eat:			return "Comer";
-		##Empty:		return "Vaciar";
-		!##EmptyT
-		##Enter:		return "Entrar";
-		##Examine:		return "Examinar";
-		##Exit:			return "Salir";
-		##GetOff:		return "Salir";
-		##Give:			return "Dar";
-		##Go:			return "Ir";
-		##GoIn:			return "Entrar";
-		##Insert:		return "Meter";
-		##Inv:			return "Inventario";
-		##InvTall:		return "Inventario (lista)";
-		##InvWide:		return "Inventario (descripción)";
-		##Lock:			return "Bloquear";
-		##Look:			return "Mirar";
-		##Open:			return "Abrir";
-		##Order:		return "Ordenar";
-		##PutOn:		return "Poner encima";
-		##Remove:		return "Quitar";
-		##Search:		return "Buscar";
-		##Show:			return "Enseñar";
-		##SwitchOff:	return "Apagar";
-		##SwitchOn:		return "Encender";
-		##Take:			return "Coger";
-		!##Transfer
-		##Unlock:		return "Desbloquear";
-		!##VagueGo
-		##Wear:			return "Vestir";
-		!! GROUP 3 ACTIONS: Output a message and stop at the "before" stage.
-		##Answer:		return "Responder";
-		##Ask:			return "Preguntar";
-		##AskFor:		return "Preguntar por";
-		##Attack:		return "Atacar";
-		##Blow:			return "Soplar";
-		##Burn:			return "Quemar";
-		##Buy:			return "Comprar";
-		##Climb:		return "Escalar";
-		##Consult:		return "Consultar";
-		##Cut:			return "Cortar";
-		##Dig:			return "Excavar";
-		##Drink:		return "Beber";
-		##Fill:			return "Llenar";
-		##Jump:			return "Saltar";
-		##JumpOver:		return "Saltar";
-		##Kiss:			return "Besar";
-		!##LetGo:
-		##Listen:		return "Escuchar";
-		##LookUnder:	return "Mirar debajo";
-		##Mild:			return "Insultar";
-		##No:			return "No";
-		##Pray:			return "Rezar";
-		##Pull:			return "Tirar";
-		##Push:			return "Empujar";
-		##PushDir:		return "Empujar hacia";
-		##Receive:		return "Recibir";
-		##Rub:			return "Frotar";
-		##Set:			return "Establecer";
-		##SetTo:		return "Establecer a";
-		##Sing:			return "Cantar";
-		##Sleep:		return "Dormir";
-		##Smell:		return "Oler";
-		##Sorry:		return "Disculpar";
-		##Squeeze:		return "Agitar";
-		##Strong:		return "Blasfemar";
-		##Swim:			return "Nadar";
-		##Swing:		return "Columpiar";
-		##Taste:		return "Saborear";
-		##Tell:			return "Decir";
-		##Think:		return "Pensar";
-		##ThrowAt:		return "Lanzar a";
-		##Tie:			return "Atar";
-		##Touch:		return "Tocar";
-		##Turn:			return "Girar";
-		##Wait:			return "Esperar";
-		##Wake:			return "Despertar";
-		##WakeOther:	return "Despertar";
-		##Wave:			return "Gesticular";
-		##WaveHands:	return "Gesticular con las manos";
-		##Yes:			return "Si";
-		!! GRAMÁTICA ESPAÑOLA EXTENDIDA:
-		##Dance:		return "Bailar";
-		##GoDown:		return "Descender";
-		##GoUp:			return "Ascender";
-		##KnockOn:		return "Llamar";
-		##Masturbate:	return "Masturbarse";
-		##Read:			return "Leer";
-		##Shout:		return "Gritar";
-		##Sit:			return "Sentarse";
-		##SleepWith:	return "Follar";
-		##StandUp:		return "Levantarse";
-		##Untie:		return "Desatar";
-		##Use:			return "Usar";
-		##Write:		return "Escribir";
-		##Xyzzy:		return "Xyzzy";
-		!! CUSTOM ACTIONS:
-		##TalkTo:		return "Hablar";
-	}
-];
+!! [ GetActionVerb x;
+!! 	switch (x) {
+!! 		!! GROUP 2 ACTIONS: Usually work, given the right circumstances.
+!! 		##Close:		return "Cerrar";
+!! 		##Disrobe:		return "Desvestir";
+!! 		##Drop:			return "Dejar";
+!! 		##Eat:			return "Comer";
+!! 		##Empty:		return "Vaciar";
+!! 		!##EmptyT
+!! 		##Enter:		return "Entrar";
+!! 		##Examine:		return "Examinar";
+!! 		##Exit:			return "Salir";
+!! 		##GetOff:		return "Salir";
+!! 		##Give:			return "Dar";
+!! 		##Go:			return "Ir";
+!! 		##GoIn:			return "Entrar";
+!! 		##Insert:		return "Meter";
+!! 		##Inv:			return "Inventario";
+!! 		##InvTall:		return "Inventario (lista)";
+!! 		##InvWide:		return "Inventario (descripción)";
+!! 		##Lock:			return "Bloquear";
+!! 		##Look:			return "Mirar";
+!! 		##Open:			return "Abrir";
+!! 		##Order:		return "Ordenar";
+!! 		##PutOn:		return "Poner encima";
+!! 		##Remove:		return "Quitar";
+!! 		##Search:		return "Buscar";
+!! 		##Show:			return "Enseñar";
+!! 		##SwitchOff:	return "Apagar";
+!! 		##SwitchOn:		return "Encender";
+!! 		##Take:			return "Coger";
+!! 		!##Transfer
+!! 		##Unlock:		return "Desbloquear";
+!! 		!##VagueGo
+!! 		##Wear:			return "Vestir";
+!! 		!! GROUP 3 ACTIONS: Output a message and stop at the "before" stage.
+!! 		##Answer:		return "Responder";
+!! 		##Ask:			return "Preguntar";
+!! 		##AskFor:		return "Preguntar por";
+!! 		##Attack:		return "Atacar";
+!! 		##Blow:			return "Soplar";
+!! 		##Burn:			return "Quemar";
+!! 		##Buy:			return "Comprar";
+!! 		##Climb:		return "Escalar";
+!! 		##Consult:		return "Consultar";
+!! 		##Cut:			return "Cortar";
+!! 		##Dig:			return "Excavar";
+!! 		##Drink:		return "Beber";
+!! 		##Fill:			return "Llenar";
+!! 		##Jump:			return "Saltar";
+!! 		##JumpOver:		return "Saltar";
+!! 		##Kiss:			return "Besar";
+!! 		!##LetGo:
+!! 		##Listen:		return "Escuchar";
+!! 		##LookUnder:	return "Mirar debajo";
+!! 		##Mild:			return "Insultar";
+!! 		##No:			return "No";
+!! 		##Pray:			return "Rezar";
+!! 		##Pull:			return "Tirar";
+!! 		##Push:			return "Empujar";
+!! 		##PushDir:		return "Empujar hacia";
+!! 		##Receive:		return "Recibir";
+!! 		##Rub:			return "Frotar";
+!! 		##Set:			return "Establecer";
+!! 		##SetTo:		return "Establecer a";
+!! 		##Sing:			return "Cantar";
+!! 		##Sleep:		return "Dormir";
+!! 		##Smell:		return "Oler";
+!! 		##Sorry:		return "Disculpar";
+!! 		##Squeeze:		return "Agitar";
+!! 		##Strong:		return "Blasfemar";
+!! 		##Swim:			return "Nadar";
+!! 		##Swing:		return "Columpiar";
+!! 		##Taste:		return "Saborear";
+!! 		##Tell:			return "Decir";
+!! 		##Think:		return "Pensar";
+!! 		##ThrowAt:		return "Lanzar a";
+!! 		##Tie:			return "Atar";
+!! 		##Touch:		return "Tocar";
+!! 		##Turn:			return "Girar";
+!! 		##Wait:			return "Esperar";
+!! 		##Wake:			return "Despertar";
+!! 		##WakeOther:	return "Despertar";
+!! 		##Wave:			return "Gesticular";
+!! 		##WaveHands:	return "Gesticular con las manos";
+!! 		##Yes:			return "Si";
+!! 		!! GRAMÁTICA ESPAÑOLA EXTENDIDA:
+!! 		##Dance:		return "Bailar";
+!! 		##GoDown:		return "Descender";
+!! 		##GoUp:			return "Ascender";
+!! 		##KnockOn:		return "Llamar";
+!! 		##Masturbate:	return "Masturbarse";
+!! 		##Read:			return "Leer";
+!! 		##Shout:		return "Gritar";
+!! 		##Sit:			return "Sentarse";
+!! 		##SleepWith:	return "Follar";
+!! 		##StandUp:		return "Levantarse";
+!! 		##Untie:		return "Desatar";
+!! 		##Use:			return "Usar";
+!! 		##Write:		return "Escribir";
+!! 		##Xyzzy:		return "Xyzzy";
+!! 		!! CUSTOM ACTIONS:
+!! 		##TalkTo:		return "Hablar";
+!! 	}
+!! ];
 
 
 !!==============================================================================
@@ -502,11 +504,11 @@ Attribute described; ! Indica si un objeto ha sido descrito al jugador
 !! 'abajo' (se mantienen las definiciones 'interior' y 'exterior' por defecto
 !! de la 'Spanish.h'), para eliminar los nombres 'cielo' 'techo', 'piso' y
 !! 'suelo', de forma que puedan ser utilizados por otros objetos del relato.
-!! Se añaden además dos direcciones nuevas: 'adelante' y 'atrás'.
 !!
-!! Redefinición también de la rutina 'LanguageDirection()', usado en la rutina
-!! 'PrintCommand()' y en el comando salidas (##Dirs), para imprimir el nombre
-!! de las nuevas direcciones añadidas.
+!! Se abre la posibilidad de añadir aquí direcciones nuevas, por ejemplo:
+!! 'adelante' y 'atrás'. Para ello se redefine también la runtina
+!! 'LanguageDirection()', usada a su vez en la rutina 'PrintCommand()' para
+!! imprimir el nombre de las nuevas direcciones añadidas.
 !!
 !! Para utilizar las redefiniciones es necesario declarar la constante
 !! WITHOUT_DIRECTIONS, de forma que se omiten los puntos cardinales por defecto
@@ -548,15 +550,15 @@ CompassDirection d_obj "abajo" compass
  with	name 'd//' 'abajo' 'ab' 'baja', door_dir d_to,
  has	proper;
 
-Property b_to;
-CompassDirection b_obj "atrás" compass
- with	name 'b//' 'atras', door_dir b_to,
- has	proper;
-
-Property f_to;
-CompassDirection f_obj "adelante" compass
- with	name 'f//' 'adelante', door_dir f_to,
- has	proper;
+!! Property b_to;
+!! CompassDirection b_obj "atrás" compass
+!!  with	name 'b//' 'atras', door_dir b_to,
+!!  has	proper;
+!!
+!! Property f_to;
+!! CompassDirection f_obj "adelante" compass
+!!  with	name 'f//' 'adelante', door_dir f_to,
+!!  has	proper;
 
 [ LanguageDirection dir;
 	switch (dir) {
@@ -572,8 +574,8 @@ CompassDirection f_obj "adelante" compass
 		d_to:	print "abajo";
 		in_to:	print "dentro";
 		out_to:	print "fuera";
-		b_to:	print "atrás";
-		f_to:	print "adelante";
+		!! b_to:	print "atrás";
+		!! f_to:	print "adelante";
 		default: return RunTimeError(9, dir);
 	}
 ];
