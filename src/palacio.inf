@@ -1,3 +1,4 @@
+!% -v8
 !% -SD
 !% +language_name=Spanish
 !% $MAX_LABELS=5000
@@ -132,6 +133,9 @@ Constant USR1_STYLE_FGC $000000; ! Color frontal del estilo de texto Usuario 1
 Constant USR2_STYLE_BGC $B08080; ! Color de fondo del estilo de texto Usuario 2
 Constant USR2_STYLE_FGC $000000; ! Color frontal del estilo de texto Usuario 2
 
+Constant HYPERLINKS_COMMAND "ir al";
+Constant PROMPT ": ";
+
 Global _highlight_style_1 = TEXT_STYLE_IMPORTANT;	! Objetos destacados
 Global _highlight_style_2 = TEXT_STYLE_STRESSED;	! Direcciones y puertas
 Global _highlight_style_3 = TEXT_STYLE_UPRIGHT;		! Otros objetos
@@ -148,7 +152,7 @@ Replace ChangePlayer;			! Rutina para cambiar el objeto PC
 Replace DrawStatusLine;			! Dibuja la barra de estado
 Replace ExamineSub;				! Rutina para la acción ##Examine
 Replace GetGNAOfObject;			! Rutina para obtener el GNA de un objeto
-!! Replace HyperlinkSetStyle;		! Gestión de estilos de texto de hipervínculos
+Replace HyperlinkSetStyle;		! Gestión de estilos de texto de hipervínculos
 Replace LanguageDirection;		! Imprime el nombre de las direcciones
 Replace LMode1Sub;				! Lookmode 1: Breve
 Replace LMode2Sub;				! Lookmode 2: Largo (establecido por defecto)
@@ -229,18 +233,18 @@ Include "gwincls.h";			! GWindows: Window Class Framework
 	!! Gestión de efecto de 'fade' en Damusix en tiempo real:
 	Damusix.NotificarFade(ev);
 	!! Gestión de los eventos de selección de hipervínculo:
-	!! if (HandleHyperlinkEvent(ev, context, abortres)) {
-	!! 	previous_style = TextFormatter.get_current_style();
-	!! 	TextFormatter.use_parser();
-	!! 	TextFormatter.print_parser_prefix();
-	!! 	for (i = WORDSIZE : i < (abortres-->0) + WORDSIZE : i++) {
-	!! 		print (char) abortres->i;
-	!! 	}
-	!! 	TextFormatter.print_parser_sufix();
-	!! 	TextFormatter.use(previous_style);
-	!! 	new_line;
-	!! 	return 2; ! finaliza el turno
-	!! }
+	if (HandleHyperlinkEvent(ev, context, abortres)) {
+		previous_style = TextFormatter.get_current_style();
+		TextFormatter.use_parser();
+		TextFormatter.print_parser_prefix();
+		for (i = WORDSIZE : i < (abortres-->0) + WORDSIZE : i++) {
+			print (char) abortres->i;
+		}
+		TextFormatter.print_parser_sufix();
+		TextFormatter.use(previous_style);
+		new_line;
+		return 2; ! finaliza el turno
+	}
 ];
 
 !!------------------------------------------------------------------------------
@@ -328,8 +332,8 @@ Include ">palacio.bli";			! Recursos multimedia de la aplicación
 !! Include "aimAndFire.h";			! Sistema de apuntado y disparo QTE
 !! Include "choiceSet.h";			! Sistema de selección de acciones sobre lista
 Include	"hyperlinks.h";			! Rutinas de apoyo para el uso de hipervínculos
-!! Include "pPreprocessor.h";		! Preprocesador del parser
-!! Include "receptacles.h";		! Contenedores con límites de capacidad
+Include "pPreprocessor.h";		! Preprocesador del parser
+Include "receptacles.h";		! Contenedores con límites de capacidad
 
 Include "VerbLib.h";			! Define cómo trabajan las acciones
 
@@ -374,7 +378,11 @@ Global _current_location = 0;
 !!
 !!	@returns Nada
 !!------------------------------------------------------------------------------
-[ BeforeParsing; ];
+[ BeforeParsing;
+	#Ifdef TARGET_GLULX;
+	ParsingPreprocessor.run();
+	#Endif; ! TARGET_GLULX;
+];
 
 !!------------------------------------------------------------------------------
 !! Inicializaciones del relato. Esta rutina es obligatoria y, entre otras
@@ -462,7 +470,9 @@ Global _current_location = 0;
 !!		forma modificada del verbo, o falso para continuar con la ejecución
 !!		normal y que el sistema imprima el verbo de la forma habitual
 !!------------------------------------------------------------------------------
-[ PrintVerb word; ];
+[ PrintVerb word;
+	return false;
+];
 
 !!------------------------------------------------------------------------------
 !! Invocada por el sistema cuando se encuentra con un verbo desconocido, de
@@ -472,7 +482,9 @@ Global _current_location = 0;
 !!		ejecución normal e imprima un mensaje de error, o un valor de
 !!		diccionario del verbo a utilizar en lugar del verbo desconocido
 !!------------------------------------------------------------------------------
-[ UnknownVerb; ];
+[ UnknownVerb;
+	return false;
+];
 
 
 !!==============================================================================
@@ -484,8 +496,8 @@ Global _current_location = 0;
 !!	-	EraseWindow()
 !!	-	FadeInTrack()
 !!	-	FadeOutTrack()
-!!	-	Handle_SCENERY_PE()
 !!	-	HorizontalRule()
+!!	-	HyperlinkSetStyle()
 !!	-	PressAnyKey()
 !!	-	TopHolder()
 !!------------------------------------------------------------------------------
@@ -602,21 +614,6 @@ Global _current_location = 0;
 ];
 
 !!------------------------------------------------------------------------------
-!! Para errores SCENERY (el usuario a utilizado una palabra de la propiedad
-!! NAME de la localidad actual) provocados por una operación de tipo EXAMINAR,
-!! se lanza la acción ##Look que imprime una descripción de la localidad.
-!!------------------------------------------------------------------------------
-[ Handle_SCENERY_PE;
-	if (action_to_be == ##Examine or ##Search or ##Consult) {
-		<Look>;
-		InformLibrary.end_turn_sequence();
-		return true;
-	}
-	print_ret (parser) "No es necesario referirse a eso para terminar
-	la historia.";
-];
-
-!!------------------------------------------------------------------------------
 !! Imprime una regla horizontal centrada en pantalla.
 !!
 !!	@returns {boolean} Verdadero
@@ -629,6 +626,30 @@ Global _current_location = 0;
 	TextFormatter.use(previous_style);
 	new_line;
 	return true;
+];
+
+!!------------------------------------------------------------------------------
+!! Selecciona el estilo de texto utilizado por la rutina para crear
+!! hipervínculos.
+!!
+!!	@param {integer} highlight - Código numérico para identificar el estilo de
+!!		texto a utilizar, utilizando como referencia los estilos de texto de
+!!		Máquina-Z: 0) normal, 1) subrayado, 2) negrita y 3) ancho-fijo
+!!	@param {Object|String} item - Objeto o cadena de caracteres sobre el que se
+!!		genera el hipervínculo. Originalmente no se utiliza, pero puede ser
+!!		interesante si el autor decide sobreescribir la rutina y tener en
+!!		cuenta este 'item' para seleccionar el estilo de texto utilizado
+!!	@returns {integer} Código numérico que identifica los estilos de texto. La
+!!		rutina se invoca 2 veces, antes y después de imprimir el texto del
+!!		hipervínculo, de tal forma que el resultado de la primera llamada se
+!!		pasa como parámetro en la segunda. Así es posible inicar, desde la
+!!		llamada 1, el estilo final del texto una vez impreso el hipervínculo
+!!------------------------------------------------------------------------------
+[ HyperlinkSetStyle highlight item
+	st;
+	item++; ! (por evitar alertas del compilador)
+	if (highlight) st = _highlight_style_1;
+	return TextFormatter.use(st);
 ];
 
 !!------------------------------------------------------------------------------
@@ -679,6 +700,8 @@ Global _current_location = 0;
 !!------------------------------------------------------------------------------
 !!	IMPORTANTE: Los mensajes de algunas de las acciones que se añaden requieren
 !!	la extensión 'SpanishLM.h'. Acciones añadidas o modificadas:
+!!	-	##Audio / ##AudioOn / ##AudioOff
+!!	-	##Highlight / ##HighlightOn / ##HighlightOff
 !!	-	##LMode2
 !!	-	##NoSuchVerb --- Permite eliminar las acciones:
 !!		-	##Sorry
@@ -687,6 +710,158 @@ Global _current_location = 0;
 
 Include "SpanishG.h";			! Gramática española
 Include "SpanishEG.h";			! Gramática española extendida
+
+!!------------------------------------------------------------------------------
+!! ##Audio / ##AudioOn / ##AudioOff
+!!------------------------------------------------------------------------------
+
+#Ifdef TARGET_GLULX;
+Verb meta 'audio' 'music' 'musica' 'sonido' 'sonidos'
+	*								-> Audio
+	* 'on' / 'si'					-> AudioOn
+	* 'encendido' / 'activado'		-> AudioOn
+	* 'off' / 'no'					-> AudioOff
+	* 'apagado' / 'desactivado'		-> AudioOff
+;
+VerboIrregular "establecer la reproducción de audio" with imperativo
+	'audio' 'music' 'musica' 'sonido' 'sonidos';
+
+[ AudioSub;
+	if (Damusix.HayAudio()) <<AudioOff>>;
+	else <<AudioOn>>;
+];
+
+[ AudioOnSub;
+	if (Damusix.HayAudio())
+		print_ret (parser) "La reproducción de audio ya estaba activada.";
+	Damusix.ActivarAudio();
+	print_ret (parser) "Reproducción de audio activada.";
+];
+
+[ AudioOffSub;
+	if (~~Damusix.HayAudio())
+		print_ret (parser) "La reproducción de audio ya estaba desactivada.";
+	Damusix.DesactivarAudio();
+	print_ret (parser) "Reproducción de audio desactivada.";
+];
+#Endif; ! TARGET_GLULX;
+
+!!------------------------------------------------------------------------------
+!! ##Highlight / ##HighlightOn / ##HighlightOff
+!!------------------------------------------------------------------------------
+
+Verb meta 'highlight' 'resaltado'
+	*								-> Highlight
+;
+VerboIrregular "establecer estilo de texto resaltado" with imperativo
+	'highlight' 'resaltado';
+
+[ HighlightSub
+	previous_style flag;
+	while (flag == false) {
+		EraseWindow();
+		print (string) Story;
+		print " utiliza un sistema de palabras clave para destacar objetos
+		interactivos del relato. Hay tres clases de palabras clave: 1) nombres
+		de objetos importantes en la historia, 2) objetos o direcciones hacia
+		las que te puedes desplazar, y 3) nombres de otros objetos
+		interactivos. Introduce el número de la clase de palabra clave para
+		rotar entre los estilos de resaltado disponibles y seleccionar aquel
+		que se adeque mejor a tus preferencias personales:";
+		new_line;
+		new_line;
+		print "1) Objetos importantes: ";
+		previous_style = TextFormatter.use(_highlight_style_1);
+		switch (_highlight_style_1) {
+			TEXT_STYLE_UPRIGHT:		print "sin estilo";
+			TEXT_STYLE_STRESSED:	print "enfatizado";
+			TEXT_STYLE_IMPORTANT:	print "destacado";
+			TEXT_STYLE_MONOSPACED:	print "monoespaciado";
+			TEXT_STYLE_USER1:		print "color de fondo 1";
+			TEXT_STYLE_USER2:		print "color de fondo 2";
+		}
+		TextFormatter.use(previous_style);
+		print ".^";
+		print "2) Direcciones: ";
+		previous_style = TextFormatter.use(_highlight_style_2);
+		switch (_highlight_style_2) {
+			TEXT_STYLE_UPRIGHT:		print "sin estilo";
+			TEXT_STYLE_STRESSED:	print "enfatizado";
+			TEXT_STYLE_IMPORTANT:	print "destacado";
+			TEXT_STYLE_MONOSPACED:	print "monoespaciado";
+			TEXT_STYLE_USER1:		print "color de fondo 1";
+			TEXT_STYLE_USER2:		print "color de fondo 2";
+		}
+		TextFormatter.use(previous_style);
+		print ".^";
+		print "3) Otros objetos: ";
+		previous_style = TextFormatter.use(_highlight_style_3);
+		switch (_highlight_style_3) {
+			TEXT_STYLE_UPRIGHT:		print "sin estilo";
+			TEXT_STYLE_STRESSED:	print "enfatizado";
+			TEXT_STYLE_IMPORTANT:	print "destacado";
+			TEXT_STYLE_MONOSPACED:	print "monoespaciado";
+			TEXT_STYLE_USER1:		print "color de fondo 1";
+			TEXT_STYLE_USER2:		print "color de fondo 2";
+		}
+		TextFormatter.use(previous_style);
+		print ".^";
+		new_line;
+		print (parser) "Pulsa INTRO para aceptar y salir.";
+		new_line;
+		switch (PressAnyKey()) {
+			32, -6:
+				flag = true;
+			'1':
+				switch (_highlight_style_1) {
+					TEXT_STYLE_UPRIGHT:
+						_highlight_style_1 = TEXT_STYLE_STRESSED;
+					TEXT_STYLE_STRESSED:
+						_highlight_style_1 = TEXT_STYLE_IMPORTANT;
+					TEXT_STYLE_IMPORTANT:
+						_highlight_style_1 = TEXT_STYLE_MONOSPACED;
+					TEXT_STYLE_MONOSPACED:
+						_highlight_style_1 = TEXT_STYLE_USER1;
+					TEXT_STYLE_USER1:
+						_highlight_style_1 = TEXT_STYLE_USER2;
+					TEXT_STYLE_USER2:
+						_highlight_style_1 = TEXT_STYLE_UPRIGHT;
+				}
+			'2':
+				switch (_highlight_style_2) {
+					TEXT_STYLE_UPRIGHT:
+						_highlight_style_2 = TEXT_STYLE_STRESSED;
+					TEXT_STYLE_STRESSED:
+						_highlight_style_2 = TEXT_STYLE_IMPORTANT;
+					TEXT_STYLE_IMPORTANT:
+						_highlight_style_2 = TEXT_STYLE_MONOSPACED;
+					TEXT_STYLE_MONOSPACED:
+						_highlight_style_2 = TEXT_STYLE_USER1;
+					TEXT_STYLE_USER1:
+						_highlight_style_2 = TEXT_STYLE_USER2;
+					TEXT_STYLE_USER2:
+						_highlight_style_2 = TEXT_STYLE_UPRIGHT;
+				}
+			'3':
+				switch (_highlight_style_3) {
+					TEXT_STYLE_UPRIGHT:
+						_highlight_style_3 = TEXT_STYLE_STRESSED;
+					TEXT_STYLE_STRESSED:
+						_highlight_style_3 = TEXT_STYLE_IMPORTANT;
+					TEXT_STYLE_IMPORTANT:
+						_highlight_style_3 = TEXT_STYLE_MONOSPACED;
+					TEXT_STYLE_MONOSPACED:
+						_highlight_style_3 = TEXT_STYLE_USER1;
+					TEXT_STYLE_USER1:
+						_highlight_style_3 = TEXT_STYLE_USER2;
+					TEXT_STYLE_USER2:
+						_highlight_style_3 = TEXT_STYLE_UPRIGHT;
+				}
+		}
+	}
+	EraseWindow();
+	<<Look>>;
+];
 
 !!------------------------------------------------------------------------------
 !! ##LMode2

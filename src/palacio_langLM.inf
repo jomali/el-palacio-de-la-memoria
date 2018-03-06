@@ -356,7 +356,7 @@ Object	LibraryMessages
 		!! Puede definirse para que sea una frase, o se genere una frase
 		!! aleatoria en cada turno, por ejemplo.
 		new_line;
-		print "> ";
+		print (string) PROMPT;
 		return true;
 
 	Quit:
@@ -548,7 +548,7 @@ Object	LibraryMessages
 !!------------------------------------------------------------------------------
 
 [ ParserError pe
-	previous_style i;
+	previous_style j;
 	switch (pe) {
 		STUCK_PE:
 				!! #27: El parser se ha atascado. Es el tipo de error más
@@ -633,8 +633,8 @@ Object	LibraryMessages
 				previous_style = TextFormatter.use_parser();
 				TextFormatter.print_parser_prefix();
 				print "La instrucción ~";
-				for (i = 0: i < WordLength(1): i++)
-					print (char) WordAddress(1) -> i;
+				for (j = 0: j < WordLength(1): j++)
+					print (char) WordAddress(1) -> j;
 				print "~ no está definida.";
 				TextFormatter.print_parser_sufix();
 				TextFormatter.use(previous_style);
@@ -690,4 +690,19 @@ Object	LibraryMessages
 				!! Error was NOT handled by this routine.
 				return false;
 	}
+];
+
+!!------------------------------------------------------------------------------
+!! Para errores SCENERY (el usuario a utilizado una palabra de la propiedad
+!! NAME de la localidad actual) provocados por una operación de tipo EXAMINAR,
+!! se lanza la acción ##Look que imprime una descripción de la localidad.
+!!------------------------------------------------------------------------------
+[ Handle_SCENERY_PE;
+	if (action_to_be == ##Examine or ##Search or ##Consult) {
+		<Look>;
+		InformLibrary.end_turn_sequence();
+		return true;
+	}
+	print_ret (parser) "No es necesario referirse a eso para terminar
+	la historia.";
 ];
