@@ -1,6 +1,10 @@
 # Se excluyen los ficheros de documentación '.pdf':
 *.pdf
 
+# Se excluyen los ficheros multimedia:
+*.ogg
+*.png
+
 # Se excluyen los ficheros ejecutables de Máquina-Z y Glulx:
 *.z5
 *.z8
