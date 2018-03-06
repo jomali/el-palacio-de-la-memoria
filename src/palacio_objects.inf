@@ -198,7 +198,7 @@ Indoors	patio "Patio delantero"
 Furniture	puerta_delantera "puerta"
  with	name_f	'puerta',
 		gender	G_FEMENINO,
-		adjectives 'delantera',
+		adjectives 'delantera' 'entrada' 'principal',
  has	door female ~open;
 
 
@@ -212,19 +212,6 @@ Indoors	recibidor "Recibidor"
  with	name_f	'antesala' 'estancia' 'habitacion',
 		name_m	'hall' 'recibidor' 'vestibulo',
 		gender	G_MASCULINO,
-		initial [
-			previous_style;
-			if (self hasnt visited) {
-				O__M(dungeon_master, 1);
-				KeyCharPrimitive();
-				EraseWindow();
-				previous_style = TextFormatter.get_current_style();
-				TextFormatter.use_quote();
-				O__M(dungeon_master, 2);
-				TextFormatter.use(previous_style);
-				return true;
-			}
-		],
 		description [;
 			if (puerta_delantera hasnt open) O__M(self, 1);
 			else O__M(self, 2);

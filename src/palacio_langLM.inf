@@ -241,7 +241,7 @@ Object	LibraryMessages
 				!! Si el usuario intenta hablar con un objeto que no es
 				!! "animate" ni "talkable" ("talkable" debe ponerse a objetos
 				!! inanimates con los que se podría hablar, como un micrófono).
-				previous_style = TextFormatter.get_current_style();
+				previous_style = TextFormatter.use_parser();
 				TextFormatter.print_parser_prefix();
 				print "No es posible hablar con ", (the) lm_o, ".";
 				TextFormatter.print_parser_sufix();
@@ -267,7 +267,7 @@ Object	LibraryMessages
 				!! El usuario ha escrito una frase u orden a PSI incompleta,
 				!! como BESA (verbo aplicado sobre PSIs normalmente). El parser
 				!! le pregunta para que complete la frase.
-				previous_style = TextFormatter.get_current_style();
+				previous_style = TextFormatter.use_parser();
 				TextFormatter.print_parser_prefix();
 				PreguntaCualExactamente = 1;
 				if (IniciarPregunta() ==0 ) print "A quién";
@@ -284,7 +284,7 @@ Object	LibraryMessages
 				!! El usuario ha escrito una frase u orden incompleta, como
 				!! COGE (verbo aplicado sobre objetos normalmente). El parser
 				!! le pregunta para que complete la frase.
-				previous_style = TextFormatter.get_current_style();
+				previous_style = TextFormatter.use_parser();
 				TextFormatter.print_parser_prefix();
 				PreguntaCualExactamente = 1;
 				if (IniciarPregunta() ==0 ) print "Qué";
@@ -331,7 +331,7 @@ Object	LibraryMessages
 		!!	5:	[6/11].
 		switch (lm_n) {
 			1:
-				previous_style = TextFormatter.get_current_style();
+				previous_style = TextFormatter.use_parser();
 				TextFormatter.print_parser_prefix();
 				print "En este momento, ";
 			2:
@@ -356,7 +356,7 @@ Object	LibraryMessages
 		!! Puede definirse para que sea una frase, o se genere una frase
 		!! aleatoria en cada turno, por ejemplo.
 		new_line;
-		print (emph) "> ";
+		print "> ";
 		return true;
 
 	Quit:
@@ -364,7 +364,7 @@ Object	LibraryMessages
 		!!	2:	Respuesta si el jugador escribe algo distinto de "si" o "no".
 		switch (lm_n) {
 			1:
-				previous_style = TextFormatter.get_current_style();
+				previous_style = TextFormatter.use_parser();
 				TextFormatter.print_parser_prefix();
 				print "Por favor, responde ";
 				print "SÍ"; ! Hyperlink("SÍ"); !! TODO
@@ -375,7 +375,7 @@ Object	LibraryMessages
 				TextFormatter.use(previous_style);
 				print " ";
 			2:
-				previous_style = TextFormatter.get_current_style();
+				previous_style = TextFormatter.use_parser();
 				TextFormatter.print_parser_prefix();
 				print "¿Realmente quieres abandonar el relato? (";
 				print "SÍ"; ! Hyperlink("SÍ"); !! TODO
@@ -393,7 +393,7 @@ Object	LibraryMessages
 		!!	2:	Si no se puede reiniciar.
 		switch (lm_n) {
 			1:
-				previous_style = TextFormatter.get_current_style();
+				previous_style = TextFormatter.use_parser();
 				TextFormatter.print_parser_prefix();
 				print "¿Realmente quieres reiniciar el relato? (";
 				print "SÍ"; ! Hyperlink("SÍ"); !! TODO
@@ -440,7 +440,7 @@ Object	LibraryMessages
 		!! este ultimo caso, la variable "deadflag" valdrá true.
 		switch (lm_n) {
 			1:
-				previous_style = TextFormatter.get_current_style();
+				previous_style = TextFormatter.use_parser();
 				TextFormatter.print_parser_prefix();
 				if (deadflag) print "En este juego, tu puntuación ha sido ";
 				else print "Hasta el momento tu puntuación es ";
@@ -492,7 +492,7 @@ Object	LibraryMessages
 	Strong:
 		!! Respuesta si se usa como primera palabra algún taco.
 		!! TODO - Cambiar por un mensaje más apropiado (¿recomendar AYUDA?)
-		previous_style = TextFormatter.get_current_style();
+		previous_style = TextFormatter.use_parser();
 		TextFormatter.print_parser_prefix();
 		print "No ";
 		switch (_grammatical_inflection) {
@@ -557,7 +557,7 @@ Object	LibraryMessages
 		UPTO_PE:
 				!! #28: Al parser le sobran palabras, aunque ha entendido gran
 				!! parte de la orden.
-				previous_style = TextFormatter.get_current_style();
+				previous_style = TextFormatter.use_parser();
 				TextFormatter.print_parser_prefix();
 				print "Intenta de nuevo porque solo se pudo entender que
 				quieres ~";
@@ -588,7 +588,7 @@ Object	LibraryMessages
 		MULTI_PE:
 				!! #33: El usuario ha intentado usar objetos múltiples (o
 				!! "TODO") con un verbo que en su gramática no lo admite.
-				previous_style = TextFormatter.get_current_style();
+				previous_style = TextFormatter.use_parser();
 				TextFormatter.print_parser_prefix();
 				print "No se pueden especificar objetos múltiples con ~",
 				(address) verb_word, "~.";
@@ -604,7 +604,7 @@ Object	LibraryMessages
 		VAGUE_PE:
 				!! #35: El usuario ha usado un pronombre, como CÓMELO, pero el
 				!! parser no tiene asignado un valor a ese pronombre.
-				previous_style = TextFormatter.get_current_style();
+				previous_style = TextFormatter.use_parser();
 				TextFormatter.print_parser_prefix();
 				print "No está claro a qué te refieres con ~",
 				(address) pronoun_word ,"~.";
@@ -630,7 +630,7 @@ Object	LibraryMessages
 				!! #38: La primera palabra usada por el usuario es desconocida
 				!! (o la primera palabra tras la comma, si se trata de una
 				!! orden a un PNJ).
-				previous_style = TextFormatter.get_current_style();
+				previous_style = TextFormatter.use_parser();
 				TextFormatter.print_parser_prefix();
 				print "La instrucción ~";
 				for (i = 0: i < WordLength(1): i++)
@@ -647,7 +647,7 @@ Object	LibraryMessages
 		ITGONE_PE:
 				!! #40: El usuario ha usado un proname, como EXAMÍNALO, pero el
 				!! pronombre se refiere a un objeto que ya no está visible.
-				previous_style = TextFormatter.get_current_style();
+				previous_style = TextFormatter.use_parser();
 				TextFormatter.print_parser_prefix();
 				print "Ahora mismo no se puede encontrar lo que representa el
 				pronombre ~", (address) pronoun_word ,"~ (", (the) pronoun_obj,
@@ -667,7 +667,7 @@ Object	LibraryMessages
 				!! #42: El usuario ha solicitado un número de objetos en una
 				!! lista de objetos múltiples, pero el parser no es capaz de
 				!! encontrar tantos. Por ejemplo: COGE SEIS MONEDAS.
-				previous_style = TextFormatter.get_current_style();
+				previous_style = TextFormatter.use_parser();
 				TextFormatter.print_parser_prefix();
 				if (multi_had == 0) print "No hay suficientes disponibles.";
 				else {

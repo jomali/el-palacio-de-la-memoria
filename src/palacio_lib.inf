@@ -840,19 +840,19 @@ CompassDirection d_obj "abajo" compass
 !!	@override parserm.h
 !!	@version 1.0
 !!------------------------------------------------------------------------------
-!! [ PSN__ obj;
-!!     if (obj == 0) { print (string) NOTHING__TX; rtrue; }
-!!     switch (metaclass(obj)) {
-!! 	    Routine:  print "<routine ", obj, ">"; rtrue;
-!! 	    String:   print "<string ~", (string) obj, "~>"; rtrue;
-!! 	    nothing:  print "<illegal object number ", obj, ">"; rtrue;
-!!     }
-!!     if (obj == player) { print (string) YOURSELF__TX; rtrue; }
-!!     #Ifdef LanguagePrintShortName;
-!!     if (LanguagePrintShortName(obj)) rtrue;
-!!     #Endif; ! LanguagePrintShortName
-!! 	return CreateLink(obj);
-!! ];
+[ PSN__ obj;
+    if (obj == 0) { print (string) NOTHING__TX; rtrue; }
+    switch (metaclass(obj)) {
+	    Routine:  print "<routine ", obj, ">"; rtrue;
+	    String:   print "<string ~", (string) obj, "~>"; rtrue;
+	    nothing:  print "<illegal object number ", obj, ">"; rtrue;
+    }
+    if (obj == player) { print (string) YOURSELF__TX; rtrue; }
+    #Ifdef LanguagePrintShortName;
+    if (LanguagePrintShortName(obj)) rtrue;
+    #Endif; ! LanguagePrintShortName
+	return Hyperlink(obj, 0, true);
+];
 
 
 !!==============================================================================

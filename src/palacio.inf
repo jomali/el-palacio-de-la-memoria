@@ -73,6 +73,7 @@
 !!	-	Definiciones de la librería Inform
 !!	-	Definiciones de la extensión 'textStyles'
 !!	-	Definiciones de la librería de mensajes 'SpanishLM'
+!!	-	Otras definiciones
 !!------------------------------------------------------------------------------
 
 !!------------------------------------------------------------------------------
@@ -122,6 +123,19 @@ Global ARE2__TX		= "ves ";
 Global YOU__TX		= "Tú";
 Global PARTICULA_TE	= "te";
 
+!!------------------------------------------------------------------------------
+!!	Otras definiciones
+!!------------------------------------------------------------------------------
+
+Constant USR1_STYLE_BGC $909090; ! Color de fondo del estilo de texto Usuario 1
+Constant USR1_STYLE_FGC $000000; ! Color frontal del estilo de texto Usuario 1
+Constant USR2_STYLE_BGC $B08080; ! Color de fondo del estilo de texto Usuario 2
+Constant USR2_STYLE_FGC $000000; ! Color frontal del estilo de texto Usuario 2
+
+Global _highlight_style_1 = TEXT_STYLE_IMPORTANT;	! Objetos destacados
+Global _highlight_style_2 = TEXT_STYLE_STRESSED;	! Direcciones y puertas
+Global _highlight_style_3 = TEXT_STYLE_UPRIGHT;		! Otros objetos
+
 
 !!==============================================================================
 !!
@@ -134,11 +148,13 @@ Replace ChangePlayer;			! Rutina para cambiar el objeto PC
 Replace DrawStatusLine;			! Dibuja la barra de estado
 Replace ExamineSub;				! Rutina para la acción ##Examine
 Replace GetGNAOfObject;			! Rutina para obtener el GNA de un objeto
+!! Replace HyperlinkSetStyle;		! Gestión de estilos de texto de hipervínculos
 Replace LanguageDirection;		! Imprime el nombre de las direcciones
 Replace LMode1Sub;				! Lookmode 1: Breve
 Replace LMode2Sub;				! Lookmode 2: Largo (establecido por defecto)
 Replace LMode3Sub;				! Lookmode 3: Superbreve
 Replace LookSub;				! Rutina para la acción ##Look
+Replace PSN__;					! Rutina para imprimir nombre corto de un obj.
 Replace VersionSub;				! Créditos detallados de la aplicación
 
 
@@ -149,18 +165,19 @@ Replace VersionSub;				! Créditos detallados de la aplicación
 !!------------------------------------------------------------------------------
 
 #Ifdef TARGET_GLULX;
-!! Include "gwindefs.h";			! GWindows: Definiciones
+Include "gwindefs.h";			! GWindows: Definiciones
 #Endif; ! TARGET_GLULX;
 
 Include "Parser.h";				! Decodifica la entrada del teclado
 Include "SpanishLM.h";			! Mensajes de la librería
 Include "textStyles.h";			! Selección de estilo de los textos
+
 Include ">palacio_lib.inf";		! Personalizaciones de la librería Inform
 Include ">palacio_langLM.inf";	! Mensajes personalizados de la librería
 Include ">palacio_langOM.inf";	! Mensajes de los objetos
 
 #Ifdef TARGET_GLULX;
-!! Include "gwincls.h";			! GWindows: Window Class Framework
+Include "gwincls.h";			! GWindows: Window Class Framework
 #Endif; ! TARGET_GLULX;
 
 
@@ -171,9 +188,9 @@ Include ">palacio_langOM.inf";	! Mensajes de los objetos
 !!------------------------------------------------------------------------------
 !!	GWindows hace uso de los puntos de entrada Glk por defecto por lo cuál
 !!	define los suyos propios para reemplazar aquellos de la librería:
-!!	-	GWindowsGlkEvent(): Reemplaza HandleGlkEvent()
-!!	-	GWindowsGlkIdentify(): Reemplaza IdentifyGlkObject()
-!!	-	InitGWindows(): Reemplaza InitGlkWindow()
+!!	-	GWindowsGlkEvent(), en lugar de 'HandleGlkEvent()'
+!!	-	GWindowsGlkIdentify(), en lugar de 'IdentifyGlkObject()'
+!!	-	InitGWindows(), en lugar de 'InitGlkWindow()'
 !!------------------------------------------------------------------------------
 
 #Ifdef TARGET_GLULX;
@@ -181,19 +198,49 @@ Include ">palacio_langOM.inf";	! Mensajes de los objetos
 !! Punto de entrada para manejar eventos Glk con la librería GWindows.
 !! Reemplaza al habitual 'HandleGlkEvent()'.
 !!
-!!	@param {array} ev - Array con la información acerca del evento Glk que se
-!!		ha producido
+!!	@param {array} ev - Array de 4 palabras que describe el evento. ev-->0
+!!		registra un código numérico con que se determina el tipo de evento. La
+!!		rutina sólo actúa si se trata de un evento de tipo hipervínculo
+!!		(ev-->0 == 8); ev-->1 indica la ventana sobre la que se ha producido el
+!!		evento; ev-->2 el objeto o cadena de caracteres sobre el que se ha
+!!		creado el hipervínculo; ev-->3, reservado para información adicional,
+!!		no se utiliza
 !!	@param {integer} context - 0 si el evento se ha producido durante una
-!!		entrada de línea (como ante introducción de un comando normal; la
-!!		aplicación debe esperar a que el usuario pulse INTRO antes de dar
-!!		respuesta a la entrada). 1 si se ha producido durante una entrada de
-!!		carácter (como sucede en los menús, por ejemplo; la aplicación responde
-!!		ante cada pulsación de tecla)
-!!	@param {array} abortres
-!!	@returns {integer}
+!!		entrada de línea (comandos normales u otros usos de la función de la
+!!		librería 'KeyboardPrimitive()'); la aplicación debe esperar a que el
+!!		usuario pulse INTRO antes de dar respuesta para la entrada. 1 si el
+!!		evento se ha producido durante una entrada de caracter (función de la
+!!		librería 'KeyCharPrimitive()'); la aplicación responde ante cada
+!!		pulsación de tecla, como en los menús, por ejemplo
+!!	@param {array} abortres - Utilizado para cancelar la entrada de texto y
+!!		forzar una entrada particular. La longitud de la nueva entrada se
+!!		registra en 'abortres-->0'. Si es diferente de 0, los caracteres del
+!!		comando deben escribirse en el array secuencialmente desde la posición
+!!		'abortres->WORDSIZE' hasta 'abortres->(WORDSIZE+length)' (no
+!!		inclusive). No pueden superarse los 256 caracteres
+!!	@returns {integer|boolean} 2 para que la entrada de usuario sea abortada.
+!!		-1 para que la entrada de usuario continúe incluso después de una
+!!		pulsación de INTRO (para las entradas de línea) o de tecla (para las
+!!		entradas de caracter). Cualquier otro valor de retorno continuará con
+!!		la ejecución normal de la librería
 !!------------------------------------------------------------------------------
-[ GWindowsGlkEvent ev context abortres;
-	ev = context + abortres; ! (por evitar alertas del compilador)
+[ GWindowsGlkEvent ev context abortres
+	previous_style i;
+	!! Gestión de efecto de 'fade' en Damusix en tiempo real:
+	Damusix.NotificarFade(ev);
+	!! Gestión de los eventos de selección de hipervínculo:
+	!! if (HandleHyperlinkEvent(ev, context, abortres)) {
+	!! 	previous_style = TextFormatter.get_current_style();
+	!! 	TextFormatter.use_parser();
+	!! 	TextFormatter.print_parser_prefix();
+	!! 	for (i = WORDSIZE : i < (abortres-->0) + WORDSIZE : i++) {
+	!! 		print (char) abortres->i;
+	!! 	}
+	!! 	TextFormatter.print_parser_sufix();
+	!! 	TextFormatter.use(previous_style);
+	!! 	new_line;
+	!! 	return 2; ! finaliza el turno
+	!! }
 ];
 
 !!------------------------------------------------------------------------------
@@ -202,37 +249,61 @@ Include ">palacio_langOM.inf";	! Mensajes de los objetos
 !! estas entradas, las variables globales con objetos Glk pueden contener
 !! valores desfasados y erróneos.
 !!
-!!	@param phase
-!!	@param type
-!!	@param ref
-!!	@param rock
+!! Reemplaza a 'IdentifyGlkObject(phase, type, ref, rock)'.
+!!
+!!	@param {integer} phase - Código numérico indicando la fase en la que se
+!!		invoca a la rutina. Toma los valores: 0, 1 o 2
+!!	@param {integer} type - 0, 1 o 2 para ventanas, 'streams' y 'filerefs',
+!!		respectivamente
+!!	@param {Object} ref
+!!	@param {integer} rock
 !!------------------------------------------------------------------------------
 [ GWindowsGlkIdentify phase type ref rock;
+	!! Se identifican todos los objetos de sonido gestionados por Damusix:
+	Damusix.IdentificarSonidos(phase);
+
 	phase = type + ref + rock; ! (por evitar alertas del compilador)
 ];
 
 !!------------------------------------------------------------------------------
-!! TODO - Documentación
+!! La librería GWindows hace uso del punto de entrada 'InitGlkWindow()'. En su
+!! lugar, ofrece este punto de entrada, sin argumentos, que es equivalente a
+!! invocar 'InitGlkWindow(0)'. La librería llama a este punto de entrada
+!! cuando se crea la interfaz de usuario por primera vez. Debe establecer las
+!! variables 'Active_UI', con la raíz del árbol de ventanas; y 'Main_GWindow',
+!! con el objeto 'GWindow' que sirve de ventana principal de la aplicación. Se
+!! cumple que la variables Inform 'gg_mainwin == Main_GWindow.winid'.
 !!
-!!	@param winrock
-!!	@returns {boolean}
+!!	@returns {boolean} Falso
 !!------------------------------------------------------------------------------
-[ InitGlkWindow winrock;
-    TextFormatter.initialise_style_hints(winrock);
+[ InitGWindows;
+	!! Inicializaciones de la interfaz gráfica:
+	Active_UI = rootUI;
+	Main_GWindow = textWindow;
+	!! Propuestas de estilos de texto de 'textStyles':
+	TextFormatter.initialise_style_hints(GG_MAINWIN_ROCK);
+	!! Propuestas de estilo de texto personalizado: Usuario 1
+	glk_stylehint_set(wintype_TextBuffer, style_User1,
+		stylehint_BackColor, USR1_STYLE_BGC);
+	glk_stylehint_set(wintype_TextBuffer, style_User1,
+		stylehint_TextColor, USR1_STYLE_FGC);
+	glk_stylehint_set(wintype_TextBuffer, style_User1,
+		stylehint_Oblique, 0);
+	glk_stylehint_set(wintype_TextBuffer, style_User1,
+		stylehint_Weight, 0);
+	!! Propuestas de estilo de texto personalizado: Usuario 2
+	glk_stylehint_set(wintype_TextBuffer, style_User2,
+		stylehint_BackColor, USR2_STYLE_BGC);
+	glk_stylehint_set(wintype_TextBuffer, style_User2,
+		stylehint_TextColor, USR2_STYLE_FGC);
+	glk_stylehint_set(wintype_TextBuffer, style_User2,
+		stylehint_Oblique, 0);
+	glk_stylehint_set(wintype_TextBuffer, style_User2,
+		stylehint_Weight, 0);
 
-	!! Para continuar con el proceso normal de la librería:
-    return false;
+	return false;
 ];
 
-!!------------------------------------------------------------------------------
-!! TODO - Documentación
-!!
-!!	@param winrock
-!!	@returns {boolean}
-!!------------------------------------------------------------------------------
-[ InitGWindows winrock;
-	winrock++; ! (por evitar alertas del compilador)
-];
 #Endif; ! TARGET_GLULX;
 
 
@@ -241,6 +312,24 @@ Include ">palacio_langOM.inf";	! Mensajes de los objetos
 !!	5)	Librerías y extensiones (parte 2 de 2)
 !!
 !!------------------------------------------------------------------------------
+
+#Ifdef TARGET_ZCODE;
+Constant PIC_0001 1;
+Constant PIC_0002 2;
+Constant PIC_0003 3;
+Constant PIC_0004 4;
+Constant PIC_0005 5;
+#Ifnot; ! TARGET_GLULX;
+Include "damusix.h";			! Administrador unificado de sonido en GLULX
+Include "gwindows.h";			! GWindows: Reemplazos de la librería
+Include "gWindowsGUI.h";		! Interfaz gráfica adaptativa con GWindows
+Include ">palacio.bli";			! Recursos multimedia de la aplicación
+#Endif; ! TARGET_
+!! Include "aimAndFire.h";			! Sistema de apuntado y disparo QTE
+!! Include "choiceSet.h";			! Sistema de selección de acciones sobre lista
+Include	"hyperlinks.h";			! Rutinas de apoyo para el uso de hipervínculos
+!! Include "pPreprocessor.h";		! Preprocesador del parser
+!! Include "receptacles.h";		! Contenedores con límites de capacidad
 
 Include "VerbLib.h";			! Define cómo trabajan las acciones
 
@@ -263,9 +352,17 @@ Include "VerbLib.h";			! Define cómo trabajan las acciones
 !! decir, después de que todas las impresiones en pantalla derivadas del turno
 !! actual hayan finalizado.
 !!
+!! Se encarga de cambiar la imagen de la ventana gráfica cada vez que el PC
+!! entra en una localidad.
+!!
 !!	@returns Nada
 !!------------------------------------------------------------------------------
-[ AfterPrompt; ];
+Global _current_location = 0;
+[ AfterPrompt;
+	if (_current_location == real_location) return;
+	_current_location = real_location;
+	DrawRandomImage();
+];
 
 !!------------------------------------------------------------------------------
 !! Permite manipular la entrada de usuario antes de que sea analizada por la
@@ -289,7 +386,8 @@ Include "VerbLib.h";			! Define cómo trabajan las acciones
 !!		los créditos, que de otra manera se imprimirían inmediatamente después
 !!		de llamar a la rutina
 !!------------------------------------------------------------------------------
-[ Initialise;
+[ Initialise
+	previous_style;
 	EraseWindow();
 
 	!! Comprobaciones del intérprete -------------------------------------------
@@ -298,9 +396,31 @@ Include "VerbLib.h";			! Define cómo trabajan las acciones
 
 	!! Inicializaciones para la VM Glulx ---------------------------------------
 	#Ifdef TARGET_GLULX;
+	!! Establece la escucha de eventos glk para el uso de hipervínculos:
+	glk($0102, gg_mainwin); ! glk_request_hyperlink_event
+	!! Establece la imagen inicial presente durante el menu:
+	DrawRandomImage();
 	#Endif; ! TARGET_
 
 	!! Inicializaciones de la obra ---------------------------------------------
+	!! Texto introductorio:
+	new_line;
+	O__M(dungeon_master, 1);
+	new_line;
+	print (parser) "Pulsa una tecla para continuar";
+	PressAnyKey();
+	EraseWindow();
+	!! Créditos:
+	previous_style = TextFormatter.use_stressed();
+	O__M(dungeon_master, 2);
+	TextFormatter.use(previous_style);
+	new_line;
+	O__M(dungeon_master, 3);
+	PressAnyKey();
+	EraseWindow();
+	Banner();
+	new_line;
+	!! Resto de inicializaciones:
 	SetGrammaticalInflection(THIRD_PERSON_PRESENT);
 	ChangePlayer(silvia);		! Establece el PC (player character)
 	location = recibidor;		! Establece la localidad inicial
@@ -360,10 +480,38 @@ Include "VerbLib.h";			! Define cómo trabajan las acciones
 !!	7)	Otras rutinas
 !!
 !!------------------------------------------------------------------------------
+!!	-	DrawRandomImage()
 !!	-	EraseWindow()
+!!	-	FadeInTrack()
+!!	-	FadeOutTrack()
 !!	-	Handle_SCENERY_PE()
+!!	-	HorizontalRule()
+!!	-	PressAnyKey()
 !!	-	TopHolder()
 !!------------------------------------------------------------------------------
+
+!!------------------------------------------------------------------------------
+!! Coloca una imagen aleatoria en la ventana gráfica de la interfaz.
+!!
+!!	@returns {boolean} Verdadero
+!!	@version 1.0
+!!------------------------------------------------------------------------------
+[ DrawRandomImage;
+	#Ifdef TARGET_GLULX;
+	switch (random(5)) {
+		1:
+			graphicWindow.setImage(PIC_0001);
+		2:
+			graphicWindow.setImage(PIC_0002);
+		3:
+			graphicWindow.setImage(PIC_0003);
+		4:
+			graphicWindow.setImage(PIC_0004);
+		5:
+			graphicWindow.setImage(PIC_0005);
+	}
+	#Endif; ! TARGET_GLULX;
+];
 
 !!------------------------------------------------------------------------------
 !! Deja la ventana en blanco.
@@ -386,6 +534,74 @@ Include "VerbLib.h";			! Define cómo trabajan las acciones
 ];
 
 !!------------------------------------------------------------------------------
+!! Realiza un efecto de subida de volumen gradual en tiempo real (sin detener
+!! la aplicación) de un recurso de audio. En caso de que el recurso no se
+!! encontrase en reproducción, se inicia antes con un volumen del 0%. Si no se
+!! especifica el tiempo del efecto, la subida de volumen es inmediata. (Sólo en
+!! GLULX.)
+!!
+!!	@param {Sound} track - El recurso de audio sobre el que se lanza el efecto.
+!!		Si el recurso no estaba en reproducción primero la inicia con un
+!!		volumen del 0%
+!!	@param {integer} [volume=-1] - Volumen final en tanto por ciento con el
+!!		que se reproduce la pista de audio. -1 para indicar el volumen global
+!!		de la aplicación. Si el volumen actual es mayor que 'volume', retorna
+!!		sin hacer nada
+!!	@param {integer} [fade_time=0] - Milisegundos que dura el efecto de
+!!		'fade in' desde un volumen del 0% al especificado por 'volume'
+!!	@returns {boolean} Falso si el volumen pasado como parámetro es inferior al
+!!		volumen actual del sonido. Verdadero en caso contrario
+!!	@version 1.0
+!!------------------------------------------------------------------------------
+[ FadeInTrack track volume fade_time;
+	#Ifdef TARGET_GLULX;
+	if (Damusix.EnFade()) Damusix.AbortarFade();
+	if (volume == 0) volume = -1;
+	if (fade_time == 0) {
+		Damusix.Volumen(track, volume);
+		if (~~Damusix.SonandoDeFondo(track)) Damusix.Tocar(track);
+	} else {
+		if (~~Damusix.SonandoDeFondo(track)) {
+			Damusix.Volumen(track, 0);
+			Damusix.Tocar(track);
+		}
+		Damusix.FadeIn(track, fade_time, volume);
+	}
+	#Endif; ! TARGET_GLULX;
+	return true;
+];
+
+!!------------------------------------------------------------------------------
+!! Realiza un efecto de bajada de volumen gradual en tiempo real (sin detener
+!! la aplicación) de un recurso de audio. Si no se especifica el tiempo del
+!! efecto la bajada de volumen es inmediata. Permite especificar además un
+!! sonido a reproducir tras finalizar el efecto de bajada de volumen. (Sólo en
+!! GLULX.)
+!!
+!!	@param {Sound} track - El recurso de audio sobre el que se lanza el efecto
+!!	@param {integer} [volume=0] - Volumen final en tanto por ciento con el que
+!!		finaliza el efecto. Si el volumen final es 0, la reproducción se
+!!		detiene automáticamente
+!!	@param {integer} [fade_time=0] - Milisegundos que dura el efecto de
+!!		'fade out' desde el volumen actual al especificado por 'volume'
+!!	@param {Sound} [post_track=0] - Recurso de audio a reproducir tras lanzar
+!!		el efecto de 'fade out' sobre el 'track'
+!!	@returns {boolean} Verdadero
+!!	@version 1.0
+!!------------------------------------------------------------------------------
+[ FadeOutTrack track volume fade_time post_track;
+	#Ifdef TARGET_GLULX;
+	if (Damusix.EnFade()) Damusix.AbortarFade();
+	if (fade_time == 0) {
+		if (volume == 0) Damusix.Parar(track);
+		else Damusix.Volumen(track, volume);
+		if (post_track) Damusix.Tocar(post_track);
+	} else Damusix.FadeOut(track, fade_time, volume, post_track);
+	#Endif; ! TARGET_GLULX;
+	return true;
+];
+
+!!------------------------------------------------------------------------------
 !! Para errores SCENERY (el usuario a utilizado una palabra de la propiedad
 !! NAME de la localidad actual) provocados por una operación de tipo EXAMINAR,
 !! se lanza la acción ##Look que imprime una descripción de la localidad.
@@ -398,6 +614,42 @@ Include "VerbLib.h";			! Define cómo trabajan las acciones
 	}
 	print_ret (parser) "No es necesario referirse a eso para terminar
 	la historia.";
+];
+
+!!------------------------------------------------------------------------------
+!! Imprime una regla horizontal centrada en pantalla.
+!!
+!!	@returns {boolean} Verdadero
+!!------------------------------------------------------------------------------
+[ HorizontalRule
+	previous_style;
+	previous_style = TextFormatter.use_monospaced();
+	spaces (ScreenWidth()-1-7) / 2; ! 7 -> longitud de "*  *  *"
+	print "*  *  *";
+	TextFormatter.use(previous_style);
+	new_line;
+	return true;
+];
+
+!!------------------------------------------------------------------------------
+!! Espera una pulsación de tecla del usuario o, si se introduce un valor
+!! 'delay', espera a que pase esa cantidad de décimas de segundo antes de
+!! continuar con la ejecución normal del relato.
+!!
+!!	@param {integer} [delay] - Si se introduce un entero, espera a que se
+!!		cumpla la cantidad 'delay' de décimas de segundo antes de continuar.
+!!		En caso contrario, espera a una pulsación de tecla del usuario
+!!	@returns {char} Caracter introducido por el usuario
+!!	@version 1.0
+!!------------------------------------------------------------------------------
+[ PressAnyKey delay
+	result;
+	#Ifdef TARGET_GLULX;
+	if (Damusix.EnFade()) delay = 0;
+	#Endif; ! TARGET_GLULX;
+	if (delay > 0) result = KeyDelay(delay);
+	else result = KeyCharPrimitive();
+	return result;
 ];
 
 !!------------------------------------------------------------------------------
