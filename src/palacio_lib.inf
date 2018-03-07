@@ -64,7 +64,6 @@
 !!	-	LookSub()
 !!	-	ParseNoun()
 !!	-	PSN__()
-!!	-	SpanishNominativePronoun()
 !!	-	VersionSub()
 !!
 !!------------------------------------------------------------------------------
@@ -851,25 +850,7 @@ CompassDirection d_obj "abajo" compass
     #Ifdef LanguagePrintShortName;
     if (LanguagePrintShortName(obj)) rtrue;
     #Endif; ! LanguagePrintShortName
-	return Hyperlink(obj, 0, true);
-];
-
-
-!!==============================================================================
-!! Imprime el pronombre nominativo correcto correspondiente a un objeto.
-!!
-!!	@param {Object} obj - Obj. del que se desea imprimir su pronombre nominativo
-!!	@version 1.0
-!!------------------------------------------------------------------------------
-[ SpanishNominativePronoun obj;
-	switch (GetGNAOfObject(obj)) {
-		0, 6:	print "él";
-		1, 7:	print "ella";
-		2, 8:	print "ello";
-		3, 9:	print "ellos";
-		4, 10:	print "ellas";
-		5, 11:	print "ellos";
-   }
+	return Hyperlink(obj);
 ];
 
 

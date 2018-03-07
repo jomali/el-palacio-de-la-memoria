@@ -71,10 +71,10 @@
 !!
 !!------------------------------------------------------------------------------
 !!	-	Información bibliográfica
+!!	-	Definiciones generales
 !!	-	Definiciones de la librería Inform
 !!	-	Definiciones de la extensión 'textStyles'
 !!	-	Definiciones de la librería de mensajes 'SpanishLM'
-!!	-	Otras definiciones
 !!------------------------------------------------------------------------------
 
 !!------------------------------------------------------------------------------
@@ -92,6 +92,30 @@ Constant Checking 0;
 Release 0;						! v0.0
 
 !!------------------------------------------------------------------------------
+!!	Definiciones generales
+!!------------------------------------------------------------------------------
+
+!! Utilización de mensajes personalizados de la librería:
+Constant CUSTOM_LIBRARY_MESSAGES;
+!! Utilización de reemplazos de rutinas por defecto de la librería:
+Constant EXTENDED_LIBRARY;
+
+!! Acción por defecto utilizada al seleccionar un hipervínculo:
+Constant HYPERLINKS_COMMAND "";
+!! Inductor:
+Constant PS1 "> ";
+!! Color de fondo del estilo de texto Usuario 1:
+Constant USR1_STYLE_BGC	$102030;
+!! Color frontal del estilo de texto Usuario 2:
+Constant USR2_STYLE_FGC $404040;
+
+!! Variables globales con los estilos de texto para resaltar objetos:
+
+Global _highlight_style_1 = TEXT_STYLE_USER1;	! Objetos destacados
+Global _highlight_style_2 = TEXT_STYLE_USER1;	! Direcciones y puertas
+Global _highlight_style_3 = TEXT_STYLE_UPRIGHT;		! Otros objetos
+
+!!------------------------------------------------------------------------------
 !!	Definiciones de la librería Inform
 !!------------------------------------------------------------------------------
 
@@ -99,21 +123,28 @@ Constant MANUAL_PRONOUNS;		! Los pronoms. refieren a objetos ya mencionados
 Constant MAX_CARRIED 3;			! Máx. de objetos que se pueden llevar en mano
 Constant NO_PLACES;				! Acciones LUGARES y OBJETOS desactivadas
 Constant NO_SCORE;				! No se lleva conteo de puntuación
+
+#Ifdef CUSTOM_LIBRARY_MESSAGES;
 Constant SIN_MENSAJES;			! Se omiten los mensajes por defecto de la lib.
+#Endif; ! CUSTOM_LIBRARY_MESSAGES;
+
+#Ifdef EXTENDED_LIBRARY;
 Constant WITHOUT_DIRECTIONS;	! Se omiten las dir. por defecto de la lib.
+#Endif; ! EXTENDED_LIBRARY;
 
 !!------------------------------------------------------------------------------
 !!	Definiciones de la extensión 'textStyles'
 !!------------------------------------------------------------------------------
 
+Constant TEXT_STYLE_PARSER TEXT_STYLE_USER2;
 Constant TEXT_STYLE_PARSER_PREFIX "[";
-Constant TEXT_STYLE_PARSER_STYLE TEXT_STYLE_STRESSED;
 Constant TEXT_STYLE_PARSER_SUFIX "]";
 
 !!------------------------------------------------------------------------------
 !!	Definiciones de la librería de mensajes 'SpanishLM'
 !!------------------------------------------------------------------------------
 
+#Ifdef CUSTOM_LIBRARY_MESSAGES;
 Global FORMER__TX	= "tu antiguo ~yo~";
 Global YOURSELF__TX	= "ti mismo";
 Global CANTGO__TX	= "No puedes ir por ahí.";
@@ -123,22 +154,13 @@ Global IS2__TX		= "ves ";
 Global ARE2__TX		= "ves ";
 Global YOU__TX		= "Tú";
 Global PARTICULA_TE	= "te";
-
-!!------------------------------------------------------------------------------
-!!	Otras definiciones
-!!------------------------------------------------------------------------------
-
-Constant USR1_STYLE_BGC $909090; ! Color de fondo del estilo de texto Usuario 1
-Constant USR1_STYLE_FGC $000000; ! Color frontal del estilo de texto Usuario 1
-Constant USR2_STYLE_BGC $B08080; ! Color de fondo del estilo de texto Usuario 2
-Constant USR2_STYLE_FGC $000000; ! Color frontal del estilo de texto Usuario 2
-
-Constant HYPERLINKS_COMMAND "ir al";
-Constant PROMPT ": ";
-
-Global _highlight_style_1 = TEXT_STYLE_IMPORTANT;	! Objetos destacados
-Global _highlight_style_2 = TEXT_STYLE_STRESSED;	! Direcciones y puertas
-Global _highlight_style_3 = TEXT_STYLE_UPRIGHT;		! Otros objetos
+#Ifnot;
+[ IsPluralNoun; return false; ];
+[ SetGrammaticalInflection; ];
+[ lm_as_; print "as"; ];
+[ lm_estas; print "estás"; ];
+[ lm_tienes; print "tienes"; ];
+#Endif; ! CUSTOM_LIBRARY_MESSAGES;
 
 
 !!==============================================================================
@@ -147,12 +169,16 @@ Global _highlight_style_3 = TEXT_STYLE_UPRIGHT;		! Otros objetos
 !!
 !!------------------------------------------------------------------------------
 
+#Ifdef CUSTOM_LIBRARY_MESSAGES;
+Replace ChangePlayer;			! Rutina para cambiar el objeto PC
+#Endif; ! CUSTOM_LIBRARY_MESSAGES;
+
+#Ifdef EXTENDED_LIBRARY;
 Replace Banner;					! Créditos generales de la aplicación
 Replace ChangePlayer;			! Rutina para cambiar el objeto PC
 Replace DrawStatusLine;			! Dibuja la barra de estado
 Replace ExamineSub;				! Rutina para la acción ##Examine
 Replace GetGNAOfObject;			! Rutina para obtener el GNA de un objeto
-Replace HyperlinkSetStyle;		! Gestión de estilos de texto de hipervínculos
 Replace LanguageDirection;		! Imprime el nombre de las direcciones
 Replace LMode1Sub;				! Lookmode 1: Breve
 Replace LMode2Sub;				! Lookmode 2: Largo (establecido por defecto)
@@ -160,6 +186,9 @@ Replace LMode3Sub;				! Lookmode 3: Superbreve
 Replace LookSub;				! Rutina para la acción ##Look
 Replace PSN__;					! Rutina para imprimir nombre corto de un obj.
 Replace VersionSub;				! Créditos detallados de la aplicación
+#Endif; ! EXTENDED_LIBRARY;
+
+Replace HyperlinkSetStyle;		! Gestión de estilos de texto de hipervínculos
 
 
 !!==============================================================================
@@ -173,10 +202,16 @@ Include "gwindefs.h";			! GWindows: Definiciones
 #Endif; ! TARGET_GLULX;
 
 Include "Parser.h";				! Decodifica la entrada del teclado
-Include "SpanishLM.h";			! Mensajes de la librería
 Include "textStyles.h";			! Selección de estilo de los textos
 
+#Ifdef CUSTOM_LIBRARY_MESSAGES;
+Include "SpanishLM.h";			! Mensajes de la librería
+#Endif; ! CUSTOM_LIBRARY_MESSAGES;
+
+#Ifdef EXTENDED_LIBRARY;
 Include ">palacio_lib.inf";		! Personalizaciones de la librería Inform
+#Endif; ! EXTENDED_LIBRARY;
+
 Include ">palacio_langLM.inf";	! Mensajes personalizados de la librería
 Include ">palacio_langOM.inf";	! Mensajes de los objetos
 
@@ -234,14 +269,13 @@ Include "gwincls.h";			! GWindows: Window Class Framework
 	Damusix.NotificarFade(ev);
 	!! Gestión de los eventos de selección de hipervínculo:
 	if (HandleHyperlinkEvent(ev, context, abortres)) {
-		previous_style = TextFormatter.get_current_style();
-		TextFormatter.use_parser();
-		TextFormatter.print_parser_prefix();
+		previous_style = UseTextStyle(TEXT_STYLE_PARSER);
+		print (string) TEXT_STYLE_PARSER_PREFIX;
 		for (i = WORDSIZE : i < (abortres-->0) + WORDSIZE : i++) {
 			print (char) abortres->i;
 		}
-		TextFormatter.print_parser_sufix();
-		TextFormatter.use(previous_style);
+		print (string) TEXT_STYLE_PARSER_SUFIX;
+		UseTextStyle(previous_style);
 		new_line;
 		return 2; ! finaliza el turno
 	}
@@ -284,22 +318,33 @@ Include "gwincls.h";			! GWindows: Window Class Framework
 	!! Inicializaciones de la interfaz gráfica:
 	Active_UI = rootUI;
 	Main_GWindow = textWindow;
+
 	!! Propuestas de estilos de texto de 'textStyles':
-	TextFormatter.initialise_style_hints(GG_MAINWIN_ROCK);
+	InitialiseStyleHints(GG_MAINWIN_ROCK);
+
 	!! Propuestas de estilo de texto personalizado: Usuario 1
+	#Ifdef USR1_STYLE_BGC;
 	glk_stylehint_set(wintype_TextBuffer, style_User1,
 		stylehint_BackColor, USR1_STYLE_BGC);
+	#Endif; ! USR1_STYLE_BGC;
+	#Ifdef USR1_STYLE_FGC;
 	glk_stylehint_set(wintype_TextBuffer, style_User1,
 		stylehint_TextColor, USR1_STYLE_FGC);
+	#Endif; ! USR1_STYLE_FGC;
 	glk_stylehint_set(wintype_TextBuffer, style_User1,
 		stylehint_Oblique, 0);
 	glk_stylehint_set(wintype_TextBuffer, style_User1,
 		stylehint_Weight, 0);
+
 	!! Propuestas de estilo de texto personalizado: Usuario 2
+	#Ifdef USR2_STYLE_BGC;
 	glk_stylehint_set(wintype_TextBuffer, style_User2,
 		stylehint_BackColor, USR2_STYLE_BGC);
+	#Endif; ! USR2_STYLE_BGC;
+	#Ifdef USR2_STYLE_FGC;
 	glk_stylehint_set(wintype_TextBuffer, style_User2,
 		stylehint_TextColor, USR2_STYLE_FGC);
+	#Endif; ! USR2_STYLE_FGC;
 	glk_stylehint_set(wintype_TextBuffer, style_User2,
 		stylehint_Oblique, 0);
 	glk_stylehint_set(wintype_TextBuffer, style_User2,
@@ -400,6 +445,18 @@ Global _current_location = 0;
 
 	!! Comprobaciones del intérprete -------------------------------------------
 	#Ifdef TARGET_GLULX;
+	!! Comprobaciones de las capacidades multimedia:
+	if (~~(glk_gestalt(gestalt_Sound, 0) && glk_gestalt(gestalt_SoundMusic, 0)
+		&& glk_gestalt(gestalt_Graphics, 0))) {
+		print (strong) "ADVERTENCIA:", " Esta aplicación incluye contenidos
+		gráficos y de audio, pero tu intérprete GLULX no los soporta
+		adecuadamente. La aplicación se iniciará con parte o la totalidad de
+		sus recursos multimedia desactivados.^";
+		new_line;
+		print (parser) "Pulsa una tecla para continuar.";
+		PressAnyKey();
+		EraseWindow();
+	}
 	#Endif; ! TARGET_GLULX;
 
 	!! Inicializaciones para la VM Glulx ---------------------------------------
@@ -414,18 +471,16 @@ Global _current_location = 0;
 	!! Texto introductorio:
 	new_line;
 	O__M(dungeon_master, 1);
+	PressAnyKey();
 	new_line;
 	print (parser) "Pulsa una tecla para continuar";
 	PressAnyKey();
 	EraseWindow();
 	!! Créditos:
-	previous_style = TextFormatter.use_stressed();
 	O__M(dungeon_master, 2);
-	TextFormatter.use(previous_style);
-	new_line;
-	O__M(dungeon_master, 3);
 	PressAnyKey();
 	EraseWindow();
+	new_line;
 	Banner();
 	new_line;
 	!! Resto de inicializaciones:
@@ -471,6 +526,11 @@ Global _current_location = 0;
 !!		normal y que el sistema imprima el verbo de la forma habitual
 !!------------------------------------------------------------------------------
 [ PrintVerb word;
+	if (word == 'no.verb' or 'teleport.verb') {
+		print "hacer algo con";
+		return true;
+	}
+
 	return false;
 ];
 
@@ -482,7 +542,18 @@ Global _current_location = 0;
 !!		ejecución normal e imprima un mensaje de error, o un valor de
 !!		diccionario del verbo a utilizar en lugar del verbo desconocido
 !!------------------------------------------------------------------------------
-[ UnknownVerb;
+[ UnknownVerb
+	obj;
+	obj = ParsingPreprocessor.get_selected_object();
+	if (obj ~= real_location && obj ofclass Room) {
+		verb_wordnum = 0;
+		return 'teleport.verb';
+	}
+	if (TestScope(obj, player)) {
+		verb_wordnum = 0;
+		return 'no.verb';
+	}
+
 	return false;
 ];
 
@@ -499,6 +570,7 @@ Global _current_location = 0;
 !!	-	HorizontalRule()
 !!	-	HyperlinkSetStyle()
 !!	-	PressAnyKey()
+!!	-	SpanishNominativePronoun()
 !!	-	TopHolder()
 !!------------------------------------------------------------------------------
 
@@ -620,36 +692,46 @@ Global _current_location = 0;
 !!------------------------------------------------------------------------------
 [ HorizontalRule
 	previous_style;
-	previous_style = TextFormatter.use_monospaced();
+	previous_style = UseTextStyle(TEXT_STYLE_MONOSPACED);
 	spaces (ScreenWidth()-1-7) / 2; ! 7 -> longitud de "*  *  *"
 	print "*  *  *";
-	TextFormatter.use(previous_style);
+	UseTextStyle(previous_style);
 	new_line;
 	return true;
 ];
 
 !!------------------------------------------------------------------------------
 !! Selecciona el estilo de texto utilizado por la rutina para crear
-!! hipervínculos.
+!! hipervínculos. La rutina 'Hyperlink()' para crear hipervínculos la invoca en
+!! dos ocasiones; antes y después de imprimir el texto del hipervínculo. El
+!! resultado de la primera llamada se utiliza como primer parámetro de la
+!! segunda (para que el estilo de texto tras imprimir el hipervínculo sea el
+!! mismo que había antes).
 !!
-!!	@param {integer} highlight - Código numérico para identificar el estilo de
-!!		texto a utilizar, utilizando como referencia los estilos de texto de
-!!		Máquina-Z: 0) normal, 1) subrayado, 2) negrita y 3) ancho-fijo
-!!	@param {Object|String} item - Objeto o cadena de caracteres sobre el que se
-!!		genera el hipervínculo. Originalmente no se utiliza, pero puede ser
-!!		interesante si el autor decide sobreescribir la rutina y tener en
-!!		cuenta este 'item' para seleccionar el estilo de texto utilizado
-!!	@returns {integer} Código numérico que identifica los estilos de texto. La
-!!		rutina se invoca 2 veces, antes y después de imprimir el texto del
-!!		hipervínculo, de tal forma que el resultado de la primera llamada se
-!!		pasa como parámetro en la segunda. Así es posible inicar, desde la
-!!		llamada 1, el estilo final del texto una vez impreso el hipervínculo
+!!	@param {integer} style - Código numérico para identificar el estilo de
+!!		texto a utilizar (utiliza los mismos códigos de los estilos de texto de
+!!		la extensión 'textStyles')
+!!	@param {Object|String} [item] - Objeto o cadena de caracteres sobre el que
+!!		se genera el hipervínculo. Si se trata de un objeto, el estilo se
+!!		selecciona automáticamente (con indiferencia del valor de 'style') en
+!!		función de sus características
+!!	@returns {integer} Código numérico del estilo utilizado con anterioridad
 !!------------------------------------------------------------------------------
-[ HyperlinkSetStyle highlight item
-	st;
-	item++; ! (por evitar alertas del compilador)
-	if (highlight) st = _highlight_style_1;
-	return TextFormatter.use(st);
+[ HyperlinkSetStyle style item
+	result;
+	if (metaclass(item) == Object) {
+		!! Objetos importantes en la obra:
+		if (item has remarkable)
+			result = UseTextStyle(_highlight_style_1);
+		!! Objetos hacia los que el PC puede desplazarse:
+		else if ((item ofclass Room or CompassDirection) || (item has door))
+			result = UseTextStyle(_highlight_style_2);
+		!! Otros objetos:
+		else result = UseTextStyle(_highlight_style_3);
+	} else {
+		result = UseTextStyle(style);
+	}
+	return result;
 ];
 
 !!------------------------------------------------------------------------------
@@ -671,6 +753,23 @@ Global _current_location = 0;
 	if (delay > 0) result = KeyDelay(delay);
 	else result = KeyCharPrimitive();
 	return result;
+];
+
+!!------------------------------------------------------------------------------
+!! Imprime el pronombre nominativo correcto correspondiente a un objeto.
+!!
+!!	@param {Object} obj - Obj. del que se desea imprimir su pronombre nominativo
+!!	@version 1.0
+!!------------------------------------------------------------------------------
+[ SpanishNominativePronoun obj;
+	switch (GetGNAOfObject(obj)) {
+		0, 6:	print "él";
+		1, 7:	print "ella";
+		2, 8:	print "ello";
+		3, 9:	print "ellos";
+		4, 10:	print "ellas";
+		5, 11:	print "ellos";
+   }
 ];
 
 !!------------------------------------------------------------------------------
@@ -701,11 +800,13 @@ Global _current_location = 0;
 !!	IMPORTANTE: Los mensajes de algunas de las acciones que se añaden requieren
 !!	la extensión 'SpanishLM.h'. Acciones añadidas o modificadas:
 !!	-	##Audio / ##AudioOn / ##AudioOff
+!!	-	##DefaultAction
 !!	-	##Highlight / ##HighlightOn / ##HighlightOff
 !!	-	##LMode2
 !!	-	##NoSuchVerb --- Permite eliminar las acciones:
 !!		-	##Sorry
 !!	-	##TalkOn / ##TalkTo
+!!	-	##Teleport
 !!------------------------------------------------------------------------------
 
 Include "SpanishG.h";			! Gramática española
@@ -747,6 +848,24 @@ VerboIrregular "establecer la reproducción de audio" with imperativo
 #Endif; ! TARGET_GLULX;
 
 !!------------------------------------------------------------------------------
+!! ##DefaultAction
+!!------------------------------------------------------------------------------
+!!	Los objetos pueden definir una propiedad: 'action_set', con un array de
+!!	acciones evidentes que pueden realizarse sobre ese objeto. Si definen esta
+!!	propiedad, la acción por defecto imprime el listado de acciones. En caso
+!!	contrario, la acción por defecto se limita a invocar la acción ##Examine
+!!	sobre ese objeto.
+!!------------------------------------------------------------------------------
+
+Verb 'no.verb'
+	* noun							-> DefaultAction
+;
+
+[ DefaultActionSub;
+	<<Examine noun>>;
+];
+
+!!------------------------------------------------------------------------------
 !! ##Highlight / ##HighlightOn / ##HighlightOff
 !!------------------------------------------------------------------------------
 
@@ -760,7 +879,9 @@ VerboIrregular "establecer estilo de texto resaltado" with imperativo
 	previous_style flag;
 	while (flag == false) {
 		EraseWindow();
+		previous_style = UseTextStyle(TEXT_STYLE_IMPORTANT);
 		print (string) Story;
+		UseTextStyle(previous_style);
 		print " utiliza un sistema de palabras clave para destacar objetos
 		interactivos del relato. Hay tres clases de palabras clave: 1) nombres
 		de objetos importantes en la historia, 2) objetos o direcciones hacia
@@ -771,7 +892,7 @@ VerboIrregular "establecer estilo de texto resaltado" with imperativo
 		new_line;
 		new_line;
 		print "1) Objetos importantes: ";
-		previous_style = TextFormatter.use(_highlight_style_1);
+		previous_style = UseTextStyle(_highlight_style_1);
 		switch (_highlight_style_1) {
 			TEXT_STYLE_UPRIGHT:		print "sin estilo";
 			TEXT_STYLE_STRESSED:	print "enfatizado";
@@ -780,31 +901,29 @@ VerboIrregular "establecer estilo de texto resaltado" with imperativo
 			TEXT_STYLE_USER1:		print "color de fondo 1";
 			TEXT_STYLE_USER2:		print "color de fondo 2";
 		}
-		TextFormatter.use(previous_style);
+		UseTextStyle(previous_style);
 		print ".^";
 		print "2) Direcciones: ";
-		previous_style = TextFormatter.use(_highlight_style_2);
+		previous_style = UseTextStyle(_highlight_style_2);
 		switch (_highlight_style_2) {
 			TEXT_STYLE_UPRIGHT:		print "sin estilo";
 			TEXT_STYLE_STRESSED:	print "enfatizado";
 			TEXT_STYLE_IMPORTANT:	print "destacado";
 			TEXT_STYLE_MONOSPACED:	print "monoespaciado";
 			TEXT_STYLE_USER1:		print "color de fondo 1";
-			TEXT_STYLE_USER2:		print "color de fondo 2";
 		}
-		TextFormatter.use(previous_style);
+		UseTextStyle(previous_style);
 		print ".^";
 		print "3) Otros objetos: ";
-		previous_style = TextFormatter.use(_highlight_style_3);
+		previous_style = UseTextStyle(_highlight_style_3);
 		switch (_highlight_style_3) {
 			TEXT_STYLE_UPRIGHT:		print "sin estilo";
 			TEXT_STYLE_STRESSED:	print "enfatizado";
 			TEXT_STYLE_IMPORTANT:	print "destacado";
 			TEXT_STYLE_MONOSPACED:	print "monoespaciado";
 			TEXT_STYLE_USER1:		print "color de fondo 1";
-			TEXT_STYLE_USER2:		print "color de fondo 2";
 		}
-		TextFormatter.use(previous_style);
+		UseTextStyle(previous_style);
 		print ".^";
 		new_line;
 		print (parser) "Pulsa INTRO para aceptar y salir.";
@@ -823,8 +942,6 @@ VerboIrregular "establecer estilo de texto resaltado" with imperativo
 					TEXT_STYLE_MONOSPACED:
 						_highlight_style_1 = TEXT_STYLE_USER1;
 					TEXT_STYLE_USER1:
-						_highlight_style_1 = TEXT_STYLE_USER2;
-					TEXT_STYLE_USER2:
 						_highlight_style_1 = TEXT_STYLE_UPRIGHT;
 				}
 			'2':
@@ -838,8 +955,6 @@ VerboIrregular "establecer estilo de texto resaltado" with imperativo
 					TEXT_STYLE_MONOSPACED:
 						_highlight_style_2 = TEXT_STYLE_USER1;
 					TEXT_STYLE_USER1:
-						_highlight_style_2 = TEXT_STYLE_USER2;
-					TEXT_STYLE_USER2:
 						_highlight_style_2 = TEXT_STYLE_UPRIGHT;
 				}
 			'3':
@@ -853,8 +968,6 @@ VerboIrregular "establecer estilo de texto resaltado" with imperativo
 					TEXT_STYLE_MONOSPACED:
 						_highlight_style_3 = TEXT_STYLE_USER1;
 					TEXT_STYLE_USER1:
-						_highlight_style_3 = TEXT_STYLE_USER2;
-					TEXT_STYLE_USER2:
 						_highlight_style_3 = TEXT_STYLE_UPRIGHT;
 				}
 		}
@@ -888,6 +1001,149 @@ Extend	'perdona' replace
 ;
 
 [ NoSuchVerbSub; return ParserError(VERB_PE); ];
+
+!!------------------------------------------------------------------------------
+!! ##TalkOn / ##TalkTo
+!!------------------------------------------------------------------------------
+
+Extend	'habla' replace
+	* noun							-> TalkTo
+	* 'a'/'con' noun				-> TalkTo
+	* creature						-> TalkTo
+	* 'a'/'con' creature			-> TalkTo
+	* 'por' noun					-> TalkOn
+	* 'por' creature				-> TalkOn
+;
+
+Verb	'conversa' 'platica'
+	* noun							-> TalkTo
+	* 'a'/'con' noun				-> TalkTo
+	* creature						-> TalkTo
+	* 'a'/'con' creature			-> TalkTo
+	* 'por' noun					-> TalkOn
+	* 'por' creature				-> TalkOn
+;
+
+[ TalkOnSub
+	previous_style;
+	previous_style = UseTextStyle(TEXT_STYLE_PARSER);
+	print (string) TEXT_STYLE_PARSER_PREFIX;
+	print "Hablar con ", (name) noun;
+	print (string) TEXT_STYLE_PARSER_SUFIX;
+	UseTextStyle(previous_style);
+	new_line;
+	<<TalkTo noun second>>;
+];
+
+[ TalkToSub;
+	!! 1) El personaje intenta hablar consigo mismo:
+	if ( noun == player ) {
+		print "Hablar ", (lm_contigo) player, " mism", (o) player, " ";
+		switch (_grammatical_inflection) {
+			FIRST_PERSON_PRESENT,
+			SECOND_PERSON_PRESENT,
+			THIRD_PERSON_PRESENT:
+				"no resulta especialmente divertido.";
+			FIRST_PERSON_PAST,
+			SECOND_PERSON_PAST,
+			THIRD_PERSON_PAST:
+				"no resultaba especialmente divertido.";
+			FIRST_PERSON_FUTURE,
+			SECOND_PERSON_FUTURE,
+			THIRD_PERSON_FUTURE:
+				"no resultará especialmente divertido.";
+		}
+	}
+	!! 2) El personaje intenta hablar con un objeto inanimado:
+	if ( noun hasnt animate ) {
+		switch (_grammatical_inflection) {
+			FIRST_PERSON_PRESENT,
+			SECOND_PERSON_PRESENT,
+			THIRD_PERSON_PRESENT:
+				"Sería más interesante intentar hablar con cosas que puedan
+				devolver una respuesta.";
+			FIRST_PERSON_PAST,
+			SECOND_PERSON_PAST,
+			THIRD_PERSON_PAST:
+				"Hubiese sido más interesante intentar hablar con cosas que
+				pudiesen devolver una respuesta.";
+			FIRST_PERSON_FUTURE,
+			SECOND_PERSON_FUTURE,
+			THIRD_PERSON_FUTURE:
+				"Será más interesante intentar hablar con cosas que puedan
+				devolver una respuesta.";
+		}
+	}
+	!! 3) El personaje intenta hablar con un objeto animado:
+	switch (_grammatical_inflection) {
+		FIRST_PERSON_PRESENT,
+		SECOND_PERSON_PRESENT,
+		THIRD_PERSON_PRESENT:
+			print (The) noun, " no parecen", (n) noun;
+		FIRST_PERSON_PAST,
+		SECOND_PERSON_PAST,
+		THIRD_PERSON_PAST:
+			print (The) noun, " no parecía", (n) noun;
+		FIRST_PERSON_FUTURE,
+		SECOND_PERSON_FUTURE,
+		THIRD_PERSON_FUTURE:
+			print (The) noun, " no parecerá", (n) noun;
+	}
+	" interesad", (o) noun, " en hablar ", (lm_contigo) player, ".";
+];
+
+!!------------------------------------------------------------------------------
+!! ##Teleport
+!!------------------------------------------------------------------------------
+
+[ TeleportScope
+	obj adjacent_location;
+	switch (scope_stage) {
+		1:	return false;
+		2:	objectloop (obj in Compass) {
+				keep_silent = true;
+				adjacent_location = real_location.(obj.door_dir)();
+				keep_silent = false;
+				if (adjacent_location ~= 0) {
+					PlaceInScope(adjacent_location);
+				}
+			}
+		3:	print_ret (parser) "No puedes llegar hasta ahí desde donde te
+			encuentras en estos momentos.";
+	}
+];
+
+Extend 've' last
+	* scope=TeleportScope			-> Teleport
+	* 'a//' scope=TeleportScope		-> Teleport
+	* 'hacia' scope=TeleportScope	-> Teleport
+;
+
+Extend 'entra' last
+	* scope=TeleportScope			-> Teleport
+	* 'a//' scope=TeleportScope		-> Teleport
+	* 'en' scope=TeleportScope		-> Teleport
+;
+
+Verb 'teleport.verb'
+	* scope=TeleportScope			-> Teleport
+;
+
+[ TeleportSub
+	obj adjacent_location;
+	objectloop (obj in Compass) {
+		keep_silent = true;
+		adjacent_location = real_location.(obj.door_dir)();
+		keep_silent = false;
+		if (adjacent_location ~= 0) {
+			if (noun == adjacent_location) {
+				<<Go obj>>;
+			}
+		}
+	}
+
+	PlayerTo(noun, 2);
+];
 
 
 !!==============================================================================
