@@ -54,6 +54,7 @@
 !!			+	Item
 !!			+	Furniture
 !!			+	Atrezzo
+!!			+	Receptacle
 !!			+	NPC
 !!		-	Room
 !!			+	Outdoors
@@ -117,14 +118,13 @@ Attribute remarkable;
 !!------------------------------------------------------------------------------
 
 Class	Thing
- with	size	0,			! Tamaño
-		volume	0,			! Volumen
-		weight	0,			! Peso
-		capacity_number	-1,	! Capacidad total: en cuanto a número de objetos
+ with	action_set 0,
 		capacity_size	-1,	! Capacidad total: en cuanto a tamaño
 		capacity_volume	-1,	! Capacidad total: en cuanto a volumen
 		capacity_weight	-1,	! Capacidad total: en cuanto a peso
-		action_set 0,
+		size	0,			! Tamaño
+		volume	0,			! Volumen
+		weight	0,			! Peso
 		description [;
 			switch (_grammatical_inflection) {
 				FIRST_PERSON_PRESENT:
@@ -259,8 +259,8 @@ Class	Furniture
 Class	Atrezzo
  class	Thing
  with	before [;
-			Examine, Search:
-			!DefaultAction: ! custom actions FIXME
+			Examine, Search,
+			DefaultAction: ! custom actions
 				return false;
 			default:
 				switch (_grammatical_inflection) {
@@ -309,6 +309,153 @@ Class	Atrezzo
  has	scenery;
 
 !!==============================================================================
+!!	+	Receptacle
+!!------------------------------------------------------------------------------
+!!	Clase para definir contenedores o soportes con comprobación automática de
+!!	los límites de cantidad, tamaño, volumen y peso al introducir objetos.
+!!	Utiliza las rutinas definidas en 'capacities.h'.
+!!------------------------------------------------------------------------------
+
+Class	Receptacle
+ class	Thing
+ with	before [;
+			Receive:
+				switch (CheckIfObjectFits(self, noun)) {
+					-1:	print "En ", (the) self, " ya no ";
+						switch (_grammatical_inflection) {
+							FIRST_PERSON_PRESENT,
+							SECOND_PERSON_PRESENT,
+							THIRD_PERSON_PRESENT:
+								print "caben";
+							FIRST_PERSON_PAST,
+							SECOND_PERSON_PAST,
+							THIRD_PERSON_PAST:
+								print "cabían";
+							FIRST_PERSON_FUTURE,
+							SECOND_PERSON_FUTURE,
+							THIRD_PERSON_FUTURE:
+								print "cabrán";
+						}
+						" más cosas.";
+					-2:	print (The) noun, " ";
+						switch (_grammatical_inflection) {
+							FIRST_PERSON_PRESENT,
+							SECOND_PERSON_PRESENT,
+							THIRD_PERSON_PRESENT:
+								if (IsPluralNoun(noun)) print "son";
+								else print "es";
+							FIRST_PERSON_PAST,
+							SECOND_PERSON_PAST,
+							THIRD_PERSON_PAST:
+								if (IsPluralNoun(noun)) print "eran";
+								else print "era";
+							FIRST_PERSON_FUTURE,
+							SECOND_PERSON_FUTURE,
+							THIRD_PERSON_FUTURE:
+								if (IsPluralNoun(noun)) print "serán";
+								else print "será";
+						}
+						print " demasiado ";
+						if (IsPluralNoun(noun)) print "grandes";
+						else print "grande";
+						print " para ";
+						if (self has container) {
+							print "meterl", (o) noun, " en";
+						}
+						if (self has supporter) {
+							print "colocarl", (o) noun, " sobre";
+						}
+						" ", (the) self, ".";
+					-3:	print (The) noun, " ";
+						switch (_grammatical_inflection) {
+							FIRST_PERSON_PRESENT,
+							SECOND_PERSON_PRESENT,
+							THIRD_PERSON_PRESENT:
+								if (IsPluralNoun(noun)) print "son";
+								else print "es";
+							FIRST_PERSON_PAST,
+							SECOND_PERSON_PAST,
+							THIRD_PERSON_PAST:
+								if (IsPluralNoun(noun)) print "eran";
+								else print "era";
+							FIRST_PERSON_FUTURE,
+							SECOND_PERSON_FUTURE,
+							THIRD_PERSON_FUTURE:
+								if (IsPluralNoun(noun)) print "serán";
+								else print "será";
+						}
+						print " demasiado voluminos", (o) noun, " para ";
+						if (self has container) {
+							print "meterl", (o) noun, " en";
+						}
+						if (self has supporter) {
+							print "colocarl", (o) noun, " sobre";
+						}
+						" ", (the) self, ".";
+					-4:	print "No ";
+						switch (_grammatical_inflection) {
+							FIRST_PERSON_PRESENT,
+							SECOND_PERSON_PRESENT,
+							THIRD_PERSON_PRESENT:
+								print "hay";
+							FIRST_PERSON_PAST,
+							SECOND_PERSON_PAST,
+							THIRD_PERSON_PAST:
+								print "había";
+							FIRST_PERSON_FUTURE,
+							SECOND_PERSON_FUTURE,
+							THIRD_PERSON_FUTURE:
+								print "habrá";
+						}
+						print " hueco suficiente en ", (the) self, " para ";
+						if (self has container) print "meter";
+						if (self has supporter) print "colocar";
+						" ", (the) noun, ".";
+					-5:	print (The) noun, " ";
+						switch (_grammatical_inflection) {
+							FIRST_PERSON_PRESENT,
+							SECOND_PERSON_PRESENT,
+							THIRD_PERSON_PRESENT:
+								if (IsPluralNoun(noun)) print "son";
+								else print "es";
+							FIRST_PERSON_PAST,
+							SECOND_PERSON_PAST,
+							THIRD_PERSON_PAST:
+								if (IsPluralNoun(noun)) print "eran";
+								else print "era";
+							FIRST_PERSON_FUTURE,
+							SECOND_PERSON_FUTURE,
+							THIRD_PERSON_FUTURE:
+								if (IsPluralNoun(noun)) print "serán";
+								else print "será";
+						}
+						print " demasiado pesad", (o) noun, " para ";
+						if (self has container) {
+							print "meterl", (o) noun, " en";
+						}
+						if (self has supporter) {
+							print "colocarl", (o) noun, " sobre";
+						}
+						" ", (the) self, ".";
+					-6:	switch (_grammatical_inflection) {
+							FIRST_PERSON_PRESENT,
+							SECOND_PERSON_PRESENT,
+							THIRD_PERSON_PRESENT:
+								print "Es";
+							FIRST_PERSON_PAST,
+							SECOND_PERSON_PAST,
+							THIRD_PERSON_PAST:
+								print "Era";
+							FIRST_PERSON_FUTURE,
+							SECOND_PERSON_FUTURE,
+							THIRD_PERSON_FUTURE:
+								print "Será";
+						}
+						" demasiado peso para ", (the) self, ".";
+				}
+		];
+
+!!==============================================================================
 !!	+	NPC
 !!------------------------------------------------------------------------------
 !!	Representa un personaje no jugador. Hay algunas extensiones que definen
@@ -330,10 +477,10 @@ Class	Atrezzo
 Class	NPC
  class	Thing,
  with	before [;
-			!! DefaultAction: !! FIXME
-			!! 	if (self has described) {
-			!! 		<<TalkTo self>>;
-			!! 	}
+			DefaultAction:
+				if (self has described) {
+					<<TalkTo self>>;
+				}
 		],
  has	animate;
 
@@ -533,22 +680,22 @@ Class	SmartEnterable
 			!Yes:
 			!! CUSTOM ACTIONS
 			!Dance:
-			!! GoDown: FIXME
-			!! 	if (self has supporter) <<Exit self>>;
-			!! 	return false;
+			GoDown:
+				if (self has supporter) <<Exit self>>;
+				return false;
 			!GoUp:
 			!KnockOn:
 			!Masturbate:
 			!Sit:
 			!SleepWith:
-			!! StandUp: !! FIXME
-			!! 	if ((self has supporter) && (noun == nothing or self))
-			!! 		<<Exit self>>;
-			!! TalkTo: !! FIXME
-			!! 	if (noun hasnt animate) return false;
-			!! 	if (self.out_of_reach(noun))
-			!! 		{ <Exit self>; new_line; }
-			!! 	return false;
+			StandUp:
+				if ((self has supporter) && (noun == nothing or self))
+					<<Exit self>>;
+			TalkTo:
+				if (noun hasnt animate) return false;
+				if (self.out_of_reach(noun))
+					{ <Exit self>; new_line; }
+				return false;
 			!TalkTo:
 			!Untie:
 			!Use:

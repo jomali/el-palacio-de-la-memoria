@@ -27,7 +27,7 @@
 !!	cualquier versión posterior.
 !!
 !!	EL PALACIO DE LA MEMORIA se distribuye con la esperanza de que sea
-!!	útil, pero SIN GARANTÍA ALGUNA; ni siquiera la garantía implícita
+!!	útil, pero SIN GARANTíA ALGUNA; ni siquiera la garantía implícita
 !!	MERCANTIL o de APTITUD PARA UN PROPÓSITO DETERMINADO. Consulte los
 !!	detalles de la Licencia Pública General GNU para más información.
 !!
@@ -74,7 +74,7 @@
 	switch (obj) {
 
 !!------------------------------------------------------------------------------
-bolso: switch (n) {
+Bolso: switch (n) {
 1:	! ##Examine
 print "Es un bolso bandolera. Cómodo, sencillo, barato.";
 return true;
@@ -84,26 +84,26 @@ return true;
 }
 
 !!------------------------------------------------------------------------------
-cocina: switch (n) {
+Cocina: switch (n) {
 1:	! ##Examine
-print "Espaciosa y bien iluminada. Su padre ha debido ir añadiendo muebles y electrodomésticos conforme los iba necesitando, atendiendo posiblemente antes a la funcionalidad que al aspecto del conjunto. El resultado es un collage; aparatos de aspecto moderno y minimalista como un frigorífico con acabado en acero brillante se combinan con una antigua cocina de leña en hierro forjado negro o un gran armario en madera tallada con motivos florales, y la gran mesa de comedor situada en medio de la cocina está rodeada de varias sillas, la mayoría de diseños diferentes. Cuenta con puertas al salón y a una terraza trasera, a [e_obj] y norte respectivamente.";
+print "Espaciosa y bien iluminada. Su padre ha debido ir añadiendo muebles y electrodomésticos conforme los iba necesitando, atendiendo posiblemente antes a la funcionalidad que al aspecto del conjunto. El resultado es un collage; aparatos de aspecto moderno y minimalista como un frigorífico con acabado en acero brillante se combinan con una antigua cocina de leña en hierro forjado negro o un gran armario en madera tallada con motivos florales, y la gran mesa de comedor situada en medio de la cocina está rodeada de varias sillas, la mayoría de diseños diferentes. Cuenta con puerta al salón [al e_obj].";
 new_line;
 return true;
 }
 
 !!------------------------------------------------------------------------------
-cocina_encimera: switch (n) {
+CocinaEncimera: switch (n) {
 1:	! ##Examine (A - Encimera vacía)
 !! TODO
 return true;
 2:	! ##Examine (B - Objetos sobre la encimera)
-print "Sobre la encimera puede ver [lista de objetos sobre cocina_encimera].";
+print "Sobre la encimera puede ver [lista de objetos sobre CocinaEncimera].";
 new_line;
 return true;
 }
 
 !!------------------------------------------------------------------------------
-cocina_frigorifico: switch (n) {
+CocinaFrigorifico: switch (n) {
 1:	! ##Examine
 !! TODO
 print "Un frigorífico en acero brillante. Parece nuevo.";
@@ -112,7 +112,7 @@ return true;
 }
 
 !!------------------------------------------------------------------------------
-cocina_mesa: switch (n) {
+CocinaMesa: switch (n) {
 1:	! ##Examine
 !! TODO
 print "Una gran mesa de comedor.";
@@ -121,16 +121,7 @@ return true;
 }
 
 !!------------------------------------------------------------------------------
-cocina_mesa: switch (n) {
-1:	! ##Examine
-!! TODO
-print "Una gran mesa de comedor.";
-new_line;
-return true;
-}
-
-!!------------------------------------------------------------------------------
-cristalera: switch (n) {
+Cristalera: switch (n) {
 1:	! ##Examine (A - en el patio)
 !! TODO
 return true;
@@ -141,7 +132,7 @@ return true;
 }
 
 !!------------------------------------------------------------------------------
-dungeon_master: switch (n) {
+DungeonMaster: switch (n) {
 1:
 print "La casa se levantaba sobre un pequeño promontorio, a apenas una treintena de pasos de las frías aguas del Cantábrico.
 ^^
@@ -163,13 +154,13 @@ print (stressed) "@<<Y entro en los campos y anchos palacios de la memoria, dond
 new_line;
 return true;
 4:
-print "Ha cumplido con sus obligaciones por la mañana. Se ha encontrado con gente a la que no veía desde hacía años y a la que recordaba solo a medias, y muchos a los que directamente o bien no conocía o no recordaba en absoluto. Todos han aparentado alegrarse mucho de volver a verla. Durante la ceremonia, incapaz de prestar atención al sermón, se ha concentrado en las composiciones policromadas de las vidrieras. Después, un nuevo trámite de intercambio de abrazos y besos en las mejillas, de apretones de mano y palabras amables. Ella ha agradecido los gestos con sinceridad. Al acabar, se ha desecho con la máxima educación de aquellos que insistían en acompañarla y ha recorrido a solas viejas carreteras sacudidas por un viento cargado de olores viejos, hasta llegar a la vieja casa de sus padres. Ahora que no están, se halla de pronto vacía.";
+print "Ha cumplido con sus obligaciones por la mañana. Se ha encontrado con gente a la que no veía desde hacía años y a la que recordaba solo a medias, y muchos a los que directamente o bien no conocía o no recordaba en absoluto. Todos han aparentado alegrarse mucho de volver a verla. Durante la ceremonia, incapaz de prestar atención al sermón, se ha concentrado en las composiciones policromadas de las vidrieras. Al acabar, un nuevo trámite de intercambio de abrazos y besos en las mejillas, de apretones de mano y palabras amables. Ella ha agradecido los gestos con sinceridad. Después, se ha desecho con la máxima educación de aquellos que insistían en acompañarla y ha recorrido a solas viejas carreteras sacudidas por un viento cargado de olores viejos, hasta llegar a la vieja casa de sus padres. Ahora que ya no están, se halla de pronto vacía.";
 new_line;
 return true;
 }
 
 !!------------------------------------------------------------------------------
-limbo: switch (n) {
+Limbo: switch (n) {
 1:	! ##Examine (A)
 print "Est", (lm_estas) player, " más allá de la barrera casi insuperable que separa la realidad de todo lo demás. Un lugar etéreo, donde la vida, la materia y la vitalidad no son necesariamente constantes; un lugar donde el el tiempo y el espacio no existen tal y como los capta nuestro ser despierto...";
 return true;
@@ -179,7 +170,7 @@ return true;
 }
 
 !!------------------------------------------------------------------------------
-llavero_padre: switch (n) {
+LlaveroPadre: switch (n) {
 1:	! ##Examine
 print "Sólo tenía tres llaves; las de las puertas delantera y trasera de la casa, y la del viejo todoterreno de su padre ---le habían dicho que estaba aparcado en la casa de unos primos. Podría quedarse allí acumulando polvo por un tiempo---. Una delgada cadena llena de óxido y sin nada enganchado a ella servía como extraño adorno del llavero.";
 new_line;
@@ -187,7 +178,7 @@ return true;
 }
 
 !!------------------------------------------------------------------------------
-llavero_silvia: switch (n) {
+LlaveroSilvia: switch (n) {
 1:	! ##Examine (A)
 print "Son las llaves de su coche y del piso en Plasencia. Una Sally en miniatura, el personaje de Pesadilla Antes de Navidad, cuelga del llavero.";
 new_line;
@@ -199,22 +190,22 @@ return true;
 }
 
 !!------------------------------------------------------------------------------
-patio: switch (n) {
+Patio: switch (n) {
 1:	! ##Examine
-print "Un acceso de hormigón de unos veinte metros de longitud comunica [la puerta_delantera] de la casa, al [n_obj], con la carretera, hacia el sureste. El coche de Silvia está aparcado frente a la puerta. Deslumbra bajo el sol, proyectando reflejos molestos en el rostro mujer.";
+print "Un acceso de hormigón de unos veinte metros de longitud comunica [la PuertaDelantera] de la casa, al [n_obj], con la carretera, hacia el sureste. El coche de Silvia está aparcado frente a la puerta. Deslumbra bajo el sol, proyectando reflejos molestos en el rostro mujer.";
 new_line;
 return true;
 }
 
 !!------------------------------------------------------------------------------
-patio_coche: switch (n) {
+PatioCoche: switch (n) {
 1:	! ##Examine
 !! TODO
 return true;
 }
 
 !!------------------------------------------------------------------------------
-puerta_delantera: switch (n) {
+PuertaDelantera: switch (n) {
 1:	! ##Examine (A - Desde el patio)
 print "La puerta delantera de la casa. Está ";
 if (obj has open) print "abierta.";
@@ -227,37 +218,52 @@ if (obj has open) print "Está abierta de par en par.";
 else print "Ahora mismo está cerrada.";
 new_line;
 return true;
+3:	! door_to (A)
+print "Sale al patio delantero.";
+new_line;
+return true;
+4:	! door_to (B - no puede recoger el abrigo)
+print "Antes necesita coger [el abrigo], pero ya tiene las manos ocupadas con demasiadas cosas y no puede hacerlo.";
+new_line;
+return true;
+5:	! door_to (C - si recoge el abrigo del perchero antes)
+print "Coge [el abrigo] del [RecibidorPerchero](perchero) y sale al patio delantero.";
+new_line;
+return true;
 }
 
 !!------------------------------------------------------------------------------
-recibidor: switch (n) {
-1:	! ##Examine (A - Parte 1/2, con la puerta cerrada)
-print "La luz del exterior se cuela por una cristalera de colores que hay junto a la [puerta_delantera](puerta) principal, pintando el pequeño recibidor con una mezcla de azules, amarillos, verdes y rojos, como el vitral de una iglesia.";
+Recibidor:
+switch (n) {
+1:	! ##Examine (A - primera vez)
+print "La luz del exterior se cuela por una cristalera de colores que hay junto a la [PuertaDelantera](puerta) principal, pintando el pequeño recibidor con una mezcla de azules, amarillos, verdes y rojos. Un juego de luces que resulta tan bonito como siempre. Pero ya ha visto vidrieras suficientes por un día. Todo ha terminado y no le queda nada más que hacer allí; va siendo hora de volver a su propia casa.";
+new_line;
 return true;
-2:	! ##Examine (B - Parte 1/2, con la puerta abierta)
+2:	! ##Examine (A - Parte 1/3, con la puerta cerrada)
+print "La luz del exterior se cuela por una cristalera de colores que hay junto a la [PuertaDelantera](puerta) principal, pintando el pequeño recibidor con una mezcla de azules, amarillos, verdes y rojos, como el vitral de una iglesia.";
+return true;
+3:	! ##Examine (B - Parte 1/3, con la puerta abierta)
 print "La brillante luz del exterior se cuela por la puerta abierta y por una cristalera de colores que hay junto ella, bañando el pequeño recibidor de una mezcla de los blancos directos del sol y de los azules, amarillos, verdes y rojos que llegan por el filtro del cristal tintado.";
 return true;
-3:	! ##Examine (C - Parte 2/2)
-print "Frente a la puerta, al [n_obj], un corto pasillo conduce hasta el salón. Hay una cómoda apoyada contra la pared.";
-new_line;
+4:	! ##Examine (C - Parte 2/3)
+print "Frente a la puerta, al [n_obj], un corto pasillo conduce hasta el salón. Hay una cómoda apoyada contra la pared";
 return true;
-4:	! ##Examine (D - La primera vez)
-print "La luz del exterior se cuela por una cristalera de colores que hay junto a la [puerta_delantera](puerta) principal, pintando el pequeño recibidor con una mezcla de azules, amarillos, verdes y rojos. Sigue resultando tan bonito como siempre ver jugar así a la luz, pero ya ha tenido vidrieras suficientes por un día. Todo ha terminado, de modo que finalmente puede regresar a su vida normal. Va siendo hora de salir de allí.";
-new_line;
+5:	! ##Examine (D - Parte 3/3, si no hay objetos en el perchero)
+print " y [un RecibidorPerchero] en una esquina";
 return true;
 }
 
 !!------------------------------------------------------------------------------
-recibidor_perchero: switch (n) {
+RecibidorPerchero: switch (n) {
 1:	! ##Examine (A - general)
 print "Un perchero alto";
 return true;
 2:	! ##Examine (B - si tiene una cosa colgada)
-print " del que cuelga [lista de objetos en recibidor_perchero].";
+print " del que cuelga [lista de objetos en RecibidorPerchero].";
 new_line;
 return true;
 3:	! ##Examine (C - si tiene varias cosas colgadas)
-print " del que cuelgan [lista de objetos en recibidor_perchero].";
+print " del que cuelgan [lista de objetos en RecibidorPerchero].";
 new_line;
 return true;
 4:	! describe (A - Sólo tiene colgado el bolso)
@@ -265,17 +271,29 @@ print "Su [abrigo] cuelga de un perchero alto, en una esquina.";
 new_line;
 return true;
 5:	! describe (B - si tiene una cosa colgada)
-print "En [el recibidor_perchero] de la esquina cuelga [lista de objetos en recibidor_perchero].";
+print "En [el RecibidorPerchero] de la esquina cuelga [lista de objetos en RecibidorPerchero].";
 new_line;
 return true;
 6:	! describe (C - si tiene varias cosas colgadas)
-print "En [el recibidor_perchero] de la esquina cuelgan [lista de objetos en recibidor_perchero].";
+print "En [el RecibidorPerchero] de la esquina cuelgan [lista de objetos en RecibidorPerchero].";
+new_line;
+return true;
+7:	! ##Pull, ##Push, ##PushDir, ##Take, ##Turn
+print "No es necesario andar moviéndol", (o) obj, ".";
+new_line;
+return true;
+8:	! ##Receive (A - si no es el Abrigo o el Bolso)
+print "No puede colgar eso en el [RecibidorPerchero](perchero).";
+new_line;
+return true;
+9:	! ##Receive (B - tras colgar el Abrigo o el Bolso)
+print "Cuelga [el x1] en el [RecibidorPerchero](perchero).";
 new_line;
 return true;
 }
 
 !!------------------------------------------------------------------------------
-salon: switch (n) {
+Salon: switch (n) {
 1:	! ##Examine
 print "Desde el otro lado de los ventanales laterales el paisaje marino parece penetrar la estancia con el romper de las olas. Como virtualmente ocurre en todas las casas, un amplio sofá hace de centro de gravedad de todo el salón; colocado de manera que se puede contemplar con la misma facilidad tanto el mar tras los ventanales como el televisor. Varias estanterías atestadas de libros y un mueble bar completan este paréntesis entre el recibidor, al [s_obj], y las puertas de doble hoja que conducen al [w_obj] hasta la cocina.";
 new_line;
@@ -283,23 +301,53 @@ return true;
 }
 
 !!------------------------------------------------------------------------------
-silvia: switch (n) {
-1:	! ##Examine / ##Inv (A - por primera vez)
-print "Lleva puesto su vestido negro, con una falda negra que le alcanza hasta debajo de las rodillas, medias negras traslúcidas y zapatos negros con tacón, bien cepillados y brillantes; una ropa que normalmente le haría sentir incómoda, como si estuviese vistiendo un disfraz ridículo. Hoy, en cambio, llevar puesto ese disfraz le ha garantizado algo de seguridad. Era el uniforme adecuado para un día difícil.";
+Silvia: switch (n) {
+1:	! ##Examine / ##Inv
+print "Está completamente desnuda";
+return true;
+2:	! ##Examine / ##Inv
+print ". La piel de gallina por culpa de la brisa marítima";
+return true;
+3:	! ##Examine / ##Inv
+print ".";
 new_line;
 return true;
-2:	! ##Examine / ##Inv (B)
-print "Lleva puesto su vestido negro, con una falda negra que le alcanza hasta debajo de las rodillas, medias negras traslúcidas y zapatos negros con tacón, bien cepillados y brillantes.";
-new_line;
+4:	! ##Examine / ##Inv
+print "Debajo del abrigo está completamente desnuda";
 return true;
-3:	! ##Dance (A - por primera vez)
-print "Es a Carmen a quien le gusta andar bailoteando por la casa. Sonríe al recordarla afirmando ser una virtuosa de la ~bio-danza~ y, como para demostrarlo, retorcerse contra la pared con un movimiento absurdo... payasa.";
-new_line;
+5:	! ##Examine / ##Inv
+print "Lleva ";
 return true;
-4:	! ##Dance (B)
-print "Nunca ha sido capaz de ponerse a bailar esa ~bio-danza~ de Carmen.";
-new_line;
+6:	! ##Examine / ##Inv
+print "puesto su vestido negro, con una falda negra que le alcanza hasta debajo de las rodillas, medias negras traslúcidas y zapatos negros con tacón, bien cepillados y brillantes";
 return true;
+7:	! ##Examine / ##Inv
+print "; una ropa que normalmente le haría sentir incómoda, como si estuviese vistiendo un disfraz ridículo. Hoy, en cambio, llevar puesto ese disfraz le ha garantizado algo de seguridad. Era el uniforme adecuado para un día difícil";
+return true;
+8:	! ##Examine / ##Inv
+print "Debajo del abrigo lleva ";
+return true;
+9:	! ##Examine / ##Inv
+print "Tiene ";
+return true;
+10:	! ##Examine / ##Inv
+print " en las manos";
+return true;
+11:	! ##Examine / ##Inv
+print "el bolso colgado al hombro";
+return true;
+12:	! ##Examine / ##Inv
+print " y ";
+return true;
+
+!! 3:	! ##Dance (A - por primera vez)
+!! print "Es a Carmen a quien le gusta andar bailoteando por la casa. Sonríe al recordarla afirmando ser una virtuosa de la ~bio-danza~ y, como para demostrarlo, retorcerse contra la pared con un movimiento absurdo... payasa.";
+!! new_line;
+!! return true;
+!! 4:	! ##Dance (B)
+!! print "Nunca ha sido capaz de ponerse a bailar esa ~bio-danza~ de Carmen.";
+!! new_line;
+!! return true;
 }
 
 	}

@@ -71,7 +71,7 @@
 
 Object	LibraryMessages
  with	before [
-			previous_style;
+			previous_style temp;
 
 	Answer, Ask, AskFor, Order, Tell:
 		print_ret (parser) "Para iniciar una conversación, usa simplemente la

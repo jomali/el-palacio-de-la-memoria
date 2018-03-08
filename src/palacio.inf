@@ -111,8 +111,8 @@ Constant USR2_STYLE_FGC $404040;
 
 !! Variables globales con los estilos de texto para resaltar objetos:
 
-Global _highlight_style_1 = TEXT_STYLE_USER1;	! Objetos destacados
-Global _highlight_style_2 = TEXT_STYLE_USER1;	! Direcciones y puertas
+Global _highlight_style_1 = TEXT_STYLE_IMPORTANT;	! Objetos destacados
+Global _highlight_style_2 = TEXT_STYLE_STRESSED;	! Direcciones y puertas
 Global _highlight_style_3 = TEXT_STYLE_UPRIGHT;		! Otros objetos
 
 !!------------------------------------------------------------------------------
@@ -123,6 +123,7 @@ Constant MANUAL_PRONOUNS;		! Los pronoms. refieren a objetos ya mencionados
 Constant MAX_CARRIED 3;			! Máx. de objetos que se pueden llevar en mano
 Constant NO_PLACES;				! Acciones LUGARES y OBJETOS desactivadas
 Constant NO_SCORE;				! No se lleva conteo de puntuación
+Constant SACK_OBJECT Bolso;		! Contenedor principal para la librería
 
 #Ifdef CUSTOM_LIBRARY_MESSAGES;
 Constant SIN_MENSAJES;			! Se omiten los mensajes por defecto de la lib.
@@ -179,6 +180,7 @@ Replace ChangePlayer;			! Rutina para cambiar el objeto PC
 Replace DrawStatusLine;			! Dibuja la barra de estado
 Replace ExamineSub;				! Rutina para la acción ##Examine
 Replace GetGNAOfObject;			! Rutina para obtener el GNA de un objeto
+Replace InvSub;					! Rutina para tomar inventario del PC
 Replace LanguageDirection;		! Imprime el nombre de las direcciones
 Replace LMode1Sub;				! Lookmode 1: Breve
 Replace LMode2Sub;				! Lookmode 2: Largo (establecido por defecto)
@@ -378,7 +380,7 @@ Include ">palacio.bli";			! Recursos multimedia de la aplicación
 !! Include "choiceSet.h";			! Sistema de selección de acciones sobre lista
 Include	"hyperlinks.h";			! Rutinas de apoyo para el uso de hipervínculos
 Include "pPreprocessor.h";		! Preprocesador del parser
-Include "receptacles.h";		! Contenedores con límites de capacidad
+Include "capacities.h";			! Extensión a las reglas de capacidad
 
 Include "VerbLib.h";			! Define cómo trabajan las acciones
 
@@ -465,30 +467,42 @@ Global _current_location = 0;
 	glk($0102, gg_mainwin); ! glk_request_hyperlink_event
 	!! Establece la imagen inicial presente durante el menu:
 	DrawRandomImage();
+	!! Inicializa los canales de audio (10 reales + 10 virtuales):
+	!!	-	SONIDO: Recurso de sonido declarado en el fichero '.res'
+	!!	-	CANAL: Número del canal [0-9]
+	!!	-	PORCENTAJE DE VOLUMEN: [0-100]. -1 para usar el volumen global
+	!!	-	NÚM. DE REPETICIONES: (Opcional) 1 por defecto. -1 para infinitas
+	Damusix.AsignarCanal(MUS_PRESENTE, 0, 100, -1);
+	!! Inicia la reproducción de la música de fondo:
+	FadeInTrack(MUS_PRESENTE, -1, 0);
 	#Endif; ! TARGET_
 
 	!! Inicializaciones de la obra ---------------------------------------------
-	!! Texto introductorio:
-	new_line;
-	O__M(dungeon_master, 1);
-	PressAnyKey();
-	new_line;
-	print (parser) "Pulsa una tecla para continuar";
-	PressAnyKey();
-	EraseWindow();
-	!! Créditos:
-	O__M(dungeon_master, 2);
-	PressAnyKey();
-	EraseWindow();
-	new_line;
-	Banner();
-	new_line;
-	!! Resto de inicializaciones:
+	!! Narrador en presente y tercera persona
 	SetGrammaticalInflection(THIRD_PERSON_PRESENT);
-	ChangePlayer(silvia);		! Establece el PC (player character)
-	location = recibidor;		! Establece la localidad inicial
-	lookmode = 2;				! Lookmode largo
-	return 2;					! Evita la impresión inicial del banner
+	!! Establece el PC (player character)
+	ChangePlayer(Silvia);
+	!! Establece la localidad inicial del relato:
+	location = Recibidor;
+	!! Lookmode largo:
+	lookmode = 2;
+	!! Texto introductorio:
+	!! new_line;
+	!! O__M(DungeonMaster, 1);
+	!! PressAnyKey();
+	!! new_line;
+	!! print (parser) "Pulsa una tecla para continuar";
+	!! PressAnyKey();
+	!! EraseWindow();
+	!! !! Créditos:
+	!! O__M(DungeonMaster, 2);
+	!! PressAnyKey();
+	!! EraseWindow();
+	!! new_line;
+	!! Banner();
+	!! new_line;
+	!! Se evita la impresión inicial del banner
+	return 2;
 ];
 
 !!------------------------------------------------------------------------------
@@ -811,6 +825,9 @@ Global _current_location = 0;
 
 Include "SpanishG.h";			! Gramática española
 Include "SpanishEG.h";			! Gramática española extendida
+
+Verb 'cuelga' = 'deja';
+VerboIrregular "colgar" with imperativo 'cuelga';
 
 !!------------------------------------------------------------------------------
 !! ##Audio / ##AudioOn / ##AudioOff

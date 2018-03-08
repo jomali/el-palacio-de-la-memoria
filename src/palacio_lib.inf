@@ -420,79 +420,71 @@ Attribute described; ! Indica si un objeto ha sido descrito al jugador
 !!	@override verblibm.h
 !!	@version 1.0
 !!------------------------------------------------------------------------------
-!! [ InvSub item number_worn number_carried first_worn;
-!!
-!! 	!! El protagonista no lleva ningún objeto en el inventario
-!! 	if (child(player) == 0) return L__M(##Inv, 1);
-!!
-!! 	objectloop (item in player) {
-!! 		if (item has worn) {
-!! 			give item workflag;
-!! 			number_worn++;
-!! 			if (number_worn == 1) first_worn = item;
-!! 		} else {
-!! 			give item ~workflag;
-!! 			number_carried++;
-!! 		}
-!! 	}
-!!
-!! 	!! XXX - La rutina ParseNoun (tanto la rutina original de SpanishG.h como
-!! 	!! la versión utilizada aquí) puede modificar temporalmente los atributos
-!! 	!! female y pluralname de un objeto en función del nombre que haya
-!! 	!! utilizado el interlector para referirse a él, con lo que su GNA cambia.
-!! 	!! Esto podía provocar un resultado inadecuado en la primera línea del
-!! 	!! inventario (imprimir cosas como "Lleva puesto su ropa..."). Para
-!! 	!! corregirlo se han añadido la rutina _o() y una pequeña modificación de
-!! 	!! GetGNAOfObject().
-!!
-!! 	!! Objetos que el protagonista lleva puestos
-!! 	if (number_worn ~= 0) {
-!! 		print "Llev", (lm_as) player, " puest", (_o) first_worn, " ";
-!!
-!! 		!! XXX Apuntar que no se toma inventario de los objetos que pueda
-!! 		!! haber dentro de aquellos que el protagonista lleva puestos.
-!! 		WriteListFrom(child(player), ENGLISH_BIT + WORKFLAG_BIT);
-!!
-!! 		!! El protagonista tiene cosas en las manos además
-!! 		if (number_carried ~= 0) {
-!! 			objectloop (item in player) {
-!! 				if (item has worn) give item ~workflag;
-!! 				else give item workflag;
-!! 			}
-!! 			print ", y ", (lm_tienes) player, " además ";
-!! 			WriteListFrom(child(player),
-!! 				ENGLISH_BIT + RECURSE_BIT + FULLINV_BIT + WORKFLAG_BIT);
-!! 			print " en las manos";
-!! 		}
-!!
-!! 		if (SACK_OBJECT && SACK_OBJECT in player && SACK_OBJECT has worn) {
-!! 			!! Lleva puesto el SACK_OBJECT y NO tiene nada en su interior:
-!! 			if (~~child(SACK_OBJECT)) {
-!! 				print ". En ", (the) SACK_OBJECT, " no llev", (lm_as) player,
-!! 				" nada.";
-!! 			}
-!! 			!! Lleva puesto el SACK_OBJECT y tiene cosas en su interior:
-!! 			else {
-!! 				print ". En ", (the) SACK_OBJECT, " guard", (lm_as) player, " ";
-!! 				WriteListFrom(child(SACK_OBJECT),
-!! 					ENGLISH_BIT + RECURSE_BIT + FULLINV_BIT);
-!! 			}
-!! 		}
-!! 		print ".^";
-!! 	}
-!!
-!! 	!! El protagonista no lleva ningún objeto puesto
-!! 	else {
-!! 		print (lm_ttienes) player, " ";
-!! 		WriteListFrom(child(player), ENGLISH_BIT + RECURSE_BIT + FULLINV_BIT);
-!! 		print " en las manos.^";
-!! 	}
-!!
-!! 	#Ifndef MANUAL_PRONOUNS;
-!! 	objectloop (x in player) PronounNotice(x);
-!! 	#Endif;
-!! 	AfterRoutines();
-!! ];
+[ InvSub
+	item worn_items held_items;
+
+	objectloop(item in player) {
+		if (item has worn) {
+			give item ~workflag;
+			worn_items++;
+		} else {
+			give item workflag;
+			held_items++;
+		}
+	}
+
+	!! Se pretende conseguir que la rutina para listar el inventario del PC
+	!! muestre un mensaje más trabajado estéticamente que el mensaje por
+	!! defecto de la librería, y también no hacer compleja en exceso la lógica
+	!! de la rutina, que de otro modo es más propensa a errores y difícil de
+	!! mantener. Por ello se ha tomado la decisión de diseño de incluir
+	!! únicamente tres objetos que el PC puede vestir, y en lugar de hacer una
+ 	!! rutina general para tomar inventario se utilizan directamente las
+	!! referencias de estos objetos
+
+	if ((Ropa hasnt worn) && (Abrigo hasnt worn)) {
+		O__M(player, 1);
+		if (location ofclass Outdoors) O__M(player, 2);
+		O__M(player, 3);
+	} else if ((Ropa hasnt worn) && (Abrigo has worn)) {
+		O__M(player, 4);
+		O__M(player, 3);
+	} else if ((Ropa has worn) && (Abrigo hasnt worn)) {
+		O__M(player, 5);
+		O__M(player, 6);
+		if (DungeonMaster.inventory_flag == false) {
+			DungeonMaster.inventory_flag = true;
+			O__M(player, 7);
+		}
+		O__M(player, 3);
+	} else if ((Ropa has worn) && (Abrigo has worn)) {
+		O__M(player, 8);
+		O__M(player, 6);
+		if (DungeonMaster.inventory_flag == false) {
+			DungeonMaster.inventory_flag = true;
+			O__M(player, 7);
+		}
+		O__M(player, 3);
+	}
+
+	if ((Bolso has worn) || (held_items > 0)) {
+		new_line;
+		O__M(player, 9);
+		if (Bolso has worn) O__M(player, 11);
+		if ((Bolso has worn) && (held_items > 0)) O__M(player, 12);
+		if (held_items > 0) {
+			WriteListFrom(child(player),
+				ENGLISH_BIT + FULLINV_BIT + WORKFLAG_BIT);
+			O__M(player, 10);
+			O__M(player, 3);
+		}
+	}
+
+	#Ifndef MANUAL_PRONOUNS;
+	objectloop (x in player) PronounNotice(x);
+	#Endif;
+	AfterRoutines();
+];
 !! [ InvTallSub; <Inv>; ];
 !! [ InvWideSub; <Inv>; ];
 
