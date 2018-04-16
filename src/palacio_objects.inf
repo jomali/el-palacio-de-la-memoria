@@ -295,17 +295,59 @@ Outdoors	Patio "Patio delantero"
 		gender	G_MASCULINO,
 		adjectives 'delantera' 'delantero',
 		description [;
-			return O__M(self, 1);
+			if (player in self) return O__M(self, 1);
+			else return O__M(self, 2);
 		],
 		n_to	PuertaDelantera,
 		in_to	[; return self.n_to(); ],
  has	male;
 
-Atrezzo	-> PatioCoche "coche"
+Atrezzo	-> PatioCasa "casa"
+ with	name_f	'casa' 'enredadera' 'fachada',
+		name_fp	'enredaderas',
+		name_m	'edificio' 'verdin',
+		gender	G_FEMENINO,
+		adjectives 'blanca' 'blanco' 'planta',
+		description [; return O__M(self, 1); ],
+		before [;
+			Enter:
+				<<Go n_obj>>;
+		],
+ has	enterable female;
+
+Atrezzo	-> PatioCamino "camino de grava"
+ with	name_f	'carretera' 'grava' 'gravilla',
+		name_m	'acceso' 'camino',
+		gender	G_FEMENINO,
+		adjectives 'secundaria',
+		description [; return O__M(self, 1); ],
+ has	female;
+
+Item	-> PatioCoche "coche"
  with	name_m	'coche' 'vehiculo',
 		gender	G_MASCULINO,
 		description [; return O__M(self, 1); ],
- has	enterable male ~open openable;
+		before [;
+			DefaultAction:
+				if (player notin self) {
+					print (parser) "entra en el coche", "^";
+					<<Enter self>>;
+				}
+				print (parser) "enciende el coche", "^";
+				<<SwitchOn self>>;
+			SwitchOn:
+				if (player notin self) return false;
+				O__M(self, 4);
+				PressAnyKey();
+				new_line;
+				print (header) "FIN";
+				PressAnyKey();
+				new_line;
+				new_line;
+				print (parser) "Pulsa una tecla para terminar";
+				quit;
+		],
+ has	concealed container enterable male ~open openable static switchable;
 
 Item	PuertaDelantera "puerta de entrada"
  with	found_in Patio Recibidor,

@@ -73,6 +73,14 @@
 [ LanguageOM obj n x1;
 	switch (obj) {
 
+
+!! No tenía esposa ni familia que dependiera de él, nadie cuya vida fuera a verse alterada por su ausencia. Tal vez provocara un breve instante de sorpresa en alguno de sus escasos amigos, tan impresionados por la idea de los caprichos de la muerte como por la pérdida de un camarada, después un corto período de duelo, y luego nada. Con el tiempo sería como si nunca hubiera existido.
+!!
+!! Había estado ausente incluso antes de su muerte y hacía tiempo que la gente que lo rodeaba había aprendido a aceptar su ausencia, a tomarla como una cualidad inherente a su personalidad. Ahora que se había ido, no sería difícil hacerse a la idea de que su ausencia sería definitiva. La naturaleza de su vida había preparado al mundo para su muerte ---una especie de muerte prevista---, y cuando lo recordaran, si es que alguien lo hacía, sería de una forma imprecisa, sólo imprecisa.
+!!
+!! Incapaz de cualquier sentimiento de pasión, ya fuera por una cosa, una idea o una persona, no había podido o no había querido mostrarse a sí mismo bajo ninguna circunstancia y se las había ingeniado para mantenerse a cierta distancia de la vida, para evitar sumergirse en el torbellino de las cosas. Comía, iba a trabajar, tenía amigos, jugaba al tenis; pero a pesar de todo no estaba allí. Era un hombre invisible, en el sentido más profundo e inexorable de la palabra. Invisible para los demás, y muy probablemente para sí mismo. Si cuando estaba vivo no hice otra cosa que buscarlo, intentar encontrar al padre que no estaba, ahora que está muerto siento que debo seguir con esa búsqueda. Su muerte no ha cambiado nada; la única diferencia es que me he quedado sin tiempo.
+
+
 !!------------------------------------------------------------------------------
 Bolso: switch (n) {
 1:	! ##Examine
@@ -154,7 +162,7 @@ print (stressed) "@<<Y entro en los campos y anchos palacios de la memoria, dond
 new_line;
 return true;
 4:
-print "Ha cumplido con sus obligaciones por la mañana. Se ha encontrado con gente a la que no veía desde hacía años y a la que recordaba solo a medias, y muchos a los que directamente o bien no conocía o no recordaba en absoluto. Todos han aparentado alegrarse mucho de volver a verla. Durante la ceremonia, incapaz de prestar atención al sermón, se ha concentrado en las composiciones policromadas de las vidrieras. Al acabar, un nuevo trámite de intercambio de abrazos y besos en las mejillas, de apretones de mano y palabras amables. Ella ha agradecido los gestos con sinceridad. Después, se ha desecho con la máxima educación de aquellos que insistían en acompañarla y ha recorrido a solas viejas carreteras sacudidas por un viento cargado de olores viejos, hasta llegar a la vieja casa de sus padres. Ahora que ya no están, se halla de pronto vacía.";
+print "Ha cumplido con sus obligaciones por la mañana. Se ha encontrado con gente a la que no veía desde hacía años y a la que recordaba solo a medias, y con muchos otros a los que directamente o bien no conocía o no recordaba en absoluto. Todos han aparentado alegrarse de volver a verla. Durante la ceremonia, incapaz de prestar atención al sermón, se ha concentrado en los policromados de las vidrieras ---imágenes de varios santos a los que se ha visto incapaz de identificar---. Al acabar ha tenido que repetir un nuevo trámite de abrazos y besos en las mejillas, de apretones de mano y palabras amables. Ella ha agradecido los gestos con sinceridad, se ha deshecho educadamente de aquellos que insistían en acompañarla, y ha recorrido a solas las viejas carreteras sacudidas por aquel viento cargado de olores viejos, hasta llegar a la vieja casa de sus padres. Ahora que no están, se halla de pronto vacía.";
 new_line;
 return true;
 }
@@ -191,8 +199,28 @@ return true;
 
 !!------------------------------------------------------------------------------
 Patio: switch (n) {
+1:	! ##Examine (fuera del coche)
+print "Un acceso de grava de unos diez metros de longitud comunica la carretera con [la PuertaDelantera] de la casa. [El PatioCoche] de Silvia está aquí aparcado. Deslumbra bajo el sol de la tarde, con los cristales proyectando reflejos molestos sobre su rostro.";
+new_line;
+return true;
+2:	! ##Examine (dentro del coche)
+print "Un acceso de grava de unos diez metros de longitud comunica la carretera con [la PuertaDelantera] de la casa. La temperatura fuera era agradable, incluso se llegaba a sentir frío por culpa de la brisa, pero dentro [del PatioCoche] hace demasiado calor.";
+new_line;
+return true;
+}
+
+!!------------------------------------------------------------------------------
+PatioCamino: switch (n) {
 1:	! ##Examine
-print "Un acceso de hormigón de unos veinte metros de longitud comunica [la PuertaDelantera] de la casa, al [n_obj], con la carretera, hacia el sureste. El coche de Silvia está aparcado frente a la puerta. Deslumbra bajo el sol, proyectando reflejos molestos en el rostro mujer.";
+print "El camino de grava enlaza [la PuertaDelantera] de [la PatioCasa] hasta una carretera secundaria.";
+new_line;
+return true;
+}
+
+!!------------------------------------------------------------------------------
+PatioCasa: switch (n) {
+1:	! ##Examine
+print "Un feo volumen revocado de planta rectangular. Allí donde el verdín y las enredaderas no han tomado aún la fachada se puede ver la última mano de pintura blanca.";
 new_line;
 return true;
 }
@@ -200,7 +228,18 @@ return true;
 !!------------------------------------------------------------------------------
 PatioCoche: switch (n) {
 1:	! ##Examine
-!! TODO
+print "Arrastraba alrededor de cien mil kilómetros ya cuando lo compró de segunda mano, y aunque le ha funcionado muy bien hasta ahora, en el viaje desde Madrid ha notado cómo se quedaba sin potencia en varias ocasiones en mitad de la autovía. Como si le costase subir revoluciones aún con el acelerador pisado a fondo. Debería llevarlo al taller esta semana. Sólo espera que no la deje tirada a mitad de camino de vuelta a casa.";
+new_line;
+return true;
+4:	! ##SwitchOn
+print "Silvia se inclina sobre el volante y nota el tacto del botón bajo los dedos. Mi padre ha muerto. Presiona con suavidad y el motor se pone en marcha. No nos llevábamos mal. No teníamos mucho trato desde hacía tiempo, si, pero no nos llevábamos mal. La vibración del motor se transmite por todo el coche. Es triste, claro. Estoy triste. Así funciona, el luto, también con mamá.
+^^
+Mi padre ha muerto y mi madre está muerta. Están muertos ya, y yo soy una camionera, y estoy sola, y es triste porque funciona así y no voy a tener hijos nunca... Si algo no se recuerda ¿no es como si no hubiese existido nunca? Mi padre no existe. Ahora mamá casi no ha existido nunca ya. Yo no existiré demasiado pronto probablemente No existo casi. ¿Quién me recuerda? Estoy en el coche pero eso no lo recuerda nadie. Yo sólo. Nadie. ¿El coche no existe tampoco entonces? Quizá no, y es un camión.
+^^
+Mejor sin hijos. Desagradecidos que no te van a ver, cuando mueres únicamente, y luego no te pueden recordar no lo suficiente porque no estuvieron allí para ver qué recordar después y es como si no existieses y has muerto pero sigue preocupándose más por ella y por los nombres de un santo al los que no puede reconocer que porque te has muerto aunque tampoco te conociese pero nunca se preguntó quién eras tú. Tal vez si hubieses estado pintado en un cristal. Pues para eso mejor sin hijos. Estoy triste. De verdad. Porque es triste, porque así funciona el luto.
+^^
+El coche se aleja por las viejas carreteras con un ronquido ahogado, dejando un humo demasiado negro detrás de sí.";
+new_line;
 return true;
 }
 
@@ -236,14 +275,14 @@ return true;
 Recibidor:
 switch (n) {
 1:	! ##Examine (A - primera vez)
-print "La luz del exterior se cuela por una cristalera de colores que hay junto a la [PuertaDelantera](puerta) principal, pintando el pequeño recibidor con una mezcla de azules, amarillos, verdes y rojos. Un juego de luces que resulta tan bonito como siempre. Pero ya ha visto vidrieras suficientes por un día. Todo ha terminado y no le queda nada más que hacer allí; va siendo hora de volver a su propia casa.";
+print "La luz del exterior se cuela por una cristalera de colores que hay junto a la [PuertaDelantera](puerta) principal, bañando el pequeño recibidor con una mezcla de verdes y azules, amarillos y rojos. Por un momento permanece en pie en silencio, ensimismada en el juego de luces, pero ha visto ya suficientes vidrieras por un día. Todo ha terminado, no tiene nada más que hacer en aquel lugar. Va siendo hora de de regresar a su casa y seguir con su vida normal.";
 new_line;
 return true;
 2:	! ##Examine (A - Parte 1/3, con la puerta cerrada)
 print "La luz del exterior se cuela por una cristalera de colores que hay junto a la [PuertaDelantera](puerta) principal, pintando el pequeño recibidor con una mezcla de azules, amarillos, verdes y rojos, como el vitral de una iglesia.";
 return true;
 3:	! ##Examine (B - Parte 1/3, con la puerta abierta)
-print "La brillante luz del exterior se cuela por la puerta abierta y por una cristalera de colores que hay junto ella, bañando el pequeño recibidor de una mezcla de los blancos directos del sol y de los azules, amarillos, verdes y rojos que llegan por el filtro del cristal tintado.";
+print "La brillante luz del exterior se cuela por la [PuertaDelantera](puerta) abierta y por una cristalera de colores que hay junto ella, bañando el pequeño recibidor de una mezcla de los blancos directos del sol y de los azules, amarillos, verdes y rojos que llegan por el filtro del cristal tintado.";
 return true;
 4:	! ##Examine (C - Parte 2/3)
 print "Frente a la puerta, al [n_obj], un corto pasillo conduce hasta el salón. Hay una cómoda apoyada contra la pared";

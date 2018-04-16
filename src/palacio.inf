@@ -111,9 +111,9 @@ Constant USR2_STYLE_FGC $404040;
 
 !! Variables globales con los estilos de texto para resaltar objetos:
 
-Global _highlight_style_1 = TEXT_STYLE_IMPORTANT;	! Objetos destacados
-Global _highlight_style_2 = TEXT_STYLE_STRESSED;	! Direcciones y puertas
-Global _highlight_style_3 = TEXT_STYLE_UPRIGHT;		! Otros objetos
+Global _highlight_style_1 = TEXT_STYLE_NOTE;	! Objetos destacados
+Global _highlight_style_2 = TEXT_STYLE_NOTE;	! Direcciones y puertas
+Global _highlight_style_3 = TEXT_STYLE_NOTE;		! Otros objetos
 
 !!------------------------------------------------------------------------------
 !!	Definiciones de la librería Inform
@@ -271,14 +271,14 @@ Include "gwincls.h";			! GWindows: Window Class Framework
 	Damusix.NotificarFade(ev);
 	!! Gestión de los eventos de selección de hipervínculo:
 	if (HandleHyperlinkEvent(ev, context, abortres)) {
-		previous_style = UseTextStyle(TEXT_STYLE_PARSER);
-		print (string) TEXT_STYLE_PARSER_PREFIX;
-		for (i = WORDSIZE : i < (abortres-->0) + WORDSIZE : i++) {
-			print (char) abortres->i;
-		}
-		print (string) TEXT_STYLE_PARSER_SUFIX;
-		UseTextStyle(previous_style);
-		new_line;
+!!		previous_style = UseTextStyle(TEXT_STYLE_PARSER);
+!!		print (string) TEXT_STYLE_PARSER_PREFIX;
+!!		for (i = WORDSIZE : i < (abortres-->0) + WORDSIZE : i++) {
+!!			print (char) abortres->i;
+!!		}
+!!		print (string) TEXT_STYLE_PARSER_SUFIX;
+!!		UseTextStyle(previous_style);
+!!		new_line;
 		return 2; ! finaliza el turno
 	}
 ];
@@ -478,6 +478,21 @@ Global _current_location = 0;
 	#Endif; ! TARGET_
 
 	!! Inicializaciones de la obra ---------------------------------------------
+	!! Texto introductorio:
+	new_line;
+	O__M(DungeonMaster, 1);
+	PressAnyKey();
+	new_line;
+	print (parser) "Pulsa una tecla para continuar";
+	PressAnyKey();
+	EraseWindow();
+	!! Créditos:
+	O__M(DungeonMaster, 2);
+	PressAnyKey();
+	EraseWindow();
+	new_line;
+	Banner();
+	new_line;
 	!! Narrador en presente y tercera persona
 	SetGrammaticalInflection(THIRD_PERSON_PRESENT);
 	!! Establece el PC (player character)
@@ -486,21 +501,6 @@ Global _current_location = 0;
 	location = Recibidor;
 	!! Lookmode largo:
 	lookmode = 2;
-	!! Texto introductorio:
-	!! new_line;
-	!! O__M(DungeonMaster, 1);
-	!! PressAnyKey();
-	!! new_line;
-	!! print (parser) "Pulsa una tecla para continuar";
-	!! PressAnyKey();
-	!! EraseWindow();
-	!! !! Créditos:
-	!! O__M(DungeonMaster, 2);
-	!! PressAnyKey();
-	!! EraseWindow();
-	!! new_line;
-	!! Banner();
-	!! new_line;
 	!! Se evita la impresión inicial del banner
 	return 2;
 ];

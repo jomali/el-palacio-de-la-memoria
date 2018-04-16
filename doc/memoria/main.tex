@@ -1,0 +1,319 @@
+%!TEX TS-program = pdflatex
+%!TEX encoding = utf8
+
+\documentclass[12pt, twoside]{book}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english, spanish, es-noshorthands]{babel}
+%% FONTS: libertine+biolinum+stix
+\usepackage[mono=false]{libertine}
+\usepackage[notext]{stix}
+
+% =============================================================================
+% DATOS IMPORTANTES
+%
+% hay que rellenar estos datos y luego
+% ir a \begin{document}
+
+\title{TRABAJO DE FIN DE GRADO}
+\author{J. Francisco Martín Lisaso}
+\date{\today}
+\newcommand{\tutores}[1]{\newcommand{\guardatutores}{#1}}
+\tutores{Prof. Andrés Iglesias\\
+         Prof. Akemi Gálvez}
+
+% =============================================================================
+% PÁGINAS DE TÍTULOS
+%
+\makeatletter
+\edef\maintitle{\@title}
+\renewcommand\maketitle{%
+  \begin{titlepage}
+      \vspace*{1.5cm}
+      \parskip=0pt
+      \Huge\bfseries
+      \begin{center}
+          \leavevmode\includegraphics[totalheight=6cm]{sello.pdf}\\[2cm]
+          \@title
+      \end{center}
+      \vspace{1cm}
+      \begin{center}
+          \@author
+      \end{center}
+  \end{titlepage}
+
+  \begin{titlepage}
+  \parindent=0pt
+  \begin{flushleft}
+  \vspace*{1.5mm}
+  \setlength\baselineskip{0pt}
+  \setlength\parskip{0mm}
+  \begin{center}
+      \leavevmode\includegraphics[totalheight=4.5cm]{sello.pdf}
+  \end{center}
+  \end{flushleft}
+  \vspace{1cm}
+  \bgroup
+  \Large \bfseries
+  \begin{center}
+  \@title
+  \end{center}
+  \egroup
+  \vspace*{.5cm}
+  \begin{center}
+  \@author
+  \end{center}
+  \vspace*{1.8cm}
+  \begin{flushright}
+  \begin{minipage}{8.45cm}
+      Memoria presentada como parte de los requisitos para la obtención del título de
+      Grado en Ingeniería Informática por la Universidad de Cantabria.
+
+      \vspace*{7.5mm}
+
+      Tutorizada por
+      % \vspace*{5mm}
+  \end{minipage}\par
+  \begin{tabularx}{8.45cm}[b]{@{}l}
+      \guardatutores
+  \end{tabularx}
+   \end{flushright}
+      \vspace*{\fill}
+   \end{titlepage}
+   %%% Esto es necesario...
+   \pagestyle{tfg}
+   \renewcommand{\chaptermark}[1]{\markright{\thechapter.\space ##1}}
+   \renewcommand{\sectionmark}[1]{}
+   \renewcommand{\subsectionmark}[1]{}
+  }
+\makeatother
+
+% =============================================================================
+% COLOR DE LA UNIVERSIDAD DE CANTABRIA
+%
+\usepackage{tikz}
+%\definecolor{USred}{cmyk}{0,1.00,0.65,0.34}
+\definecolor{UCgreen}{RGB}{0,103,113}
+
+% =============================================================================
+% OTROS
+%
+\usepackage[]{tabularx}
+\usepackage[]{enumitem}
+\setlist{noitemsep}
+
+% =============================================================================
+% MATEMÁTICAS Y TEOREMAS
+%
+\usepackage[]{amsmath}
+\usepackage[]{amsthm}
+\usepackage[]{mathtools}
+\usepackage[]{bm}
+\usepackage[]{thmtools}
+\newcommand{\marcador}{\vrule height 10pt depth 2pt width 2pt \hskip .5em\relax}
+\newcommand{\cabeceraespecial}{%
+    \color{UCgreen}%
+    \normalfont\bfseries}
+\declaretheoremstyle[
+    spaceabove=\medskipamount,
+    spacebelow=\medskipamount,
+    headfont=\cabeceraespecial\marcador,
+    notefont=\cabeceraespecial,
+    notebraces={(}{)},
+    bodyfont=\normalfont\itshape,
+    postheadspace=1em,
+    numberwithin=chapter,
+    headindent=0pt,
+    headpunct={.}
+    ]{importante}
+\declaretheoremstyle[
+    spaceabove=\medskipamount,
+    spacebelow=\medskipamount,
+    headfont=\normalfont\itshape\color{UCgreen},
+    notefont=\normalfont,
+    notebraces={(}{)},
+    bodyfont=\normalfont,
+    postheadspace=1em,
+    numberwithin=chapter,
+    headindent=0pt,
+    headpunct={.}
+    ]{normal}
+\declaretheoremstyle[
+    spaceabove=\medskipamount,
+    spacebelow=\medskipamount,
+    headfont=\normalfont\itshape\color{UCgreen},
+    notefont=\normalfont,
+    notebraces={(}{)},
+    bodyfont=\normalfont,
+    postheadspace=1em,
+    headindent=0pt,
+    headpunct={.},
+    numbered=no,
+    qed=\color{UCgreen}\marcador
+    ]{demostracion}
+
+% Los nombres de los enunciados. Añade los que necesites.
+\declaretheorem[name=Observaci\'on, style=normal]{remark}
+\declaretheorem[name=Corolario, style=normal]{corollary}
+\declaretheorem[name=Proposici\'on, style=normal]{proposition}
+\declaretheorem[name=Lema, style=normal]{lemma}
+
+\declaretheorem[name=Teorema, style=importante]{theorem}
+\declaretheorem[name=Definici\'on, style=importante]{definition}
+
+\let\proof=\undefined
+\declaretheorem[name=Demostraci\'on, style=demostracion]{proof}
+
+% =============================================================================
+% COMPOSICIÓN DE LA PÁGINA
+%
+\usepackage[
+	a4paper,
+    textwidth=80ex,
+]{geometry}
+
+\linespread{1.069}
+\parskip=10pt plus 1pt minus .5pt
+\frenchspacing
+% \raggedright
+
+% =============================================================================
+% COMPOSICIÓN DE LOS TÍTULOS
+%
+\usepackage[explicit]{titlesec}
+
+% XXX - Para corregir un bug introducido en 'titlesec' v2.10.1
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd{\ttlh@hang}{\parindent\z@}{\parindent\z@\leavevmode}{}{}
+\patchcmd{\ttlh@hang}{\noindent}{}{}{}
+\makeatother
+% XXX - Para corregir un bug introducido en 'titlesec' v2.10.1
+
+\newcommand{\hsp}{\hspace{20pt}}
+\titleformat{\chapter}[hang]
+ {\Huge\sffamily\bfseries}
+ {\thechapter\hsp\textcolor{UCgreen}{\vrule width 2pt}\hsp}{0pt}
+ {#1}
+\titleformat{\section}
+ {\normalfont\Large\sffamily\bfseries}{\thesection\space\space}
+ {1ex}
+ {#1}
+\titleformat{\subsection}
+ {\normalfont\large\sffamily}{\thesubsection\space\space}
+ {1ex}
+ {#1}
+
+% =============================================================================
+% CABECERAS DE PÁGINA
+%
+\usepackage[]{fancyhdr}
+\usepackage[]{emptypage}
+\fancypagestyle{plain}{%
+    \fancyhf{}%
+    \renewcommand{\headrulewidth}{0pt}
+    \renewcommand{\footrulewidth}{0pt}
+}
+\fancypagestyle{tfg}{%
+    \fancyhf{}%
+    \renewcommand{\headrulewidth}{0pt}
+    \renewcommand{\footrulewidth}{0pt}
+    \fancyhead[LE]{{\normalsize\color{UCgreen}\bfseries\thepage}\quad
+                    \small\textsc{\MakeLowercase{\maintitle}}}
+    \fancyhead[RO]{\small\textsc{\MakeLowercase{\rightmark}}%
+                    \quad{\normalsize\bfseries\color{UCgreen}\thepage}}%
+                    }
+
+% =============================================================================
+% INICIO DEL DOCUMENTO
+%
+\begin{document}
+
+\maketitle
+
+\frontmatter
+\tableofcontents
+
+\mainmatter
+
+\chapter*{English Abstract}
+\addcontentsline{toc}{chapter}{English Abstract}
+\markright{English Abstract}
+
+\begin{otherlanguage}{english}
+    According to the guidelines, every dissertation should include a short english abstract at the beginning. In the abstract, you describe in general terms what is your dissertation about, the main points you want to make, and any important consequences that may arise.
+\end{otherlanguage}
+
+
+\chapter{Los enunciados}
+
+\section{Teoremas y demostraciones}
+
+Lorem ipsum dolor sit amet\cite{Montfort2004}, consectetur adipiscing elit. Integer egestas quam ullamcorper justo lobortis convallis. Fusce sit amet erat eu sapien cursus pretium. Suspendisse vitae euismod enim. Suspendisse commodo, diam quis elementum interdum, odio diam rutrum ex, a viverra libero metus ac dolor. Quisque vitae arcu vel nibh finibus pretium. Morbi vitae interdum est. Morbi dapibus ipsum non vestibulum fringilla. Phasellus lobortis turpis lacus, quis scelerisque elit dictum nec. Suspendisse vel volutpat mauris. Curabitur at nisl magna. Vivamus porttitor lacinia mi, sit amet faucibus lacus imperdiet id. Nullam ac volutpat quam. Nullam imperdiet tincidunt metus nec convallis. Nam id tristique ex, vitae fermentum purus.
+
+Duis lectus leo, elementum vel nunc a, ultrices consequat tortor. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur at ex consequat, posuere lorem at, scelerisque dui. Sed at turpis egestas, elementum eros sit amet, pretium ex. Quisque imperdiet est a magna bibendum finibus. Sed vehicula imperdiet risus in laoreet. Nunc interdum porta ipsum, quis vulputate nulla rutrum sit amet. Curabitur euismod condimentum erat ut auctor. Donec euismod fermentum imperdiet. Vivamus fermentum mi finibus ipsum consectetur, ac vehicula turpis venenatis. Aenean vel commodo libero. Morbi vehicula tincidunt lorem, et fermentum nisl pretium vehicula. Nunc facilisis ut orci quis lobortis.
+
+Pellentesque mollis nunc eu dolor blandit, quis bibendum tortor condimentum. Etiam id turpis ut est pulvinar consectetur. Donec nec felis turpis. Maecenas sed quam finibus, ultricies mi nec, rhoncus risus. Donec luctus sagittis quam a gravida. Donec cursus arcu turpis, sed imperdiet leo porttitor tempus. Donec elementum neque ut ante volutpat, sit amet tempor libero gravida.
+
+Suspendisse quis vehicula leo, eget feugiat quam. Nam facilisis laoreet dignissim. Integer elementum eros id nibh condimentum, a molestie elit dapibus. Donec porttitor, quam id condimentum aliquet, dolor eros faucibus est, at semper tortor sapien vel orci. Etiam lobortis leo eros, sit amet efficitur leo lacinia ut. Sed purus orci, lacinia in facilisis id, tincidunt sed neque. Aenean aliquam pretium ante id consectetur. Morbi sollicitudin elementum quam nec fringilla. Ut pretium blandit libero ac volutpat. Proin eleifend nisl ut nisi commodo efficitur. Morbi dolor lacus, vehicula ut justo in, laoreet bibendum elit. Donec vestibulum in nulla sed suscipit. Donec non nulla ut dolor commodo venenatis ut vitae ligula. Proin pretium, nulla at pulvinar condimentum, dolor dolor lobortis magna, in tincidunt orci risus nec nisi. Sed placerat sagittis ante, id tempor justo vulputate blandit. Nullam suscipit finibus sem, quis viverra elit mollis a.
+
+Duis iaculis leo non eros posuere, vel efficitur orci suscipit. Curabitur elementum tellus turpis. Quisque sed metus commodo, eleifend ante vel, vulputate mauris. Maecenas nec orci eget enim blandit sollicitudin. Phasellus nec justo ante. Mauris porttitor nunc dapibus, tincidunt tellus varius, posuere orci. Morbi diam lacus, fermentum in aliquam sed, scelerisque et odio. Sed lacinia nisl eget hendrerit gravida. Quisque scelerisque mauris nec augue interdum scelerisque. Sed hendrerit rutrum quam, sit amet pulvinar quam finibus at. Duis id mauris et dui pulvinar rhoncus ac aliquet ex. Phasellus eros ligula, molestie sit amet vehicula in, congue facilisis metus. Aliquam sem est, dapibus finibus tempus eget, dapibus eget tortor. Vestibulum mollis malesuada eros ac finibus.
+
+Curabitur in fermentum ipsum, at ullamcorper arcu. Donec ut porttitor sapien, pulvinar dapibus lacus. Nunc sodales tincidunt velit, eget sollicitudin est semper eget. Fusce aliquet nunc imperdiet arcu pharetra, in blandit urna consequat. Quisque vel cursus ante. Ut aliquam, magna ut bibendum rutrum, justo nibh dignissim elit, at bibendum magna orci egestas libero. Vivamus vitae mollis nisl, ut rutrum ligula. Aenean ac urna pellentesque ex varius venenatis. Duis vel lorem augue. Pellentesque a imperdiet dui, et blandit diam. Aliquam quis turpis eu velit volutpat facilisis sed quis mi.
+
+Vestibulum a porttitor velit. Ut quam tellus, semper id tempor sit amet, dictum non arcu. Ut semper elementum mauris eget condimentum. Proin tristique, enim ut porttitor tristique, justo risus sollicitudin sem, quis placerat sem velit sed metus. Aliquam ornare diam ac risus porta, quis varius odio efficitur. Phasellus luctus posuere eleifend. Maecenas vel sem vel risus tristique suscipit vel vel eros. Aliquam erat dolor, tristique quis dui eu, volutpat hendrerit sem. Proin augue ex, sodales ac semper a, dignissim a mi. Curabitur eu lacus maximus, porta neque a, feugiat elit. Fusce eu posuere enim. Nam et leo vitae turpis vehicula vulputate. Donec odio dolor, lobortis sed elit at, volutpat imperdiet mi. Etiam eu nisl eleifend, viverra leo sed, tincidunt dolor. Curabitur feugiat vel ante at luctus. Maecenas orci arcu, luctus et maximus sed, facilisis ac quam.
+
+Vestibulum fermentum mauris augue, sit amet elementum velit lobortis at. Fusce non finibus ante. Quisque eu leo vel metus ullamcorper dictum. Maecenas molestie enim at porta sodales. Integer ac porta dolor. Curabitur et porta risus, vitae blandit metus. Mauris gravida blandit ex, vel iaculis eros elementum vitae. Nullam ac lacus eleifend, porta orci nec, fermentum velit. Cras a molestie dui. Nulla ornare turpis orci, sed accumsan odio tempus at.
+
+\begin{theorem}[Euclides]\label{thm:th1}
+    Esto es un Teorema. Se numeran a partir del 1 en cada capítulo. Como son importantes, tienen un cuadrado rojo al principio. Llevan letra cursiva.
+\end{theorem}
+
+\begin{proof}
+    Esto es la demostración. Al final de la demostración se puede ver un cuadrado rojo similar al de los teoremas. Las demostraciones no llevan letra cursiva.
+\end{proof}
+
+
+\begin{definition}\label{def:1}
+    Esto es una definición. Las definiciones son importantes; también llevan un cuadradito rojo.
+\end{definition}
+
+
+\subsection{Otros enunciados}
+
+
+\begin{remark}
+    Esto es una observación, que dice que $e=mc^{2}$. Como las observaciones no son importantes, no llevan cuadrado rojo, y el tipo de letra no es cursiva.
+\end{remark}
+
+
+\begin{proof}
+    Si la demostración acaba en una fórmula, para poner el cuadrado rojo a la altura de la última formula, hay que usar la orden \verb|\qedhere|, como en este caso:
+    \[
+        e=mc^{2}.\qedhere
+    \]
+
+\end{proof}
+
+
+\begin{corollary}\label{cor:1}
+    Esto es un corolario.
+\end{corollary}
+
+\begin{proposition}\label{pro:1}
+    Esto es una proposición.
+\end{proposition}
+
+\begin{lemma}[Gauss]\label{lem:1}
+    Esto es un lema.
+\end{lemma}
+
+
+% Bibliografía:
+
+\backmatter
+%\bibliographystyle{acm}
+\bibliographystyle{apalike}
+\bibliography{referencias}
+
+\end{document}
