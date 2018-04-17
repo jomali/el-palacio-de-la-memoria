@@ -1,11 +1,12 @@
-# Se excluyen los ficheros de documentación '.pdf':
-*.pdf
-
-# Se excluyen los ficheros multimedia:
+# Ficheros multimedia:
+*.ico
 *.ogg
 *.png
+*.psd
+./doc/musica/*
+./doc/ref/*
 
-# Se excluyen los ficheros ejecutables de Máquina-Z y Glulx:
+# Ejecutables de Máquina-Z y Glulx:
 *.z5
 *.z8
 *.zblorb
@@ -13,7 +14,12 @@
 *.blb
 *.gblorb
 
-# Se excluyen los ficheros creados al generar la documentación con 'pdflatex':
+# Documentación y ficheros creados al generar la documentación con 'pdflatex':
 *.aux
+*.bbl
+*.blg
+*.doc
+*.dvi
 *.log
 *.out
+*.pdf
