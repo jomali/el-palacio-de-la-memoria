@@ -20,6 +20,9 @@
 *.blg
 *.doc
 *.dvi
+*.lof
 *.log
+*.lot
 *.out
 *.pdf
+*.toc
