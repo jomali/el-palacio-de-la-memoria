@@ -105,15 +105,15 @@ Constant HYPERLINKS_COMMAND "";
 !! Inductor:
 Constant PS1 "> ";
 !! Color de fondo del estilo de texto Usuario 1:
-Constant USR1_STYLE_BGC	$102030;
+Constant USR1_STYLE_BGC	$CFF5F8;
 !! Color frontal del estilo de texto Usuario 2:
-Constant USR2_STYLE_FGC $404040;
+Constant USR2_STYLE_FGC $808080;
 
 !! Variables globales con los estilos de texto para resaltar objetos:
 
-Global _highlight_style_1 = TEXT_STYLE_NOTE;	! Objetos destacados
-Global _highlight_style_2 = TEXT_STYLE_NOTE;	! Direcciones y puertas
-Global _highlight_style_3 = TEXT_STYLE_NOTE;		! Otros objetos
+Global _highlight_style_1 = TEXT_STYLE_USER1;	! Objetos destacados
+Global _highlight_style_2 = TEXT_STYLE_UPRIGHT;	! Direcciones y puertas
+Global _highlight_style_3 = TEXT_STYLE_UPRIGHT;	! Otros objetos
 
 !!------------------------------------------------------------------------------
 !!	Definiciones de la librería Inform
@@ -162,6 +162,55 @@ Global PARTICULA_TE	= "te";
 [ lm_estas; print "estás"; ];
 [ lm_tienes; print "tienes"; ];
 #Endif; ! CUSTOM_LIBRARY_MESSAGES;
+
+!!------------------------------------------------------------------------------
+!!	Configuración de la interfaz gráfica (sólo en Glulx)
+!!------------------------------------------------------------------------------
+
+#Ifdef TARGET_GLULX;
+Constant GUICONFIG_MARGIN_COLOR $FFFFFF;
+Object	GUIConfig "(GUI Configuration)"
+ with	!!----------------------------------------------------------------------
+		graphic_window_flag true,	! estado de las ventanas gráficas
+		status_bar_height 1,		! altura de la barra de estado (en filas)
+		!!----------------------------------------------------------------------
+		!! Configuración por defecto A. Ancho de ventana >= threshold_A
+		graphic_width_A 0 0,	! (px)
+		margin_A 0 0,			! (%)
+		padding_A 0 0 8 0,		! (px)
+		threshold_A 0,			! (px)
+		!! Configuración por defecto B. Ancho de ventana >= threshold_B
+		graphic_width_B 0 0,	! (px)
+		margin_B 0 6,			! (%)
+		padding_B 0 0 8 0,		! (px)
+		threshold_B 460,		! (px)
+		!! Configuración por defecto C. Ancho de ventana >= threshold_C
+		graphic_width_C 0 0,	! (px)
+		margin_C 0 12,			! (%)
+		padding_C 0 0 8 0,		! (px)
+		threshold_C 660,		! (px)
+		!! Configuración por defecto D. Ancho de ventana >= threshold_D
+		graphic_width_D 0 225,	! (px)
+		margin_D 0 26 0 6,		! (%)
+		padding_D 0 0 8 20,		! (px)
+		threshold_D 900,		! (px)
+		!! Configuración por defecto E. Ancho de ventana >= threshold_E
+		graphic_width_E 0 225,	! (px)
+		margin_E 0 38 0 4,		! (%)
+		padding_E 0 0 8 20,		! (px)
+		threshold_E 1050,		! (px)
+		!! Configuración por defecto F. Ancho de ventana >= threshold_F
+		graphic_width_F 0 300,	! (px)
+		margin_F 0 25 0 4,		! (%)
+		padding_F 0 0 8 40,		! (px)
+		threshold_F 1224,		! (px)
+		!! Configuración por defecto G. Ancho de ventana >= threshold_G
+		graphic_width_G 0 225,	! (px)
+		margin_G 0 42 0 4,		! (%)
+		padding_G 0 0 8 20,		! (px)
+		threshold_G 1400,		! (px)
+;
+#Endif; ! TARGET_GLULX;
 
 
 !!==============================================================================
@@ -480,14 +529,14 @@ Global _current_location = 0;
 	!! Inicializaciones de la obra ---------------------------------------------
 	!! Texto introductorio:
 	new_line;
-	O__M(DungeonMaster, 1);
+	O__M(Silvia, 1);
 	PressAnyKey();
 	new_line;
 	print (parser) "Pulsa una tecla para continuar";
 	PressAnyKey();
 	EraseWindow();
 	!! Créditos:
-	O__M(DungeonMaster, 2);
+	O__M(Silvia, 2);
 	PressAnyKey();
 	EraseWindow();
 	new_line;
@@ -584,6 +633,7 @@ Global _current_location = 0;
 !!	-	HorizontalRule()
 !!	-	HyperlinkSetStyle()
 !!	-	PressAnyKey()
+!!	-	Shuffle()
 !!	-	SpanishNominativePronoun()
 !!	-	TopHolder()
 !!------------------------------------------------------------------------------
@@ -598,15 +648,20 @@ Global _current_location = 0;
 	#Ifdef TARGET_GLULX;
 	switch (random(5)) {
 		1:
-			graphicWindow.setImage(PIC_0001);
+			graphicWindowLeft.setImage(PIC_0001);
+			graphicWindowRight.setImage(PIC_0001);
 		2:
-			graphicWindow.setImage(PIC_0002);
+			graphicWindowLeft.setImage(PIC_0002);
+			graphicWindowRight.setImage(PIC_0002);
 		3:
-			graphicWindow.setImage(PIC_0003);
+			graphicWindowLeft.setImage(PIC_0003);
+			graphicWindowRight.setImage(PIC_0003);
 		4:
-			graphicWindow.setImage(PIC_0004);
+			graphicWindowLeft.setImage(PIC_0004);
+			graphicWindowRight.setImage(PIC_0004);
 		5:
-			graphicWindow.setImage(PIC_0005);
+			graphicWindowLeft.setImage(PIC_0005);
+			graphicWindowRight.setImage(PIC_0005);
 	}
 	#Endif; ! TARGET_GLULX;
 ];
@@ -768,6 +823,8 @@ Global _current_location = 0;
 	else result = KeyCharPrimitive();
 	return result;
 ];
+
+[ Shuffle; ];
 
 !!------------------------------------------------------------------------------
 !! Imprime el pronombre nominativo correcto correspondiente a un objeto.

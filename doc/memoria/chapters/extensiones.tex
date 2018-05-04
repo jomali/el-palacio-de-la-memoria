@@ -2,66 +2,86 @@
 
 \chapter{Extensiones a la librería Inform}\label{ch:extensiones}
 
-\section{Rutinas de impresión con cambios de formato}
+\section{Interfaz biplataforma para la selección de estilos de texto}\label{sec:textStyles}
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer egestas quam ullamcorper justo lobortis convallis. Fusce sit amet erat eu sapien cursus pretium. Suspendisse vitae euismod enim. Suspendisse commodo, diam quis elementum interdum, odio diam rutrum ex, a viverra libero metus ac dolor. Quisque vitae arcu vel nibh finibus pretium. Morbi vitae interdum est. Morbi dapibus ipsum non vestibulum fringilla. Phasellus lobortis turpis lacus, quis scelerisque elit dictum nec. Suspendisse vel volutpat mauris. Curabitur at nisl magna. Vivamus porttitor lacinia mi, sit amet faucibus lacus imperdiet id. Nullam ac volutpat quam. Nullam imperdiet tincidunt metus nec convallis. Nam id tristique ex, vitae fermentum purus.
+La selección del estilo con el que se imprime texto en el sistema Inform no es un aspecto específico de su lenguaje de programación sino que está estrechamente ligado a la máquina virtual sobre la que se ejecuta el software. Así, tanto las rutinas de selección de estilo como el propio número de estilos de texto disponibles son diferentes en Máquina-Z y Glulx. El objetivo de esta extensión a la librería es ofrecer al autor de ficción interactiva una interfaz que le permita abstraerse de la plataforma concreta para la que está desarrollando la aplicación.
 
-\subsection{Especificación de requisitos}
+En Máquina-Z existe un total de cinco estilos de texto diferentes (algunos intérpretes pueden reconocer combinaciones entre ellos, pero éstas no forman parte del estándar)\cite{Nelson:Fillmore:2014}. En Glulx, por su parte, el conjunto de estilos disponibles se extiende hasta los once\cite{Plotkin:2017:a}. Como el número de estilos disponibles entre ambas máquinas virtuales es diferente, la librería Inform (biplataforma) establece una función sobreyectiva de correspondencia entre ellas\footnote{Según esta función de correspondencia, cuando la librería utiliza un estilo en Glulx que no está definido en Máquina-Z, como por ejemplo \emph{Titular}, \emph{Subtitular} o \emph{Alerta}, en ésta última se emplea simplemente \emph{Negrita}.}. A la hora de determinar los estilos de texto básicos de la extensión, utilizaremos como base la especificación de estilos de Glulx y las correspondencias con los estilos de Máquina-Z que se establecen en la librería Inform (ver cuadro\ref{table:text-styles-estilos-basicos}).
+
+\begin{table}[]
+\centering
+\begin{tabular}{llll}
+\hline
+\textbf{\#} &\textbf{Text Styles} & \textbf{Estilo Glulx} & \textbf{Estilo Máquina-Z} \\ \hline
+$0$		& Upright		& Normal		& Normal		\\
+$1$		& Stressed		& Emphasized	& Italic		\\
+$2$		& Important		& Subheader		& Bold			\\
+$3$		& Monospaced	& Preformatted	& Fixed-width	\\
+$4$		& Header		& Header		& Bold			\\
+$5$		& Note			& Note			& Bold e Italic	\\
+$6$		& Reversed		& Alert			& Reverse		\\
+$7$		& Quote			& BlockQuote	& Fixed-width	\\
+$8$		& Input			& Input			& Bold			\\
+$9$		& User1			& User1			& Normal		\\
+$10$	& User2			& User2			& Normal		\\ \hline
+\end{tabular}
+\caption{Estilos de \emph{textStyles} y sus correspondencias en Glulx y Máquina-Z}
+\label{table:text-styles-estilos-basicos}
+\end{table}
+
+\subsection{Reglas de impresión contextuales y estilo especial para mensajes extradiegéticos}
+
+Como complemento a los estilos básicos, la extensión define dos reglas de impresión contextuales\footnote{Una regla de impresión, en Inform, es simplemente una rutina de un único parámetro que se encarga de imprimir los datos que se le pasan de una determinada manera\cite{Firth:2006}.} para enfatizar y destacar, que seleccionarán el estilo de texto a utilizar en función del estilo utilizado en ese momento.
+
+Se implementa también un estilo adicional para ser utilizado por los mensajes de tipo extradiegético emitidos por el sistema para facilitar la interacción con la obra, pero que no tienen que ver con el resto de mensajes del narrador. Este estilo contará también con su propia regla de impresión.
+
+
+\section{Marco para facilitar la interacción por hipervínculos}
+
+La máquina virtual Glulx, al incluir soporte nativo para la librería de entrada/salida Glk, ofrece un conjunto de funcionalidades adicionales a aquellas de Máquina-Z entre las que se encuentra la posibilidad de responder a eventos de selección de hipervínculos\ref{Plotkin:2017:b}.
+
+El propósito de \textbf{hyperlinks} es ofrecer la infreaestructura para que el autor de ficción interactiva pueda incluir de un modo sencillo interacción por medio de hipervínculos en sus obras compiladas para Glulx. Aunque la funcionalidad de la extensión es exclusiva de Glulx, a fin de facilitar el desarrollo de obras biplataforma, \textbf{hyperlinks} puede utilizarse tanto en Glulx como en Máquina-Z ---al compilar para esta segunda máquina virtual simplemente no se dispondrá de la funcionalidad relacionada con los hipervínculos---.
+
+
+\section{Aproximación de interfaz gráfica adaptativa con `GWindows'}
+
+Si bien el modelo de interfaz gráfica utilizado tanto por Máquina-Z como por Glulx es ciertamente restrictivo, la segunda permite una mayor libertad para crear y manipular las diferente ventanas que conforman la interfaz.
+
+Utilizando las funcionalidades de la extensión `GWindows' de Ross L. se define una interfaz con una serie de ventanas que pueden cambiar de tamaño en función de las dimensiones de la ventana padre. Así podemos adaptar el tamaño de la ventana en que se imprime el texto.
+
+
+\section{Sistema para hacer selecciones entre un conjunto de opciones}
+
+La extensión \textbf{ChoiceSet} permite implementar sistemas de conversación con inventario de temas ---y, en general, cualquier otro sistema que utilice un mecanismo de selección de opciones de entre un conjunto dado--- utilizando análisis no estricto de la entrada de usuario para el reconocimiento de patrones.
+
+Está basada en las notas de Eric Eve sobre sistemas de conversación\cite{Eve:2008} y construída sobre las extensiones NPC\_Conversacion v1.0 de Mastodon, y topicInventory v2.1 ---choiceSet es una generalización actualizada sobre ésta última, propia---.
+
+\textbf{ChoiceSet} permite listar ante el usuario un conjunto de opciones de entre las que puede seleccionar una introduciendo alguna de las palabras clave de la opción; una funcionalidad que facilita, por ejemplo, la construcción de CONVERSACIONES utilizando un sistema de INVENTARIO DE TEMAS. Estos sistemas de conversación están ideados con el objetivo de esquivar los problemas que suelen presentar los sistemas de conversación más habituales en los relatos interactivos; dificultades para adivinar la palabra clave en sistemas basados en acciones ASK/TELL, simplificación excesiva en sistemas basados en la acción TALK TO, o falta de libertad y ruptura de la interfaz textual en sistemas de menús.
+
+Al utilizar un inventario de temas, en esencia, se presenta al usuario una lista de temas de conversación sugeridos basándose en el conocimiento del personaje protagonista. De esta forma, el usuario puede hacer referencia a los temas que quiera lanzar utilizando una interfaz similar a la de los sistemas ASK/TELL, pero sin necesidad de tener que adivinar por sí mismo la palabra clave que lanza el tema.
+
+\subsection{Análisis no estricto de la entrada de usuario}
+
+El reconocimiento de patrones entre la entrada de usuario y las palabras clave de cada elección se lleva a cabo por medio de análisis no estricto; si entre todas las palabras introducidas por el usuario se reconocen claves de una o más elecciones, se lanza aquella con más coincidencias, ignorando el resto de la entrada.
+
+
+\section{Mensajes de la librería en español con flexiones gramaticales de persona y tiempo, género y número}
+
+La librería Inform-INFSP, con el conjunto de mensajes por defecto para la entrada de usuario, sólo contempla mensajes en segunda persona del presente, masculino y singular.
+
+Se ha reescrito por completo para incluir la posibilidad de modificar en tiempo de ejecución tanto el tiempo verbal de los mensajes (presente, pasado, futuro) y la persona (primera, segunda, tercera), como el género (masculino, femenino) y el número (singular, plural) ---estos últimos, en función de la definición del objeto 'player' controlado por el usuario.
+
+Además, si bien los mensajes están basados en gran medida en los mensajes por defecto de la librería original, se han incluido modificaciones para diferenciar los mensajes diegéticos (del narrador, relacionados con el relato) por aquellos extradiegéticos (del sistema, relacionados con la interacción con el software). Además, se han modificado varios mensajes que presentaban ciertas inconsistencias de estilo o tono ---heredados de las aventuras clásicas de Infocom--- por otros más neutros, siguiendo en parte el modelo de la extensión de Inform 7, \texttt{Neutral Library Messages}\cite{Reed:2007}.
+
+
+\section{Especificación de requisitos}
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit.
 
-\subsection{Diseño de alto nivel}
+\section{Diseño de alto nivel}
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit.
 
-\subsection{Diseño detallado}
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-
-\section{Sistema de hipervínculos}
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer egestas quam ullamcorper justo lobortis convallis. Fusce sit amet erat eu sapien cursus pretium. Suspendisse vitae euismod enim. Suspendisse commodo, diam quis elementum interdum, odio diam rutrum ex, a viverra libero metus ac dolor. Quisque vitae arcu vel nibh finibus pretium. Morbi vitae interdum est. Morbi dapibus ipsum non vestibulum fringilla. Phasellus lobortis turpis lacus, quis scelerisque elit dictum nec. Suspendisse vel volutpat mauris. Curabitur at nisl magna. Vivamus porttitor lacinia mi, sit amet faucibus lacus imperdiet id. Nullam ac volutpat quam. Nullam imperdiet tincidunt metus nec convallis. Nam id tristique ex, vitae fermentum purus.
-
-\subsection{Especificación de requisitos}
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-
-\subsection{Diseño de alto nivel}
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-
-\subsection{Diseño detallado}
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-
-\section{Interfaz adaptativa}
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer egestas quam ullamcorper justo lobortis convallis. Fusce sit amet erat eu sapien cursus pretium. Suspendisse vitae euismod enim. Suspendisse commodo, diam quis elementum interdum, odio diam rutrum ex, a viverra libero metus ac dolor. Quisque vitae arcu vel nibh finibus pretium. Morbi vitae interdum est. Morbi dapibus ipsum non vestibulum fringilla. Phasellus lobortis turpis lacus, quis scelerisque elit dictum nec. Suspendisse vel volutpat mauris. Curabitur at nisl magna. Vivamus porttitor lacinia mi, sit amet faucibus lacus imperdiet id. Nullam ac volutpat quam. Nullam imperdiet tincidunt metus nec convallis. Nam id tristique ex, vitae fermentum purus.
-
-\subsection{Especificación de requisitos}
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-
-\subsection{Diseño de alto nivel}
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-
-\subsection{Diseño detallado}
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-
-\section{Sistema de conversación}
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer egestas quam ullamcorper justo lobortis convallis. Fusce sit amet erat eu sapien cursus pretium. Suspendisse vitae euismod enim. Suspendisse commodo, diam quis elementum interdum, odio diam rutrum ex, a viverra libero metus ac dolor. Quisque vitae arcu vel nibh finibus pretium. Morbi vitae interdum est. Morbi dapibus ipsum non vestibulum fringilla. Phasellus lobortis turpis lacus, quis scelerisque elit dictum nec. Suspendisse vel volutpat mauris. Curabitur at nisl magna. Vivamus porttitor lacinia mi, sit amet faucibus lacus imperdiet id. Nullam ac volutpat quam. Nullam imperdiet tincidunt metus nec convallis. Nam id tristique ex, vitae fermentum purus.
-
-\subsection{Especificación de requisitos}
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-
-\subsection{Diseño de alto nivel}
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-
-\subsection{Diseño detallado}
+\section{Diseño detallado}
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit.
