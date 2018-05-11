@@ -1,10 +1,18 @@
+
+# Ramas del árbol de directorios:
+/doc/icons
+/doc/miscellany
+/doc/musica
+/doc/ref
+/ejecutable
+/empaquetador
+/font/*.zip
+
 # Ficheros multimedia:
 *.ico
 *.ogg
 *.png
 *.psd
-./doc/musica/*
-./doc/ref/*
 
 # Ejecutables de Máquina-Z y Glulx:
 *.z5
@@ -15,6 +23,7 @@
 *.gblorb
 
 # Documentación y ficheros creados al generar la documentación con 'pdflatex':
+/doc/memoria/notas
 *.aux
 *.bbl
 *.blg
