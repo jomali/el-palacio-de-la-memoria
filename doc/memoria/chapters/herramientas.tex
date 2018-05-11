@@ -1,8 +1,54 @@
 % TODO
 
-\chapter{Herramientas}\label{ch:herramientas}
+\chapter{Tecnología y herramientas}\label{ch:herramientas}
 
-\section{Sistema de creación Inform 6}
+Durante las primeras fases de desarrollo del software se han considerado diferentes tecnologías y herramientas que pudiesen utilizarse a fin de facilitar el trabajo. En este capítulo se describen cuáles han sido estas tecnologías contempladas y los motivos finales detrás de la selección de unas u otras.
+
+
+\section{Sistemas de autoría}\label{sec:sistemas-autoria}
+
+Como se ha señalado en el capítulo \ref{ch:introduccion}, una ficción interactiva es un software que debe realizar al menos el siguiente conjunto de tareas: modelar el entorno simulado en que se desarrolla la obra y el comportamiento de los objetos presentes dentro de la simulación; describir este entorno al usuario a través de una salida textual; y procesar la entrada de texto del usuario para poder traducirla en acciones que provoquen efectos directos sobre la simulación. Estas tareas pueden implementarse con un nivel de sofisticación muy variable, pero si se atiende a otras obras de ficción interactiva publicadas a lo largo de las últimas décadas, pronto se observa la gran profundidad de interacción y simulación que ofrecen. Para facilitar el proceso de creación de un ficción interactiva con un nivel de complejidad equivalente existe un amplio ecosistema de herramientas software a disposición de los autores.
+
+Habitualmente, un \textbf{sistema de autoría} está compuesto por un \emph{parser} para analizar la entrada de usuario y determinar sus unidades gramaticales, una librería software encargada de definir el comportamiento por defecto de los objetos dentro del entorno simulado y un compilador para generar los ficheros ejecutables. A lo largo de esta sección se ofrece una breve relación de los sistemas de autoría más populares en la actualidad entre las comunidades de creadores de ficción interactiva en habla inglesa e hispana.
+
+\subsection{ADRIFT y Quest}
+
+\textbf{ADRIFT} (\emph{Adventure Development \& Runner -- Interactive Fiction Toolkit})\footnote{Página oficial del sistema ADRIFT: \url{http://www.adrift.co/}} y \textbf{Quest}\footnote{Página oficial del sistema Quest: \url{http://textadventures.co.uk/quest}} son dos sistemas de autoría distintos pero con una misma filosofía en común: facilitar el proceso de creación de ficción interactiva a autores no necesariamente familiarizados con la programación, permitiendo prescindir de la escritura de código fuente a través de la utilización de interfaces gráficas en su lugar. Al colocar el foco en la facilidad de uso, ambos sistemas ofrecían tradicionalmente menos potencia y flexibilidad que otros sistemas de autoría, lo que ha impactado negativamente en su popularidad. Las últimas versiones (ADRIFT 5 y Quest 5), si embargo, han paliado en parte estos problemas añadiendo nuevas funcionalidades y aumentando la expresividad potencial de los autores. Si bien Quest permite desarrollar obras en múltiples idiomas, entre ellos el español, en ADRIFT actualmente sólo es posible crear ficción interactiva en inglés.
+
+\subsection{Aetheria Game Engine}
+
+Aetheria Game Engine, o AGE, es un sistema íntegramente desarrollado en Java, ofrece una librería capaz de integrarse con obras escritas en el lenguaje de \emph{scripting} BeanShell ---con el que se puede acceder directamente a la API de Java--- y un entorno de desarrollo integrado llamado PUCK. Cuenta con una pequeña comunidad de usuarios en español.
+
+\subsection{Diseñador de Aventuras AD}
+
+DAAD es un sistema de creación utilizado por la compañía Aventuras AD para programar sus ficciones interactivas comerciales entre 1989 y 1992. Está creado sobre la base de un sistema previo, conocido como PAWS (Professional Adventure Writing System), y permite desarrollar ficciones interactivas para un conjunto de plataformas ya consideradas retro: Spectrum, Amstrad CPC, Commodore 64, MSX, Commodore Amiga, Amstrad PCW, Atari ST, MS-DOS.
+
+\subsection{Inform 6}
+
+\textbf{Inform 6}\footnote{Página oficial del sistema Inform 6: \url{http://inform-fiction.org/}} es un sistema de creación de ficción interactiva integrado por dos componentes principales: el compilador Inform, que genera ficheros ejecutables a partir de código fuente escrito en su propio lenguaje de programación de propósito específico ---orientado a objetos y funcional e inspirado en el lenguaje C++---; y una amplia librería software encargada de automatizar las tareas de procesar la entrada de texto del usuario y de registrar el estado del modelo del mundo en que se desarrolla la obra.
+
+Originalmente permite desarrollar ficciones interactivas en inglés, pero existen diversas traducciones del módulo de idioma que permiten crear obras en otras lenguas, también la española. El módulo de idioma español se conoce como \emph{INFSP 6}.
+
+\subsection{Inform 7}
+
+\textbf{Inform 7}\footnote{Página oficial del sistema Inform 7: \url{http://inform7.com/}}e trata de la última versión del sistema de autoría Inform. En esta nueva iteración del sistema los cambios más significativos son la utilización de un nuevo lenguaje de programación de propósito específico basado en reglas y que trata de imitar la escritura en lenguaje natural (en inglés), y la introducción de un entorno integrado de desarrollo propio con herramientas especializadas en las tareas de prueba y depuración de las obras. Por lo demás, el sistema depende del compilador y la librería de Inform 6 puesto que los ficheros escritos en Inform 7 son compilados en ficheros de Inform 6, que después son compilados de nuevo para generar los ejecutables de Máquina-Z o Glulx.
+
+Al igual que ocurre con Inform 6, aunque el sistema originalmente sólo permite la creación de obras en inglés, es posible crear obras en español mediante el módulo de idioma \emph{INFSP 7}.
+
+\subsection{ngPAWS y Superglús}
+
+\textbf{ngPAWS} (\emph{next generation Professional Adventure Writing System})\footnote{Página oficial de ngPAWS:\url{http://www.ngpaws.com/}} es un sistema de autoría moderno basado en PAWS. A diferencia de otros sistemas, ngPAWS no genera ficheros ejecutables sino páginas web a las que se puede acceder de modo local u \emph{online} a través de cualquier navegador Web. Se trata del sucesor natural del sistema \textbf{Superglús} ---éste último genera ejecutables para la máquina virtual Glulx---.
+
+Permite la creación de obras tanto en español como en inglés.
+
+\subsection{TADS 3}
+
+\textbf{TADS} (siglas de \emph{The Adventure Development System})\footnote{Página oficial del sistema TADS 3: \url{http://www.tads.org/}} es, junto con Inform, uno de los sistemas más populares en la comunidad anglófona y algunos autores como Eric Eve han señalado que en la práctica ambos son muy similares\cite{Eve:2009}. TADS 3 está integrado por tres componentes principales: un compilador capaz de generar ficheros ejecutables a partir de código escrito en su propio lenguaje de programación orientado a objetos ---inspirado en C++ y Java--- con soporte nativo para el juego \emph{online}, una amplia librería software con funcionalidades avanzadas (que contemplan, entre otras, interacciones complejas de PNJs con el entorno de juego o técnicas de simulación \emph{sense-passing} para determinar automáticamente qué puede ver, oír u oler un PJ en función de la fuente de origen del estímulo, sin necesidad de que el autor implemente especialmente cada evento de forma individual), y un intérprete capaz de ejecutar los ficheros generados en el lenguaje TADS ---disponible para Windows, Mac OS X, Linux/Unix y plataformas Web---.
+
+Existe una traducción parcial de la librería al español, aunque el trabajo ha sido interrumpido antes de alcanzar un estado estable.
+
+
+\section{Motivos detrás de la selección de Inform 6}
 
 Lorem ipsum dolor sit amet\cite{Stanley:1970}, consectetur adipiscing elit. Integer egestas quam ullamcorper justo lobortis convallis. Fusce sit amet erat eu sapien cursus pretium. Suspendisse vitae euismod enim. Suspendisse commodo, diam quis elementum interdum, odio diam rutrum ex, a viverra libero metus ac dolor. Quisque vitae arcu vel nibh finibus pretium. Morbi vitae interdum est. Morbi dapibus ipsum non vestibulum fringilla. Phasellus lobortis turpis lacus, quis scelerisque elit dictum nec. Suspendisse vel volutpat mauris. Curabitur at nisl magna. Vivamus porttitor lacinia mi, sit amet faucibus lacus imperdiet id. Nullam ac volutpat quam. Nullam imperdiet tincidunt metus nec convallis. Nam id tristique ex, vitae fermentum purus.
 
@@ -32,8 +78,6 @@ Vestibulum fermentum mauris augue, sit amet elementum velit lobortis at. Fusce n
     Esto es una definición. Las definiciones son importantes; también llevan un cuadradito rojo.
 \end{definition}
 
-\subsection{Las máquinas virtuales Z-Machine y Glulx}
-
 \begin{remark}
     Esto es una observación, que dice que $e=mc^{2}$. Como las observaciones no son importantes, no llevan cuadrado rojo, y el tipo de letra no es cursiva.
 \end{remark}
@@ -57,10 +101,18 @@ Vestibulum fermentum mauris augue, sit amet elementum velit lobortis at. Fusce n
     Esto es un lema.
 \end{lemma}
 
+
+\section{Las máquinas virtuales Máquina-Z y Glulx}
+
+Los programas generados con Inform son ejecutables de Máquina-Z y Glulx, dos máquinas virtuales ideadas específicamente para dar soporte a obras de Ficción Interactiva y portadas a multitud de plataformas, desde diferentes microcomputadores de 8 bits de los años 1980, pasando por los Mac OS X, Linux/Unix y Windows actuales, hasta diversas plataformas móviles y Web.
+
+
 \section{Extensión gráfica GWindows}
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer egestas quam ullamcorper justo lobortis convallis. Fusce sit amet erat eu sapien cursus pretium. Suspendisse vitae euismod enim. Suspendisse commodo, diam quis elementum interdum, odio diam rutrum ex, a viverra libero metus ac dolor. Quisque vitae arcu vel nibh finibus pretium. Morbi vitae interdum est. Morbi dapibus ipsum non vestibulum fringilla. Phasellus lobortis turpis lacus, quis scelerisque elit dictum nec. Suspendisse vel volutpat mauris. Curabitur at nisl magna. Vivamus porttitor lacinia mi, sit amet faucibus lacus imperdiet id. Nullam ac volutpat quam. Nullam imperdiet tincidunt metus nec convallis. Nam id tristique ex, vitae fermentum purus.
+GWindows is a framework for managing the user interface of a Glulx Inform program.
 
-\section{Limitaciones de la librería por defecto}
+Specifically, GWindows allows the user to define a User Interface. A User Interface is a hierarchy of objects which represent the layout of the screen. Objects of the class GWindow correspond exactly to the windows which appear on the game screen.
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer egestas quam ullamcorper justo lobortis convallis. Fusce sit amet erat eu sapien cursus pretium. Suspendisse vitae euismod enim. Suspendisse commodo, diam quis elementum interdum, odio diam rutrum ex, a viverra libero metus ac dolor. Quisque vitae arcu vel nibh finibus pretium. Morbi vitae interdum est. Morbi dapibus ipsum non vestibulum fringilla. Phasellus lobortis turpis lacus, quis scelerisque elit dictum nec. Suspendisse vel volutpat mauris. Curabitur at nisl magna. Vivamus porttitor lacinia mi, sit amet faucibus lacus imperdiet id. Nullam ac volutpat quam. Nullam imperdiet tincidunt metus nec convallis. Nam id tristique ex, vitae fermentum purus.
+The core of GWindows is three files, gwindefs.h, gwincls.h, and gwindows.h, which provide the fundamental window classes, and the underlying code to support and manage them. GWindows User Interfaces are structured to mirror the hierarchy of windows maintained by the Glk system, so there is a one-to-one correspondence between the objects in a User Interface and those created by Glk. Additionally, GWindows provides a large number of predefined widget-classes, to facilitate common or useful window designs.
+
+In essence, GWindows allows you to create an object structure which describes the screen layout. It handles ensuring that the layout of the visible screen reflects this object structure. GWindows manages those things which are "closely bound" to windows, such as image drawing, textual input and output, updating the screen, setting style hints, and resizing the screen. 

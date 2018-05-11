@@ -2,18 +2,52 @@
 
 \chapter{Introducción}\label{ch:introduccion}
 
+\section{Software accesible e inclusión digital}
+
+Lorem ipsum dolor sit amet\cite{Wilson:2002}, consectetur adipiscing elit. Integer egestas quam ullamcorper justo lobortis convallis. Fusce sit amet erat eu sapien cursus pretium. Suspendisse vitae euismod enim. Suspendisse commodo, diam quis elementum interdum, odio diam rutrum ex, a viverra libero metus ac dolor. Quisque vitae arcu vel nibh finibus pretium. Morbi vitae interdum est. Morbi dapibus ipsum non vestibulum fringilla. Phasellus lobortis turpis lacus, quis scelerisque elit dictum nec. Suspendisse vel volutpat mauris. Curabitur at nisl magna. Vivamus porttitor lacinia mi, sit amet faucibus lacus imperdiet id. Nullam ac volutpat quam. Nullam imperdiet tincidunt metus nec convallis. Nam id tristique ex, vitae fermentum purus.
+
 \section{Una Ficción Interactiva}
 
-Lorem ipsum dolor sit amet\cite{Montfort:2004}, consectetur adipiscing elit. Integer egestas quam ullamcorper justo lobortis convallis. Fusce sit amet erat eu sapien cursus pretium. Suspendisse vitae euismod enim. Suspendisse commodo, diam quis elementum interdum, odio diam rutrum ex, a viverra libero metus ac dolor. Quisque vitae arcu vel nibh finibus pretium. Morbi vitae interdum est. Morbi dapibus ipsum non vestibulum fringilla. Phasellus lobortis turpis lacus, quis scelerisque elit dictum nec. Suspendisse vel volutpat mauris. Curabitur at nisl magna. Vivamus porttitor lacinia mi, sit amet faucibus lacus imperdiet id. Nullam ac volutpat quam. Nullam imperdiet tincidunt metus nec convallis. Nam id tristique ex, vitae fermentum purus.
+La ficción interactiva es un género literario sobre soporte electrónico que permite al usuario explorar un entorno simulado, dándole opción de decidir el comportamiento del personaje o personajes protagonistas y producir cambios en el entorno y en el propio progreso de la narración. Buscando una definición más rigurosa, Niesz y Holland definen la \textbf{ficción interactiva} como: <<obras de ficción que invitan \emph{explícitamente} al lector a interactuar con ellas mediante consultas o respuestas, a participar activamente en la historia y a cambiar deliberadamente el desarrollo de la trama, del personaje, del entorno o del lenguaje, junto con el autor>>\cite{Niesz:Holland:1984}. Montfort, por su parte, nos ofrece una definición actualizada con la que podemos observar más claramente las características que podemos esperar de un software de este tipo\cite{Montfort:2004}:
 
-\section{Accesibilidad e inclusión digital}
+\begin{itemize}
+\item Un software de computador que acepta texto como entrada e igualmente produce texto como salida.
 
-Lorem ipsum\cite{Wilson:2002} dolor sit amet, consectetur adipiscing elit.
+\item Una narrativa potencial; esto es, un sistema que produce una narrativa a lo largo de la interacción con él.
+
+\item La simulación de un entorno o modelo de mundo.
+
+\item Una estructura de reglas a través de las cuáles se persigue un resultado, lo que también se puede determinar como un juego.
+\end{itemize}
+
+La naturaleza principalmente textual de este tipo de obras no excluye la utilización de recursos multimedia pero, de existir, estos recursos suelen limitarse a servir de apoyo al texto desde un segundo plano (a diferencia de otros medios de expresión y entretenimiento electrónico como la mayor parte de los videojuegos). Esta característica lo convierte en un vehículo adecuado para promover la inclusión digital de personas con diversidad funcional de tipo sensorial (en especial, personas con diferentes grados de ceguera o sordera) y, potencialmente, de personas con otras deficiencias de diferente caracter como puedan ser, por ejemplo, en el ámbito educativo, comunicativo o emocional.
+
+Sus posibilidades como fórmula de inclusión digital y de vehículo de trabajo con personas que presentan otros tipos de deficiencias colocan los computadores como herramienta sumamente útil, no sólo en los ámbitos especializados a los que acostumbramos a estudiar y trabajar a lo largo del Grado en Ingeniería Informática y, presumiblemente, tras su finalización; sino en un ámbito humano mucho más general. Esta ha sido la principal motivación que ha empujado a seleccionar la ficción interactiva como tema del presente trabajo.
 
 \section{Objetivos del proyecto}
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+Este TFG persigue un doble objetivo:
+
+\begin{enumerate}
+	\item Por un lado, diseñar e implementar un conjunto de herramientas software centradas en mejorar la accesibilidad de las obras de ficción interactiva y que puedan ser reutilizadas por otros programadores a fin de facilitar el desarrollo de nuevas obras que también fomenten la inclusión digital.
+
+	\item Por otro lado, diseñar e implementar una obra de ficción interactiva accesible y que sirva como demostración de las herramientas generadas en el punto anterior.
+\end{enumerate}
 
 \section{Procedimiento}
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+A continuación se ofrece una visión general del trabajo desarrollado:
+
+\begin{enumerate}
+	\item \textbf{Documentación y estudio de los conceptos fundamentales sobre el medio de la ficción interactiva.} Se investiga la literatura existente sobre este campo, su evolución histórica y producción de obras destacadas, así como las tendencias actuales y la previsible evolución del medio.
+
+	\item \textbf{Documentación y análisis de las principales herramientas software actuales utilizadas por los autores de ficción interactiva.} Se analizan las ventajas y desventajas de los principales sistemas de autoría utilizados en las comunidades de autores de habla inglesa y española y se aprende a utilizar la herramienta Inform 6 seleccionada en el proceso.
+
+	\item \textbf{Especificación, diseño e implementación de módulos para extender las funcionalidades del sistema de autoría Inform 6.} Se detallan las especificaciones y el diseño de un conjunto de módulos con los que mejorar la accesibilidad de las ficciones interactivas creadas con el sistema Inform 6, se escribe el código y se ponen a disposición de otros autores en Internet.
+
+	\item \textbf{Diseño e implementación de la primera iteración de la ficción interactiva \emph{El Palacio de la Memoria}.} En la primera iteración se plantea una pequeña narración básica, fundamentalmente secuencial.
+
+	\item \textbf{Implementación de la segunda iteración de la obra.} Se incrementa el tamaño del modelo de mundo y se profundiza en la simulación de los distintos objetos para ofrecer una mayor posibilidad de exploración por parte del usuario y una estructura más abierta.
+
+	\item \textbf{Implementación de la tercera iteración de la obra.} Se incluye una secuencia en forma de \emph{flashback}, que requiere modificar la librería de mensajes por defecto del narrador para contemplar la modificación de sus flexiones gramaticales en tiempo de ejecución. Con este \emph{flashback} se plantea contraponer un episodio secuencial con un narrador poco fiable ante el tiempo principal de la obra, con un narrador realista y objetivo, y una narración de caracter más abierto.
+\end{enumerate}

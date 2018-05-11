@@ -2,7 +2,10 @@
 
 \chapter{Extensiones a la librería Inform}\label{ch:extensiones}
 
-\section{Interfaz biplataforma para la selección de estilos de texto}\label{sec:textStyles}
+
+\section{Relación de extensiones}
+
+\subsection{Interfaz biplataforma para la selección de estilos de texto}\label{subsec:textStyles}
 
 La selección del estilo con el que se imprime texto en el sistema Inform no es un aspecto específico de su lenguaje de programación sino que está estrechamente ligado a la máquina virtual sobre la que se ejecuta el software. Así, tanto las rutinas de selección de estilo como el propio número de estilos de texto disponibles son diferentes en Máquina-Z y Glulx. El objetivo de esta extensión a la librería es ofrecer al autor de ficción interactiva una interfaz que le permita abstraerse de la plataforma concreta para la que está desarrollando la aplicación.
 
@@ -29,28 +32,26 @@ $10$	& User2			& User2			& Normal		\\ \hline
 \label{table:text-styles-estilos-basicos}
 \end{table}
 
-\subsection{Reglas de impresión contextuales y estilo especial para mensajes extradiegéticos}
+\subsubsection{Reglas de impresión contextuales y estilo especial para mensajes extradiegéticos}
 
 Como complemento a los estilos básicos, la extensión define dos reglas de impresión contextuales\footnote{Una regla de impresión, en Inform, es simplemente una rutina de un único parámetro que se encarga de imprimir los datos que se le pasan de una determinada manera\cite{Firth:2006}.} para enfatizar y destacar, que seleccionarán el estilo de texto a utilizar en función del estilo utilizado en ese momento.
 
 Se implementa también un estilo adicional para ser utilizado por los mensajes de tipo extradiegético emitidos por el sistema para facilitar la interacción con la obra, pero que no tienen que ver con el resto de mensajes del narrador. Este estilo contará también con su propia regla de impresión.
 
-
-\section{Marco para facilitar la interacción por hipervínculos}
+\subsection{Marco para facilitar la interacción por hipervínculos}
 
 La máquina virtual Glulx, al incluir soporte nativo para la librería de entrada/salida Glk, ofrece un conjunto de funcionalidades adicionales a aquellas de Máquina-Z entre las que se encuentra la posibilidad de responder a eventos de selección de hipervínculos\ref{Plotkin:2017:b}.
 
 El propósito de \textbf{hyperlinks} es ofrecer la infreaestructura para que el autor de ficción interactiva pueda incluir de un modo sencillo interacción por medio de hipervínculos en sus obras compiladas para Glulx. Aunque la funcionalidad de la extensión es exclusiva de Glulx, a fin de facilitar el desarrollo de obras biplataforma, \textbf{hyperlinks} puede utilizarse tanto en Glulx como en Máquina-Z ---al compilar para esta segunda máquina virtual simplemente no se dispondrá de la funcionalidad relacionada con los hipervínculos---.
 
-
-\section{Aproximación de interfaz gráfica adaptativa con `GWindows'}
+\subsection{Aproximación de interfaz gráfica adaptativa con `GWindows'}
 
 Si bien el modelo de interfaz gráfica utilizado tanto por Máquina-Z como por Glulx es ciertamente restrictivo, la segunda permite una mayor libertad para crear y manipular las diferente ventanas que conforman la interfaz.
 
 Utilizando las funcionalidades de la extensión `GWindows' de Ross L. se define una interfaz con una serie de ventanas que pueden cambiar de tamaño en función de las dimensiones de la ventana padre. Así podemos adaptar el tamaño de la ventana en que se imprime el texto.
 
 
-\section{Sistema para hacer selecciones entre un conjunto de opciones}
+\subsection{Sistema para hacer selecciones entre un conjunto de opciones}
 
 La extensión \textbf{ChoiceSet} permite implementar sistemas de conversación con inventario de temas ---y, en general, cualquier otro sistema que utilice un mecanismo de selección de opciones de entre un conjunto dado--- utilizando análisis no estricto de la entrada de usuario para el reconocimiento de patrones.
 
@@ -60,12 +61,11 @@ Está basada en las notas de Eric Eve sobre sistemas de conversación\cite{Eve:2
 
 Al utilizar un inventario de temas, en esencia, se presenta al usuario una lista de temas de conversación sugeridos basándose en el conocimiento del personaje protagonista. De esta forma, el usuario puede hacer referencia a los temas que quiera lanzar utilizando una interfaz similar a la de los sistemas ASK/TELL, pero sin necesidad de tener que adivinar por sí mismo la palabra clave que lanza el tema.
 
-\subsection{Análisis no estricto de la entrada de usuario}
+\subsubsection{Análisis no estricto de la entrada de usuario}
 
 El reconocimiento de patrones entre la entrada de usuario y las palabras clave de cada elección se lleva a cabo por medio de análisis no estricto; si entre todas las palabras introducidas por el usuario se reconocen claves de una o más elecciones, se lanza aquella con más coincidencias, ignorando el resto de la entrada.
 
-
-\section{Mensajes de la librería en español con flexiones gramaticales de persona y tiempo, género y número}
+\subsection{Mensajes de la librería en español con flexiones gramaticales de persona y tiempo, género y número}
 
 La librería Inform-INFSP, con el conjunto de mensajes por defecto para la entrada de usuario, sólo contempla mensajes en segunda persona del presente, masculino y singular.
 
@@ -78,9 +78,11 @@ Además, si bien los mensajes están basados en gran medida en los mensajes por 
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit.
 
+
 \section{Diseño de alto nivel}
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+
 
 \section{Diseño detallado}
 
