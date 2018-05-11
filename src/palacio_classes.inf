@@ -60,6 +60,7 @@
 !!			+	Outdoors
 !!			+	Indoors
 !!		-	SmartEnterable
+!!		-	Clothes
 !!
 !!------------------------------------------------------------------------------
 !!
@@ -484,42 +485,42 @@ Class	NPC
 		],
  has	animate;
 
- !!==============================================================================
- !!	-	Room
- !!------------------------------------------------------------------------------
- !!	Representa un objeto localidad dentro del modelo de mundo.
- !!------------------------------------------------------------------------------
+!!==============================================================================
+!!	-	Room
+!!------------------------------------------------------------------------------
+!!	Representa un objeto localidad dentro del modelo de mundo.
+!!------------------------------------------------------------------------------
 
- Class	Room
-  with	description [;
- 			if (action == ##Look || self hasnt visited) self.long_description();
- 			else self.short_description();
- 			!! Espacio para elementos comunes a las dos descripciones.
- 			return true;
- 		],
- 		long_description "EN CONSTRUCCIÓN.",
- 		!! Por defecto, la descripción corta es la misma descripción larga:
- 		short_description [; return self.long_description(); ],
- 		!! Permite que se inhiba el listado automático de objetos al imprimir
- 		!! la descripción de la localidad. (XXX Para ello se debe modificar el
- 		!! comportamiento de la acción ##Look en el archivo de mensajes de la
- 		!! librería):
- 		inhibit_object_list false,
-  has	light remarkable;
+Class	Room
+ with	description [;
+			if (action == ##Look || self hasnt visited) self.long_description();
+			else self.short_description();
+			!! Espacio para elementos comunes a las dos descripciones.
+			return true;
+		],
+		long_description "EN CONSTRUCCIÓN.",
+		!! Por defecto, la descripción corta es la misma descripción larga:
+		short_description [; return self.long_description(); ],
+		!! Permite que se inhiba el listado automático de objetos al imprimir
+		!! la descripción de la localidad. (XXX Para ello se debe modificar el
+		!! comportamiento de la acción ##Look en el archivo de mensajes de la
+		!! librería):
+		inhibit_object_list false,
+ has	light remarkable;
 
- !!==============================================================================
- !!	+	Outdoors
- !!------------------------------------------------------------------------------
+!!==============================================================================
+!!	+	Outdoors
+!!------------------------------------------------------------------------------
 
- Class	Outdoors
-  class	Room;
+Class	Outdoors
+ class	Room;
 
- !!==============================================================================
- !!	+	Indoors
- !!------------------------------------------------------------------------------
+!!==============================================================================
+!!	+	Indoors
+!!------------------------------------------------------------------------------
 
- Class	Indoors
-  class	Room;
+Class	Indoors
+ class	Room;
 
 !!==============================================================================
 !!	-	SmartEnterable
@@ -567,11 +568,11 @@ Class	SmartEnterable
 				if (self.out_of_reach(second))
 					{ <Exit self>; new_line; }
 				return false;
-			!Enter:
-			!Examine:
-			!Exit:
-			!GetOff:
-			!Give:
+			!! Enter:
+			!! Examine:
+			!! Exit:
+			!! GetOff:
+			!! Give:
 			Go:
 				!! TODO - Habría que corregir el comportamiento si se
 				!! implementa un sistema de movimiento no basado en puntos
@@ -579,115 +580,115 @@ Class	SmartEnterable
 				if (~~(noun ofclass CompassDirection)) return false;
 				<Exit self>; new_line;
 				return false;
-			!GoIn:
+			!! GoIn:
 			Insert, PutOn:
 				if ((second == d_obj) || (player in second)) <<Drop noun>>;
 				if (self.out_of_reach(second))
 					{ <Exit self>; new_line; }
 				return false;
-			!Inv:
-			!InvTall:
-			!InvWide:
+			!! Inv:
+			!! InvTall:
+			!! InvWide:
 			Lock, Unlock:
 				if (noun hasnt lockable) return false;
 				if (self.out_of_reach(noun))
 					{ <Exit self>; new_line; }
 				return false;
-			!Look:
-			!Open:		Ver ##Close
-			!Order:
-			!PutOn:		Ver ##Insert
-			!Remove:	Ver ##Empty
-			!Search:	Ver ##Empty
-			!Show:
+			!! Look:
+			!! Open:		Ver ##Close
+			!! Order:
+			!! PutOn:		Ver ##Insert
+			!! Remove:		Ver ##Empty
+			!! Search:		Ver ##Empty
+			!! Show:
 			SwitchOff, SwitchOn:
 				if (noun hasnt switchable) return false;
 				if (self.out_of_reach(noun))
 					{ <Exit self>; new_line; }
 				return false;
-			!SwitchOn:	Ver ##SwitchOff
-			!Take:		Ver ##Empty
-			!Transfer:
-			!Unlock:	Ver ##Lock
-			!VagueGo:
-			!Wear:		Ver ##Disrobe
+			!! SwitchOn:	Ver ##SwitchOff
+			!! Take:		Ver ##Empty
+			!! Transfer:
+			!! Unlock:		Ver ##Lock
+			!! VagueGo:
+			!! Wear:		Ver ##Disrobe
 			!! GROUP 3 ACTIONS: Output a message and stop at the "before" stage.
-			!Answer:
-			!Ask:
-			!AskFor:
+			!! Answer:
+			!! Ask:
+			!! AskFor:
 			Attack, Blow, LookUnder, Smell, Squeeze, Taste, Touch:
 				if (self.out_of_reach(noun))
 					{ <Exit self>; new_line; }
 				return false;
-			!Blow:		Ver ##Attack
-			!Burn:
-			!Buy:
+			!! Blow:		Ver ##Attack
+			!! Burn:
+			!! Buy:
 			Climb:
 				if (noun hasnt enterable) return false;
 				if (self.out_of_reach(noun))
 					{ <Exit self>; new_line; }
 				return false;
-			!Consult:
-			!Cut:
-			!Dig:
-			!Drink:
-			!Fill:
+			!! Consult:
+			!! Cut:
+			!! Dig:
+			!! Drink:
+			!! Fill:
 			Jump:
 				if (noun has supporter) <<Exit self>>;
 				return false;
-			!JumpOver:
-			!Kiss:
-			!LetGo:
-			!Listen:
-			!LookUnder:	Ver ##Attack
-			!Mild:
-			!No:
-			!Pray:
+			!! JumpOver:
+			!! Kiss:
+			!! LetGo:
+			!! Listen:
+			!! LookUnder:	Ver ##Attack
+			!! Mild:
+			!! No:
+			!! Pray:
 			Pull, Push, Turn:
 				!! TODO - Comprobar mensaje al empujar objetos scenery o static
 				if (noun has scenery or static) return false;
 				if (self.out_of_reach(noun))
 					{ <Exit self>; new_line; }
 				return false;
-			!Push:		Ver ##Pull
-			!PushDir:
-			!Receive:
-			!Rub:
-			!Set:
-			!SetTo:
-			!Sing:
-			!Sleep:
-			!Smell:		Ver ##Attack
-			!Sorry:
-			!Squeeze:	Ver ##Attack
-			!Strong:
-			!Swim:
+			!! Push:		Ver ##Pull
+			!! PushDir:
+			!! Receive:
+			!! Rub:
+			!! Set:
+			!! SetTo:
+			!! Sing:
+			!! Sleep:
+			!! Smell:		Ver ##Attack
+			!! Sorry:
+			!! Squeeze:	Ver ##Attack
+			!! Strong:
+			!! Swim:
 			Swing:
 				if (noun has supporter) <<Swing self>>;
 				return false;
-			!Taste:		Ver ##Attack
-			!Tell:
-			!Think:
-			!ThrowAt:
-			!Tie:
-			!Touch:		Ver ##Attack
-			!Turn:		Ver ##Pull
-			!Wait:
-			!Wake:
-			!WakeOther:
-			!Wave:
-			!WaveHands:
-			!Yes:
+			!! Taste:		Ver ##Attack
+			!! Tell:
+			!! Think:
+			!! ThrowAt:
+			!! Tie:
+			!! Touch:		Ver ##Attack
+			!! Turn:		Ver ##Pull
+			!! Wait:
+			!! Wake:
+			!! WakeOther:
+			!! Wave:
+			!! WaveHands:
+			!! Yes:
 			!! CUSTOM ACTIONS
-			!Dance:
+			!! Dance:
 			GoDown:
 				if (self has supporter) <<Exit self>>;
 				return false;
-			!GoUp:
-			!KnockOn:
-			!Masturbate:
-			!Sit:
-			!SleepWith:
+			!! GoUp:
+			!! KnockOn:
+			!! Masturbate:
+			!! Sit:
+			!! SleepWith:
 			StandUp:
 				if ((self has supporter) && (noun == nothing or self))
 					<<Exit self>>;
@@ -696,51 +697,11 @@ Class	SmartEnterable
 				if (self.out_of_reach(noun))
 					{ <Exit self>; new_line; }
 				return false;
-			!TalkTo:
-			!Untie:
-			!Use:
-			!Write:
-			!Xyzzy:
-		],
-		after [;
-			Exit:
-				if (keep_silent == 0) {
-					if (self has supporter) {
-						print "Baj", (lm_as_) player;
-					} else {
-						switch (_grammatical_inflection) {
-							FIRST_PERSON_PRESENT:
-								if (IsPluralNoun(player)) print "Salimos";
-								else print "Salgo";
-							SECOND_PERSON_PRESENT:
-								if (IsPluralNoun(player)) print "Salís";
-								else print "Sales";
-							THIRD_PERSON_PRESENT:
-								if (IsPluralNoun(player)) print "Salen";
-								else print "Sale";
-							FIRST_PERSON_PAST:
-								if (IsPluralNoun(player)) print "Salimos";
-								else print "Salí";
-							SECOND_PERSON_PAST:
-								if (IsPluralNoun(player)) print "Salisteis";
-								else print "Saliste";
-							THIRD_PERSON_PAST:
-								if (IsPluralNoun(player)) print "Salieron";
-								else print "Salió";
-							FIRST_PERSON_FUTURE:
-								if (IsPluralNoun(player)) print "Saldremos";
-								else print "Saldré";
-							SECOND_PERSON_FUTURE:
-								if (IsPluralNoun(player)) print "Saldréis";
-								else print "Saldrás";
-							THIRD_PERSON_FUTURE:
-								if (IsPluralNoun(player)) print "Saldrán";
-								else print "Saldrá";
-						}
-					}
-					print " ", (del) self, ".^";
-				}
-				return true;
+			!! TalkTo:
+			!! Untie:
+			!! Use:
+			!! Write:
+			!! Xyzzy:
 		],
 		!! Objetos al alcance desde el SmartEnterable:
 		reach_objects 0,
@@ -778,3 +739,21 @@ Class	SmartEnterable
 			return true;
 		],
  has	enterable;
+
+
+!!==============================================================================
+!!	-	Clothes
+!!------------------------------------------------------------------------------
+
+Class	Clothes
+ with	before [
+			obj;
+			Disrobe, Wear:
+				objectloop(obj in player && obj ofclass Clothes
+					&& obj has worn && obj.level > self.level) {
+					print (lm_ttienes) player, " que quitar", (lm_te) player,
+					" ", (the) noun, " primero.";
+				}
+		],
+		level 0,
+ has	clothing;

@@ -57,7 +57,8 @@
 !!	-	ExamineSub()
 !!	-	GetGNAOfObject()
 !!	-	GetActionVerb()
-!!	-	LanguageDirection()/Redefinición de direcciones
+!!	-	InvSub()
+!!	-	LanguageDirection() / Redefinición de direcciones
 !!	-	LMode1Sub()
 !!	-	LMode2Sub()
 !!	-	LMode3Sub()
@@ -443,41 +444,56 @@ Attribute described; ! Indica si un objeto ha sido descrito al jugador
 	!! referencias de estos objetos
 
 	if ((Ropa hasnt worn) && (Abrigo hasnt worn)) {
-		O__M(player, 1);
-		if (location ofclass Outdoors) O__M(player, 2);
-		O__M(player, 3);
+		!! "Está completamente desnuda"
+		O__M(Silvia, 4);
+		!! ". La piel de gallina [...]"
+		if (location ofclass Outdoors) O__M(Silvia, 5);
+		!! "."
+		O__M(Silvia, 6);
 	} else if ((Ropa hasnt worn) && (Abrigo has worn)) {
-		O__M(player, 4);
-		O__M(player, 3);
+		!! "Debajo del abrigo está completamente desnuda"
+		O__M(Silvia, 7);
+		!! "."
+		O__M(Silvia, 6);
 	} else if ((Ropa has worn) && (Abrigo hasnt worn)) {
-		O__M(player, 5);
-		O__M(player, 6);
-		if (DungeonMaster.inventory_flag == false) {
-			DungeonMaster.inventory_flag = true;
-			O__M(player, 7);
+		!! "Lleva "
+		O__M(Silvia, 8);
+		!! "puesto su vestido negro [...]"
+		O__M(Silvia, 9);
+		if (Silvia.inventory_flag == false) {
+			Silvia.inventory_flag = true;
+			!! "; una ropa que normalmente le haría [...]"
+			O__M(Silvia, 10);
 		}
-		O__M(player, 3);
+		O__M(Silvia, 6); !! "."
 	} else if ((Ropa has worn) && (Abrigo has worn)) {
-		O__M(player, 8);
-		O__M(player, 6);
-		if (DungeonMaster.inventory_flag == false) {
-			DungeonMaster.inventory_flag = true;
-			O__M(player, 7);
+		!! "Debajo del abrigo lleva "
+		O__M(Silvia, 11);
+		!! "puesto su vestido negro [...]"
+		O__M(Silvia, 9);
+		if (Silvia.inventory_flag == false) {
+			Silvia.inventory_flag = true;
+			!! "; una ropa que normalmente le haría [...]"
+			O__M(Silvia, 10);
 		}
-		O__M(player, 3);
+		O__M(Silvia, 6); !! "."
 	}
 
 	if ((Bolso has worn) || (held_items > 0)) {
 		new_line;
-		O__M(player, 9);
-		if (Bolso has worn) O__M(player, 11);
-		if ((Bolso has worn) && (held_items > 0)) O__M(player, 12);
+		!! "Tiene "
+		O__M(Silvia, 12);
+		!! " el bolso colgado [...]"
+		if (Bolso has worn) O__M(Silvia, 14);
+		!! " y "
+		if ((Bolso has worn) && (held_items > 0)) O__M(Silvia, 15);
 		if (held_items > 0) {
 			WriteListFrom(child(player),
 				ENGLISH_BIT + FULLINV_BIT + WORKFLAG_BIT);
-			O__M(player, 10);
-			O__M(player, 3);
+			!! " en las manos"
+			O__M(Silvia, 13);
 		}
+		O__M(Silvia, 6); !! "."
 	}
 
 	#Ifndef MANUAL_PRONOUNS;

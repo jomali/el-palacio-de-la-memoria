@@ -330,6 +330,7 @@ Include "gwincls.h";			! GWindows: Window Class Framework
 !!		new_line;
 		return 2; ! finaliza el turno
 	}
+	previous_style = i;
 ];
 
 !!------------------------------------------------------------------------------
@@ -414,6 +415,7 @@ Include "gwincls.h";			! GWindows: Window Class Framework
 !!------------------------------------------------------------------------------
 
 #Ifdef TARGET_ZCODE;
+Constant MUS_PRESENTE 1;
 Constant PIC_0001 1;
 Constant PIC_0002 2;
 Constant PIC_0003 3;
@@ -425,11 +427,11 @@ Include "gwindows.h";			! GWindows: Reemplazos de la librería
 Include "gWindowsGUI.h";		! Interfaz gráfica adaptativa con GWindows
 Include ">palacio.bli";			! Recursos multimedia de la aplicación
 #Endif; ! TARGET_
-!! Include "aimAndFire.h";			! Sistema de apuntado y disparo QTE
-!! Include "choiceSet.h";			! Sistema de selección de acciones sobre lista
+Include "capacities.h";			! Extensión a las reglas de capacidad
+Include "choiceSet.h";			! Sistema de selección de acciones sobre lista
 Include	"hyperlinks.h";			! Rutinas de apoyo para el uso de hipervínculos
 Include "pPreprocessor.h";		! Preprocesador del parser
-Include "capacities.h";			! Extensión a las reglas de capacidad
+Include "shuffle.h";			! Barajeado de números aleatorios
 
 Include "VerbLib.h";			! Define cómo trabajan las acciones
 
@@ -490,8 +492,7 @@ Global _current_location = 0;
 !!		los créditos, que de otra manera se imprimirían inmediatamente después
 !!		de llamar a la rutina
 !!------------------------------------------------------------------------------
-[ Initialise
-	previous_style;
+[ Initialise;
 	EraseWindow();
 
 	!! Comprobaciones del intérprete -------------------------------------------
@@ -536,11 +537,16 @@ Global _current_location = 0;
 	PressAnyKey();
 	EraseWindow();
 	!! Créditos:
+	new_line;
 	O__M(Silvia, 2);
 	PressAnyKey();
 	EraseWindow();
 	new_line;
 	Banner();
+	PressAnyKey();
+	EraseWindow();
+	new_line;
+	HorizontalRule();
 	new_line;
 	!! Narrador en presente y tercera persona
 	SetGrammaticalInflection(THIRD_PERSON_PRESENT);
@@ -633,7 +639,6 @@ Global _current_location = 0;
 !!	-	HorizontalRule()
 !!	-	HyperlinkSetStyle()
 !!	-	PressAnyKey()
-!!	-	Shuffle()
 !!	-	SpanishNominativePronoun()
 !!	-	TopHolder()
 !!------------------------------------------------------------------------------
@@ -824,8 +829,6 @@ Global _current_location = 0;
 	return result;
 ];
 
-[ Shuffle; ];
-
 !!------------------------------------------------------------------------------
 !! Imprime el pronombre nominativo correcto correspondiente a un objeto.
 !!
@@ -876,6 +879,7 @@ Global _current_location = 0;
 !!	-	##LMode2
 !!	-	##NoSuchVerb --- Permite eliminar las acciones:
 !!		-	##Sorry
+!!	-	##SwitchEngineOn
 !!	-	##TalkOn / ##TalkTo
 !!	-	##Teleport
 !!------------------------------------------------------------------------------
@@ -1075,6 +1079,21 @@ Extend	'perdona' replace
 ;
 
 [ NoSuchVerbSub; return ParserError(VERB_PE); ];
+
+!!------------------------------------------------------------------------------
+!! ##SwitchOnEngine
+!!------------------------------------------------------------------------------
+
+Verb 'arranca'
+	*							-> SwitchOnEngine
+    * noun						-> SwitchOnEngine
+;
+
+[ SwitchOnEngineSub;
+	if (noun == nothing)
+		"", (parser) "Esa acción no tiene sentido en estos momentos.";
+	<<SwitchOn noun>>;
+];
 
 !!------------------------------------------------------------------------------
 !! ##TalkOn / ##TalkTo

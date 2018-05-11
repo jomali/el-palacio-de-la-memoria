@@ -15,82 +15,212 @@
 
 
 
+
+Abrigo: switch (n) {
+1:	! ##Examine
+print "", (A) Abrigo, " largo de color gris. Sencillo, como la mayor parte de sus cosas.";
+new_line;
+return true;
+}
+
+Armario: switch (n) {
+1:	! ##Examine
+print "De madera, con unas tallas de motivos florales horteras.";
+new_line;
+return true;
+}
+
 Bolso: switch (n) {
 1:	! ##Examine
-print "Es un bolso bandolera. Cómodo, sencillo, barato.";
+print "Es ", (a) Bolso, " bandolera negro. Cómodo, sencillo, barato.";
 return true;
 2:	! ##Examine (B - Continuación, cuando contiene objetos)
-print "Dentro tiene ";
-WriteListFrom(child(bolso), ENGLISH_BIT + PARTINV_BIT);
+print " Dentro tiene ";
+WriteListFrom(child(bolso), ENGLISH_BIT);
 print ".";
+return true;
+3:	! ##Take (A - si está en un soporte)
+print "Coge ", (the) Bolso, " de encima ", (del) x1, ".";
+new_line;
+return true;
+4:	! ##Take (B - si está en un contenedor)
+print "Coge ", (the) Bolso, " de dentro ", (del) x1, ".";
+new_line;
+return true;
+}
+
+BotonArranque: switch (n) {
+1:	! ##Examine
+print "Tiene impresa la leyenda ", (strong) "@<<START -- STOP@>>", " en letras blancas, algo desgastadas por el uso.";
+new_line;
+return true;
+2:	! describe
+print "Aunque está lejos de ser nuevo, es de esos ya que se arrancan utilizando un ";
+Hyperlink(BotonArranque, "botón", 0);
+print ".";
+new_line;
+return true;
+3:	! ##Push (A - primera vez)
+print "Se gira en el asiento y contempla la casa un momento, sin llegar a arrancar. Se ha quedado vacía, en un sentido profundo e inexorable de la palabra. Si cuando murió su madre el hueco que dejó se sentía ya casi como algo físico, la aparición de un glaucoma crónico con el que se tuvieron que acostumbrar a convivir, ahora que no hay nadie para habitar este espacio el glaucoma se ha extendido. El vacío ha tomado un sentido más absoluto. Y quizá por vez primera se pregunta cómo debió sentirse su padre cuando ella se fue a estudiar a Madrid.";
+new_line;
+return true;
+4:	! ##Push (B - duda)
+print "Vuelve a contemplar la casa por encima por encima del hombro, sin arrancar. ¿Está preparada para dejar aquel lugar?";
+new_line;
+return true;
+5:	! ##Push (C)
+print "Silvia se inclina sobre el volante y nota el tacto del botón bajo los dedos. Se ha muerto. Ya no está. Presiona con suavidad, mirando a la casa una última vez a través del espejo retrovisor, al tiempo que el motor se pone en marcha. La vibración se transmite por todo el coche. No nos llevábamos mal. No teníamos mucho trato pero no nos llevábamos mal. Es triste, claro. Estoy triste. Así funciona el luto.
+^^
+Se ha muerto, como mamá. Ellos están muertos y yo soy una huérfana y estoy sola y estoy triste porque así funciona y no voy a tener hijos nunca... Si algo no se recuerda es como si no hubiese existido nunca, ¿no es así? Mi padre no existe y ahora todos su recuerdos de mi madre no existen tampoco ya y es como si mamá no hubieses existido nunca casi. Ahora tiene once años solamente. Ni eso, porque yo no existo casi tampoco, porque ¿quién me recuerda? Estoy en el coche pero esto no hay quién lo recuerde. Yo sólo. Nadie. ¿El coche no existe tampoco entonces? Quizá no y papá tenía razón y es un camión.
+^^
+Mejor sin hijos. Son desagradecidos que te abandonan en el vacío y que no te van a ver nunca cuando mueres sólo y luego no te pueden recordar no lo suficiente porque no estuvieron aquí para vivir algo que recordar después y es como si no existieses y has muerto y ella sigue pensando más en ella misma y en los nombres de unos santos que no conoce que en tí que te has muerto. Tampoco te conoce pero contigo nunca se preguntó quién eras. Tal vez si hubieses estado pintado en un cristal ", (emph) "art-decó", "... Pues para eso mejor sin hijos. Es triste. Triste de verdad. Claro, porque así funciona el luto.
+^^
+El coche se aleja con un ronquido ahogado, dejando tras de sí un estela de humo demasiado negro.";
+new_line;
+return true;
+}
+
+Cafetera: switch (n) {
+1:	! ##Examine
+print "De diseño futurista hasta un punto casi ridículo para una cafetera. Parece sacada del plató de rodaje de ", (emph) "Minority Report", " o de un laboratorio de prototipos de ", (emph) "Apple", ". Tiene una ranura para meter las cápsulas de café y un botón de encendido iluminado por un led blanco.";
+new_line;
+return true;
+2:	! ##SwitchOn
+print "Necesitaría meterle primero una cápsula de café y, en cualquier caso, ahora no le apetece uno.";
+new_line;
+return true;
+}
+
+Casa: switch (n) {
+1:	! ##Examine
+print "Un volumen tosco de planta rectangular, con paredes revocadas en yeso. Allí donde el verdín y las enredaderas no han tomado la fachada se puede ver aún la última mano de pintura blanca.";
+new_line;
+return true;
+}
+
+Cielo: switch (n) {
+1:	! ##Examine
+print "No todos los días de noviembre llueve en Cantabria después de todo.";
+new_line;
+return true;
+}
+
+Coche: switch (n) {
+1:	! ##Examine (A - fuera del coche, primera vez)
+print "Lo mira con cierta aprensión. Arrastraba alrededor de cien mil kilómetros ya cuando lo compró de segunda mano hace unos años y aunque le ha funcionado muy bien hasta ahora en el viaje desde Madrid ha empezado a mostrar desgaste: parecía quedarse sin potencia a veces, como si el motor no fuese capaz de subir revoluciones aún con el acelerador pisado a fondo. Va a tener que llevarlo a un taller sin falta, pero espera que antes pueda llegar a casa sin problemas.";
+new_line;
+return true;
+2:	! ##Examine (B - fuera del coche, general)
+print "El granate descolorido de la carrocería arroja destellos brillantes bajo la luz del sol. Espera que sea capaz de llevarla hasta Madrid y no la deje tirada a mitad de camino.";
+new_line;
+return true;
+3:	! ##Unlock (A - sin la llave, general)
+print "Tira de nuevo de la manilla pero es inútil, sigue cerrado con llave.";
+new_line;
+return true;
+4:	! ##Unlock (B - sin la llave, primera vez)
+print "Tira de la manilla pero la puerta no se abre.";
+new_line;
+return true;
+5:	! ##Unlock (C - sin la llave, primera vez, sin el bolso)
+print "Echa la mano a un lado buscando el bolso y sólo ahora se da cuenta de que no lo lleva encima. Ha debido dejárselo en alguna parte. Quizá en la cocina, cuando se ha preparado el triste sándwich que le ha servido de comida hoy.";
+new_line;
+return true;
+6:	! ##Unlock (D - sin la llave, primera vez, con el bolso)
+print "Echa la mano ", (al) Bolso, " y rebusca en su interior pero no encuentra las llaves del coche. Se las ha debido que dejar en algún sitio.";
+new_line;
+return true;
+7:	! ##Unlock (E - sin la llave, primera vez)
+print "Se palpa la ropa buscando las llaves del coche y sólo ahora se da cuenta de que no las lleva encima. Se las ha debido dejar en algún sitio.";
+new_line;
+return true;
+8:	! ##Lock (after)
+print "Vuelve a escuchar el cierre centralizado, esta vez bloqueando las puertas.";
+new_line;
+return true;
+9:	! ##Unlock (after)
+print "Aprieta el botón del mando a distancia y le responde el sonido del cierre centralizado abriéndose.";
+new_line;
+return true;
+10:	! ##Enter (after)
+print "Entra en ", (the) Coche, ".";
+new_line;
+return true;
+11:	! ##Exit
+print "Vuelve a salir ", (del) Coche, ".";
+new_line;
 return true;
 }
 
 Cocina: switch (n) {
 1:	! ##Examine
-print "Espaciosa y bien iluminada. Su padre ha debido ir añadiendo muebles y electrodomésticos conforme los iba necesitando, atendiendo posiblemente antes a la funcionalidad que al aspecto del conjunto. El resultado es un collage; aparatos de aspecto moderno y minimalista como un frigorífico con acabado en acero brillante se combinan con una antigua cocina de leña en hierro forjado negro o un gran armario en madera tallada con motivos florales, y la gran mesa de comedor situada en medio de la cocina está rodeada de varias sillas, la mayoría de diseños diferentes. Cuenta con puerta al salón ", (al) e_obj, ".";
+print "Espaciosa y bien iluminada. Su padre ha debido ir añadiendo muebles y electrodomésticos conforme los iba necesitando, atendiendo posiblemente antes a la funcionalidad que al aspecto del conjunto. El resultado es un ", (emph) "collage", "; aparatos de aspecto moderno y minimalista como ", (a) Frigorifico, " con acabado en acero brillante se combinan con una antigua ";
+Hyperlink(HornoLena, "cocina de leña", 0);
+print " o ", (a) Armario, " con feos motivos florales. Está comunicada con el salón al ", (name) e_obj, ".";
 new_line;
 return true;
-}
-
-CocinaEncimera: switch (n) {
-1:	! ##Examine (A - Encimera vacía)
+2:	! ##Examine
+print "Sobre ", (the) x1, " puede ver ";
+WriteListFrom(child(x1), ENGLISH_BIT);
+print "";
 return true;
-2:	! ##Examine (B - Objetos sobre la encimera)
-print "Sobre la encimera puede ver ";
-WriteListFrom(child(CocinaEncimera), ENGLISH_BIT + PARTINV_BIT);
+3:	! ##Examine
+print ", y puede ver también ";
+WriteListFrom(child(x1), ENGLISH_BIT);
+print " en ", (the) x1, "";
+return true;
+4:	! ##Examine
 print ".";
-new_line;
-return true;
-}
-
-CocinaFrigorifico: switch (n) {
-1:	! ##Examine
-print "Un frigorífico en acero brillante. Parece nuevo.";
-new_line;
-return true;
-}
-
-CocinaMesa: switch (n) {
-1:	! ##Examine
-print "Una gran mesa de comedor.";
 new_line;
 return true;
 }
 
 Cristalera: switch (n) {
 1:	! ##Examine (A - en el patio)
+print "Junto a la ";
+Hyperlink(PuertaDelantera, "puerta de entrada", 0);
+print " hay un panel de cristal tintado.";
+new_line;
 return true;
 2:	! ##Examine (B - en el recibidor)
-print "Un panel de cristal tintado, alto y delgado. Como los vitrales de la iglesia, salvo que en esta ocasión se trata de una composición irregular en lugar de escenas cuidadosamente pintadas de la vida de algún santo. Ve partículas de polvo flotando en los haces de luz coloreada que se filtran desde el exterior.";
+print "Un panel de cristal tintado, alto y delgado, junto a la ";
+Hyperlink(PuertaDelantera, "puerta de entrada", 0);
+print "";
+return true;
+3:	! ##Examine (C - en el recibidor. Primera vez)
+print ". Igual que las vidrieras de la iglesia, salvo que en esta ocasión no son santos desconocidos con rictus severo sino una composición ", (emph) "art deco", " abstracta";
+return true;
+4:	! ##Examine (D - en el recibidor. Final)
+print ". Puede ver partículas de polvo flotando en los haces de sol coloreados.";
 new_line;
 return true;
 }
 
-DungeonMaster: switch (n) {
-1:
-print "La casa se levantaba sobre un pequeño promontorio, a apenas una treintena de pasos de las frías aguas del Cantábrico.
-^^
-Durante años Silvia había vivido en aquella casa. Recordaba cuando era niña y, desde la terraza en la parte de atrás, descendía cuidadosamente por entre las rocas con la ayuda de sus padres hasta la cala al pie del promontorio. Los cangrejos se apresuraban a escabullirse bajo la arena al verlos llegar. Recordaba a su madre explicándole que lo hacían porque eran unos vergonzosos.
-^^
-Recordaba a su padre y a sus tíos insistiendo en que no debía tener miedo a la enfermedad, que todo saldría bien. El ligero temblor en la voz al decirle aquello, las miradas perdidas. Recordaba cuando tenía once años y nada salió bien. Durante mucho tiempo siguió bajando a menudo hasta la cala ella sola, después de que muriese su madre, intentando escabullirse allí del mundo.
-^^
-Al terminar el instituto se fue a estudiar a una ciudad diferente y más tarde encontró trabajo y construyó su vida lejos de aquel lugar.
-^^
-Ahora su padre había muerto también y la casa se había quedado vacía. Ya nadie visitaba la pequeña cala.
-^^
-Sólo los cangrejos.";
+Encimera: switch (n) {
+1:	! ##Examine (A - Encimera vacía)
+print "No hay nada en la encimera.";
 new_line;
 return true;
-2:
-print (stressed) "@<<Y entro en los campos y anchos palacios de la memoria, donde están los tesoros de innumerables imágenes de toda clase de cosas acarreadas por los sentidos.@>>", "
-^^
---- San Agustín. Confesiones, libro décimo, capítulo VIII.";
+2:	! ##Examine (B - Objetos sobre la encimera)
+print "Sobre la encimera puede ver ";
+WriteListFrom(child(Encimera), ENGLISH_BIT);
+print "";
+return true;
+}
+
+Frigorifico: switch (n) {
+1:	! ##Examine
+print "Un frigorífico en acero brillante. Impoluto. Parece nuevo.";
 new_line;
 return true;
-4:
-print "Ha cumplido con sus obligaciones por la mañana. Se ha encontrado con gente a la que no veía desde hacía años y a la que recordaba solo a medias, y con muchos otros a los que directamente o bien no conocía o no recordaba en absoluto. Todos han aparentado alegrarse de volver a verla. Durante la ceremonia, incapaz de prestar atención al sermón, se ha concentrado en los policromados de las vidrieras ---imágenes de varios santos a los que se ha visto incapaz de identificar---. Al acabar ha tenido que repetir un nuevo trámite de abrazos y besos en las mejillas, de apretones de mano y palabras amables. Ella ha agradecido los gestos con sinceridad, se ha deshecho educadamente de aquellos que insistían en acompañarla, y ha recorrido a solas las viejas carreteras sacudidas por aquel viento cargado de olores viejos, hasta llegar a la vieja casa de sus padres. Ahora que no están, se halla de pronto vacía.";
-new_line;
+}
+
+HornoLena: switch (n) {
+1:	! ##Examine
+print "Un antigo horno de leña en hierro forjado negro.";
+return true;
+2:	! ##Examine (B - la primera vez)
+print " ", (emph) "El mejor sitio del mundo para asar castañas.", "";
 return true;
 }
 
@@ -103,62 +233,53 @@ print " ¿Qué? ¿Cómo?... ¿cómo he llegado aquí?";
 return true;
 }
 
-LlaveroPadre: switch (n) {
-1:	! ##Examine
-print "Sólo tenía tres llaves; las de las puertas delantera y trasera de la casa, y la del viejo todoterreno de su padre ---le habían dicho que estaba aparcado en la casa de unos primos. Podría quedarse allí acumulando polvo por un tiempo---. Una delgada cadena llena de óxido y sin nada enganchado a ella servía como extraño adorno del llavero.";
+
+Llaves: switch (n) {
+1:	! ##Examine (A)
+print "Además de las llaves de su coche y del piso en Madrid ahora tiene también las llaves heredadas de su padre. Una Sally en miniatura, de ", (emph) "Pesadilla Antes de Navidad", ", sirve de adorno del llavero.";
+new_line;
+return true;
+2:	! ##Examine (B - Continuación al mensaje A, la primera vez que se mira)
+print "Acaricia suavemente el muñequito con el pulgar. Carmen se lo había regalado medio en broma después de que Silvia empezase a llamarla así tras ver la película juntas un sábado por la noche. Sally... sonríe. Alta, delgaducha, de pelo largo caoba; el parecido con ella le seguía resultando tremendamente gracioso.";
 new_line;
 return true;
 }
 
-LlaveroSilvia: switch (n) {
-1:	! ##Examine (A)
-print "Son las llaves de su coche y del piso en Plasencia. Una Sally en miniatura, el personaje de Pesadilla Antes de Navidad, cuelga del llavero.";
-new_line;
+MesaCocina: switch (n) {
+1:	! ##Examine
+print "Ocupa el centro de la cocina. Está rodeada por un conjunto dispar de ";
+Hyperlink(MesaCocina, "sillas", 0);
+print " con diseños diferentes.";
 return true;
-2:	! ##Examine (B - Continuación al mensaje A, la primera vez que se mira)
-print "Acaricia suavemente el muñequito con el pulgar. Carmen se lo había regalado medio en broma después de que Silvia empezase a llamarla así tras ver la película juntas un sábado por la noche. ---¡No la había visto nunca antes! Y quedaban todavía un montón de aquellas películas con las que había crecido que Carmen, incomprensiblemente, seguía sin ver---. Sally... sonríe. Alta, delgaducha, de pelo largo caoba; el parecido con ella le había resultado tremendamente gracioso.";
-new_line;
+2:	! ##Examine
+print " Sobre ella hay ";
+WriteListFrom(child(MesaCocina), ENGLISH_BIT);
+print ".";
+return true;
+3:
+print "Sobre ", (the) MesaCocina, " puede ver ";
+WriteListFrom(child(MesaCocina), ENGLISH_BIT);
+print ".";
+return true;
+4:
+print ", y puede ver también ";
+WriteListFrom(child(MesaCocina), ENGLISH_BIT);
+print " en ", (the) MesaCocina, ".";
 return true;
 }
 
 Patio: switch (n) {
-1:	! ##Examine (fuera del coche)
-print "Un acceso de grava de unos diez metros de longitud comunica la carretera con ", (the) PuertaDelantera, " de la casa. ", (The) PatioCoche, " de Silvia está aquí aparcado. Deslumbra bajo el sol de la tarde, con los cristales proyectando reflejos molestos sobre su rostro.";
+1:	! ##Examine (A - general)
+print "Un acceso de grava de unos diez metros de longitud comunica ", (the) PuertaDelantera, " con una carretera secundaria sin apenas tráfico. ";
+return true;
+2:	! ##Examine (B - fuera del coche)
+print "Su ", (name) Coche, " deslumbra bajo el ";
+Hyperlink(Cielo, "sol", 0);
+print " de la tarde, aparcado frente a ", (the) Casa, " en mitad del camino.";
 new_line;
 return true;
-2:	! ##Examine (dentro del coche)
-print "Un acceso de grava de unos diez metros de longitud comunica la carretera con ", (the) PuertaDelantera, " de la casa. La temperatura fuera era agradable, incluso se llegaba a sentir frío por culpa de la brisa, pero dentro ", (del) PatioCoche, " hace demasiado calor.";
-new_line;
-return true;
-}
-
-PatioCamino: switch (n) {
-1:	! ##Examine
-print "El camino de grava enlaza ", (the) PuertaDelantera, " de ", (the) PatioCasa, " hasta una carretera secundaria.";
-new_line;
-return true;
-}
-
-PatioCasa: switch (n) {
-1:	! ##Examine
-print "Un feo volumen revocado de planta rectangular. Allí donde el verdín y las enredaderas no han tomado aún la fachada se puede ver la última mano de pintura blanca.";
-new_line;
-return true;
-}
-
-PatioCoche: switch (n) {
-1:	! ##Examine
-print "Arrastraba alrededor de 100.000 Km. ya cuando lo compró de segunda mano, y aunque le ha funcionado muy bien hasta ahora, en el viaje desde Madrid ha notado cómo se quedaba sin potencia en varias ocasiones en mitad de la autovía. Como si le costase subir revoluciones aún con el acelerador pisado a fondo. Debería llevarlo al taller esta semana. Sólo espera que no la deje tirada a mitad de camino de vuelta a casa.";
-new_line;
-return true;
-4:	! ##SwitchOn
-print "Silvia se inclina sobre el volante y nota el tacto del botón bajo los dedos. Mi padre ha muerto. Presiona con suavidad y el motor se pone en marcha. No nos llevábamos mal. No teníamos mucho trato desde hacía tiempo, si, pero no nos llevábamos mal. La vibración del motor se transmite por todo el coche. Es triste, claro. Estoy triste. Así funciona, el luto, también con mamá.
-^^
-Mi padre ha muerto y mi madre está muerta. Están muertos ya, y yo soy una camionera, y estoy sola, y es triste porque funciona así y no voy a tener hijos nunca... Si algo no se recuerda ¿no es como si no hubiese existido nunca? Mi padre no existe. Ahora mamá casi no ha existido nunca ya. Yo no existiré demasiado pronto probablemente No existo casi. ¿Quién me recuerda? Estoy en el coche pero eso no lo recuerda nadie. Yo sólo. Nadie. ¿El coche no existe tampoco entonces? Quizá no, y es un camión.
-^^
-Mejor sin hijos. Desagradecidos que no te van a ver, cuando mueres únicamente, y luego no te pueden recordar no lo suficiente porque no estuvieron allí para ver qué recordar después y es como si no existieses y has muerto pero sigue preocupándose más por ella y por los nombres de un santo al los que no puede reconocer que porque te has muerto aunque tampoco te conociese pero nunca se preguntó quién eras tú. Tal vez si hubieses estado pintado en un cristal. Pues para eso mejor sin hijos. Estoy triste. De verdad. Porque es triste, porque así funciona el luto.
-^^
-El coche se aleja por las viejas carreteras con un ronquido ahogado, dejando un humo demasiado negro detrás de sí.";
+3:	! ##Examine (C - dentro del coche)
+print "La temperatura fuera era agradable, con la brisa marina incluso se llegaba a sentir frío, pero en el interior del coche hace demasiado calor.";
 new_line;
 return true;
 }
@@ -190,31 +311,65 @@ Hyperlink(RecibidorPerchero, "perchero", 0);
 print " y sale al patio delantero.";
 new_line;
 return true;
+6:
+print "No puede marcharse sin cerrar antes la ";
+Hyperlink(PuertaDelantera, "casa", 0);
+print " con llave.";
+new_line;
+return true;
+7:	! ##Lock
+print "Cierra la puerta con dos giros de llave.";
+new_line;
+return true;
+8:
+print "Una vez dentro cierra la ";
+Hyperlink(PuertaDelantera, "puerta", 0);
+print " tras ella.";
+new_line;
+return true;
+}
+
+Radiocasete: switch (n) {
+1:	! ##Examine
+print "Tiene al menos treinta años. Cuesta creer que pueda seguir funcionando.";
+new_line;
+return true;
+2:	! ##SwitchOn
+print "Es una reliquia. Ni siquiera sabe cómo funciona.";
+new_line;
+return true;
 }
 
 Recibidor:
 switch (n) {
 1:	! ##Examine (A - primera vez)
-print "La luz del exterior se cuela por una cristalera de colores que hay junto a la ";
-Hyperlink(PuertaDelantera, "puerta", 0);
-print " principal, bañando el pequeño recibidor con una mezcla de verdes y azules, amarillos y rojos. Por un momento permanece en pie en silencio, ensimismada en el juego de luces, pero ha visto ya suficientes vidrieras por un día. Todo ha terminado, no tiene nada más que hacer en aquel lugar. Va siendo hora de de regresar a su casa y seguir con su vida normal.";
+print "Los rayos del sol del exterior se cuelan por ", (a) Cristalera, " que hay junto a la ";
+Hyperlink(PuertaDelantera, "puerta principal", 0);
+print ", bañando el pequeño recibidor con una mezcla de ", (string) Recibidor.get_random_color(), ", ", (string) Recibidor.get_random_color(), ", ", (string) Recibidor.get_random_color(), " y ", (string) Recibidor.get_random_color(), ". Por un momento permanece en pie en silencio, ensimismada una vez más en las refracciones de la luz, pero ya ha visto vidrieras suficientes por un día. Todo ha terminado. No tiene nada más que hacer en este lugar. Puede regresar a su propia casa y continuar con su vida normal.";
 new_line;
 return true;
 2:	! ##Examine (A - Parte 1/3, con la puerta cerrada)
-print "La luz del exterior se cuela por una cristalera de colores que hay junto a la ";
-Hyperlink(PuertaDelantera, "puerta", 0);
-print " principal, pintando el pequeño recibidor con una mezcla de azules, amarillos, verdes y rojos, como el vitral de una iglesia.";
+print "La luz del exterior se cuela por ", (a) Cristalera, " que hay junto a la ";
+Hyperlink(PuertaDelantera, "puerta principal", 0);
+print ", bañando el pequeño recibidor en una mezcla de ", (string) Recibidor.get_random_color(), ", ", (string) Recibidor.get_random_color(), ", ", (string) Recibidor.get_random_color(), " y ", (string) Recibidor.get_random_color(), ", como el vitral de una iglesia.";
 return true;
 3:	! ##Examine (B - Parte 1/3, con la puerta abierta)
 print "La brillante luz del exterior se cuela por la ";
 Hyperlink(PuertaDelantera, "puerta", 0);
-print " abierta y por una cristalera de colores que hay junto ella, bañando el pequeño recibidor de una mezcla de los blancos directos del sol y de los azules, amarillos, verdes y rojos que llegan por el filtro del cristal tintado.";
+print " abierta y por ", (a) Cristalera, " que hay junto a ella, bañando el pequeño recibidor a un tiempo de los blancos directos del sol y de los ", (string) Recibidor.get_random_color(), ", ", (string) Recibidor.get_random_color(), ", ", (string) Recibidor.get_random_color(), " y ", (string) Recibidor.get_random_color(), " que penetran por el filtro del cristal tintado.";
 return true;
 4:	! ##Examine (C - Parte 2/3)
-print "Frente a la puerta, al ", (name) n_obj, ", un corto pasillo conduce hasta el salón. Hay una cómoda apoyada contra la pared";
+print "Frente a la puerta, al ", (name) n_obj, ", un corto pasillo conduce hasta el salón. Hay ", (a) RecibidorComoda, " apoyada contra la pared";
 return true;
 5:	! ##Examine (D - Parte 3/3, si no hay objetos en el perchero)
 print " y ", (a) RecibidorPerchero, " en una esquina";
+return true;
+}
+
+RecibidorComoda: switch (n) {
+1:	! ##Examine (A)
+print "De madera oscura, alta hasta un poco por encima de la cintura. Tiene un único cajón que en estos momentos está cerrado.";
+new_line;
 return true;
 }
 
@@ -224,13 +379,13 @@ print "Un perchero alto";
 return true;
 2:	! ##Examine (B - si tiene una cosa colgada)
 print " del que cuelga ";
-WriteListFrom(child(RecibidorPerchero), ENGLISH_BIT + PARTINV_BIT);
+WriteListFrom(child(RecibidorPerchero), ENGLISH_BIT);
 print ".";
 new_line;
 return true;
 3:	! ##Examine (C - si tiene varias cosas colgadas)
 print " del que cuelgan ";
-WriteListFrom(child(RecibidorPerchero), ENGLISH_BIT + PARTINV_BIT);
+WriteListFrom(child(RecibidorPerchero), ENGLISH_BIT);
 print ".";
 new_line;
 return true;
@@ -240,13 +395,13 @@ new_line;
 return true;
 5:	! describe (B - si tiene una cosa colgada)
 print "En ", (the) RecibidorPerchero, " de la esquina cuelga ";
-WriteListFrom(child(RecibidorPerchero), ENGLISH_BIT + PARTINV_BIT);
+WriteListFrom(child(RecibidorPerchero), ENGLISH_BIT);
 print ".";
 new_line;
 return true;
 6:	! describe (C - si tiene varias cosas colgadas)
 print "En ", (the) RecibidorPerchero, " de la esquina cuelgan ";
-WriteListFrom(child(RecibidorPerchero), ENGLISH_BIT + PARTINV_BIT);
+WriteListFrom(child(RecibidorPerchero), ENGLISH_BIT);
 print ".";
 new_line;
 return true;
@@ -268,49 +423,167 @@ new_line;
 return true;
 }
 
+Ropa: switch (n) {
+1:	! ##Examine (A - en el suelo)
+print "", (The) Ropa, " está hecha un rebujo en el suelo.";
+new_line;
+return true;
+2:	! ##Examine (B - en un contenedor)
+print "Tiene ", (the) Ropa, " tirada dentro ", (del) x1, ".";
+new_line;
+return true;
+3:	! ##Examine (C - por defecto)
+print "Tiene ", (the) Ropa, " tirada en ", (the) x1, ".";
+new_line;
+return true;
+4:	! ##Examine (D - en el perchero)
+print "Ha colgado ", (the) Ropa, " en ", (the) RecibidorPerchero, ".";
+new_line;
+return true;
+5:	! ##Disrobe / ##Wear (A - si tiene alguna otra prenda puesta))
+print "Tiene que quitarse ", (the) x1, " primero.";
+new_line;
+return true;
+6:	! ##Disrobe (B - se desnuda y deja la ropa en el suelo)
+print "Se desnuda por completo y deja ", (the) Ropa, " en el suelo.";
+new_line;
+return true;
+7:	! ##Disrobe (C - se desnuda y deja la ropa en un soporte/contenedor)
+print "Se desnuda por completo y deja ", (the) Ropa, " en ", (the) x1, ".";
+new_line;
+return true;
+}
+
 Salon: switch (n) {
 1:	! ##Examine
-print "Desde el otro lado de los ventanales laterales el paisaje marino parece penetrar la estancia con el romper de las olas. Como virtualmente ocurre en todas las casas, un amplio sofá hace de centro de gravedad de todo el salón; colocado de manera que se puede contemplar con la misma facilidad tanto el mar tras los ventanales como el televisor. Varias estanterías atestadas de libros y un mueble bar completan este paréntesis entre el recibidor, al ", (name) s_obj, ", y las puertas de doble hoja que conducen al ", (name) w_obj, " hasta la cocina.";
+print "Como virtualmente en cualquier otra casa, un amplio sofá hace de centro de gravedad de todo el salón; colocado de manera que se puede contemplar con la misma facilidad tanto el mar tras los ventanales como el televisor. Varias estanterías atestadas de libros y un mueble bar completan este paréntesis entre el recibidor, al ", (name) s_obj, ", y las puertas de doble hoja que conducen al ", (name) w_obj, " hasta la cocina.";
+new_line;
+return true;
+2:
+print "Se detiene un instante en el umbral contemplando el paisaje tras las ventanas. El mar casi parece colarse en el salón con el romper de las olas. Casi resulta increíble que su padre pudiese disfrutar de una vistas así a diario... Ella misma lo hizo durante años, y nunca llegó a darse cuenta del lujo que suponía algo así.";
+new_line;
+return true;
+}
+
+SalonEstanterias: switch (n) {
+1:	! ##Examine
+print "";
+Hyperlink(SalonLibros, "Libros", 0);
+print " y algunas ";
+Hyperlink(SalonFiguras, "figuritas", 0);
+print " dan peso a las estanterías.";
+new_line;
+return true;
+}
+
+SalonFiguras: switch (n) {
+1:	! ##Examine (A)
+print "Un puñado de figuritas sin gran valor entre las que hay ";
+new_line;
+return true;
+2:	! ##Examine
+print " y ";
+return true;
+3:	! ##Examine (B)
+print "una réplica de unos vente centímetros de Tizona, la espada del Cid";
+return true;
+4:	! ##Examine (C)
+print "dos payasos tristes de cerámica tocando instrumentos musicales";
+return true;
+5:	! ##Examine (D)
+print "un Spinosaurus de juguete";
+return true;
+6:	! Examine (B - la primera vez)
+print "No recuerda si ese dinosaurio era alguno de sus viejos juguetes o si se trata simplemente de algo que su padre había sacado de quién sabe dónde, pero curiosamente ella tiene en Madrid otro juguete parecido: un Tyrannosaurus Rex bebé, dentro de una maceta en el salón. Su T-Rex es de la marca Papo, y no de Schleich, como el de su padre. Los dinosaurios de Papo son más bonitos.";
+new_line;
+return true;
+}
+
+SalonLibros: switch (n) {
+1:	! ##Examine
+print "Muchos de esos libros son viejos. Silvia recuerda haber leído unos cuantos cuando iba al instituto y aún vivía allí.";
+new_line;
+return true;
+}
+
+SalonSofa: switch (n) {
+1:	! ##Examine
+print "Un sofá muy trotado desde el que se puede contemplar el mar tras los ventanales y el televisor en un mismo golpe de vista.";
+new_line;
+return true;
+2:	! ##Examine (B)
+print "Había crecido con la imagen de su padre en ese sofá, siempre sentado en el mismo rincón, leyendo en silencio, a veces con un vaso de whisky del pequeño mueble bar al lado. Todo aquello se ha quedado atrás en el tiempo salvo el silencio. Pero ni siquiera el silencio es el mismo ya.";
+new_line;
+return true;
+}
+
+SalonTelevisor: switch (n) {
+1:	! ##Examine
+print "Comedido y funcional, tiene enchufado un reproductor de DVD. Si deslizase el dedo por el lateral del reproductor notaría dos botones: el de encendido y el de expulsar disco.";
 new_line;
 return true;
 }
 
 Silvia: switch (n) {
-1:	! ##Examine / ##Inv
-print "Está completamente desnuda";
+1:	! (introducción)
+print (header) "La casa", " se levantaba sobre un pequeño promontorio, a apenas una treintena de pasos de las frías aguas del Cantábrico.
+^^
+Durante años Silvia había vivido en aquella casa. Recordaba cuando era niña y, desde la terraza en la parte de atrás, descendía cuidadosamente por entre las rocas con la ayuda de sus padres hasta la cala al pie del promontorio. Los cangrejos se apresuraban a escabullirse bajo la arena al verlos llegar. Su madre le explicó una vez que lo hacían porque eran unos vergonzosos.
+^^
+Recordaba a su padre y a sus tíos insistiendo en que no debía tener miedo a la enfermedad, que todo saldría bien. El ligero temblor en la voz al decirle aquello, las miradas perdidas. Recordaba cuando tenía once años y nada salió bien. Durante mucho tiempo siguió bajando a menudo hasta la cala ella sola, después de la muerte de su madre, intentando escabullirse allí del mundo.
+^^
+Al terminar bachillerato entró en una universidad de otra provincia y más tarde, tras sus estudios, encontró trabajo y construyó su vida en la ciudad, lejos de aquel lugar.
+^^
+Ahora su padre había muerto también y la casa se había quedado vacía. Ya nadie visitaba la pequeña cala.
+^^
+Sólo los cangrejos.";
+new_line;
 return true;
-2:	! ##Examine / ##Inv
-print ". La piel de gallina por culpa de la brisa marítima";
+2:	! (introducción)
+print (stressed) "@<<Y entro en los campos y anchos palacios de la memoria, donde están los tesoros de innumerables imágenes de toda clase de cosas acarreadas por los sentidos.@>>", "
+^^
+--- San Agustín. Confesiones, libro décimo, capítulo VIII.";
+new_line;
 return true;
-3:	! ##Examine / ##Inv
-print ".";
+3:	! (introducción)
+print "Ha cumplido con sus obligaciones por la mañana. Se ha encontrado con gente a la que no veía desde hacía años y a la que recordaba solo a medias, y con muchos otros a los que directamente o bien no conocía o no recordaba en absoluto. Todos la han saludado con afecto y han aparentado alegrarse de volver a verla. Durante la ceremonia, incapaz de prestar atención al sermón, se ha concentrado en los policromados de las vidrieras y ha permanecido abstraída en los juegos de la luz y en las expresiones rígidas de las figuras ---un puñado de santos a los que no ha sabido identificar---. Al acabar ha tenido que repetir un nuevo trámite de abrazos y besos en las mejillas, de apretones de mano y palabras amables. Ella ha agradecido los gestos con sinceridad, se ha deshecho educadamente de aquellos que insistían en acompañarla, y ha recorrido a solas las viejas carreteras sacudidas por aquel viento cargado de olores viejos, hasta llegar a la vieja casa de sus padres.";
 new_line;
 return true;
 4:	! ##Examine / ##Inv
-print "Debajo del abrigo está completamente desnuda";
+print "Está completamente desnuda";
 return true;
 5:	! ##Examine / ##Inv
-print "Lleva ";
+print ". La piel de gallina por culpa de la brisa marítima";
 return true;
 6:	! ##Examine / ##Inv
-print "puesto su vestido negro, con una falda negra que le alcanza hasta debajo de las rodillas, medias negras traslúcidas y zapatos negros con tacón, bien cepillados y brillantes";
+print ".";
+new_line;
 return true;
 7:	! ##Examine / ##Inv
-print "; una ropa que normalmente le haría sentir incómoda, como si estuviese vistiendo un disfraz ridículo. Hoy, en cambio, llevar puesto ese disfraz le ha garantizado algo de seguridad. Era el uniforme adecuado para un día difícil";
+print "Debajo del abrigo está completamente desnuda";
 return true;
 8:	! ##Examine / ##Inv
-print "Debajo del abrigo lleva ";
+print "Lleva ";
 return true;
 9:	! ##Examine / ##Inv
-print "Tiene ";
+print "puesto su vestido negro, con una falda negra que le alcanza hasta debajo de las rodillas, medias negras traslúcidas y zapatos negros con tacón, bien cepillados y brillantes";
 return true;
 10:	! ##Examine / ##Inv
-print " en las manos";
+print "; una ropa que normalmente le haría sentir incómoda, como si estuviese vistiendo un disfraz ridículo. Hoy, en cambio, llevar puesto ese disfraz le ha garantizado algo de seguridad. Era el uniforme adecuado para un día difícil";
 return true;
 11:	! ##Examine / ##Inv
-print "el bolso colgado al hombro";
+print "Debajo del abrigo lleva ";
 return true;
 12:	! ##Examine / ##Inv
+print "Tiene ";
+return true;
+13:	! ##Examine / ##Inv
+print " en las manos";
+return true;
+14:	! ##Examine / ##Inv
+print "", (the) Bolso, " colgado al hombro";
+return true;
+15:	! ##Examine / ##Inv
 print " y ";
 return true;
 

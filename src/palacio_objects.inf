@@ -47,7 +47,7 @@
 !!
 !!	TABLA DE CONTENIDOS
 !!
-!!	1)	Dungeon Master / Limbo
+!!	1)	Limbo
 !!	2)	Baño
 !!	3)	Cala de los cangrejos
 !!	4)	Cocina
@@ -65,45 +65,9 @@
 
 !!==============================================================================
 !!
-!!	1)	Dungeon Master / Limbo
+!!	1)	Limbo
 !!
 !!------------------------------------------------------------------------------
-
-Object	DungeonMaster "(Dungeon Master)"
- with	!!----------------------------------------------------------------------
-		!! Al salir por la puerta delantera se intenta coger automáticamente
-		!! el abrigo del perchero. Retorna un valor indicando el resultado de
-		!! la operación.
-		!!
-		!!	@returns {integer} Código numérico:
-		!!		1. si el abrigo no está en el perchero
-		!!		2. si no lo puede coger por falta de espacio en el inventario
-		!!		3. ídem, si tiene el frasco del día del padre
-		!!		4. si se coge el abrigo del perchero automáticamente
-		!!----------------------------------------------------------------------
-		leave_house [
-			obj i ks;
-			!! 1)
-			if (abrigo notin RecibidorPerchero) {
-				return 1;
-			}
-			!! 2)
-			objectloop(obj in player) i++;
-			if ((i + 1) > player.capacity) {
-				return 2;
-			}
-			!! 3)
-			ks = keep_silent;
-			keep_silent = true;
-			<Take abrigo>;
-			keep_silent = ks;
-			return 3;
-		],
-		!!----------------------------------------------------------------------
-		!! Se activa tras tomar inventario una vez con la ropa puesta.
-		!!----------------------------------------------------------------------
-		inventory_flag false,
-;
 
 Room	Limbo "En algún lugar"
  with	name_f	'babia',
@@ -124,22 +88,56 @@ NPC		-> Silvia "Silvia"
 		adjectives 'principal',
 		capacity MAX_CARRIED,
 		description [; <<Inv>>; ],
+		inventory_flag false,
  has	female proper;
 
 Item	-> -> Ropa "ropa"
- with	name_f	'ropa',
+ class	Clothes,
+ with	name_f	'falda' 'ropa',
+		name_fp	'medias',
+		name_m	'vestido' 'zapato',
+		name_mp	'zapatos',
 		gender	G_FEMENINO,
-		adjectives 'luto',
+		adjectives 'luto' 'negra' 'negras' 'negro' 'negros',
 		article "su",
+		before [
+			obj;
+			self.Clothes::before();
+			DefaultAction, Examine, Search:
+				obj = parent(Ropa);
+				!! 1) Silvia tiene la ropa puesta:
+				if (obj == player && Ropa has worn) <<Inv>>;
+				!! 2) la ropa está tirada en el suelo de la localidad actual:
+				else if (obj == real_location) return O__M(self, 1, obj);
+				!! 3) la ropa está en el perchero del recibidor:
+				else if (obj == RecibidorPerchero) return O__M(self, 4, obj);
+				!! 4) la ropa está dentro de un contenedor:
+				else if (obj has container) return O__M(self, 2, obj);
+				!! 5) por defecto, cuando la ropa está en un objeto cualquiera:
+				else return O__M(self, 3, obj);
+		],
+		after [;
+			Disrobe:
+				!! 1) el PC se desnuda y deja la ropa en el perchero
+				if (real_location == Recibidor) {
+					move self to RecibidorPerchero;
+					return O__M(self, 7, RecibidorPerchero);
+				}
+				!! 2) el PC se desnuda y deja la ropa en el suelo
+				move self to real_location;
+				return O__M(self, 6);
+			Take:
+				<<Wear self>>;
+		],
+		level 0,
  has	clothing female worn;
 
-Item	-> -> LlaveroPadre "llavero de su padre"
- with	name_f	'llave',
-		name_fp	'llaves',
-		name_m	'llavero',
+Atrezzo Cielo "cielo"
+ with	found_in [; if (location ofclass Outdoors) return true; ],
+		name_f	'nube',
+		name_fp	'nubes',
+		name_m	'cielo' 'firmamento' 'sol',
 		gender	G_MASCULINO,
-		adjectives 'padre' 'su',
-		article	"el",
 		description [; return O__M(self, 1); ],
  has	male;
 
@@ -181,53 +179,142 @@ Outdoors	Cala "Cala de los cangrejos"
 Indoors	Cocina "cocina"
  with	name_f	'cocina' 'estancia' 'habitacion',
 		gender	G_FEMENINO,
-		description [;
-			return O__M(self, 1);
+		description [
+			i j obj;
+			O__M(self, 1);
+			new_line;
+			objectloop(obj in Encimera && obj hasnt concealed) i++;
+			objectloop(obj in MesaCocina && obj hasnt concealed) j++;
+			if (i > 0) {
+				O__M(self, 2, Encimera);
+				if (j > 0) O__M(self, 3, MesaCocina);
+				return O__M(self, 4);
+			}
+			if (j > 0) {
+				O__M(self, 2, MesaCocina);
+				return O__M(self, 4);
+			}
 		],
 		e_to	Salon,
  has	female;
 
-Atrezzo	-> CocinaEncimera "encimera"
- with	name_f	'encimera',
-		name_m	'mobiliario' 'mueble',
+Atrezzo	-> Armario "armario"
+ with	name_m	'armario' 'mobiliario' 'mueble',
 		name_mp	'muebles',
-		gender	G_FEMENINO,
+		gender	G_MASCULINO,
 		description [; return O__M(self, 1); ],
- has	female supporter transparent;
+ has	concealed female;
 
-Furniture	-> CocinaFrigorifico "frigorífico"
+Atrezzo	-> Frigorifico "frigorífico"
  with	name_m	'electrodomestico' 'frigorifico' 'mobiliario' 'mueble',
 		name_mp	'electrodomesticos' 'muebles',
 		gender	G_MASCULINO,
 		description [; return O__M(self, 1); ],
  has	concealed male;
 
-Furniture	-> CocinaMesa "mesa"
- with	name_f	'mesa',
+Atrezzo	-> HornoLena "horno de leña"
+ with	name_m	'horno',
+		gender	G_MASCULINO,
+		adjectives 'forja' 'hierro' 'lena',
+		description [;
+			O__M(self, 1);
+			if (self hasnt described) O__M(self, 2);
+			new_line;
+			return true;
+		],
+ has	male;
+
+Item	-> Encimera "encimera"
+ with	name_f	'encimera',
+		name_m	'mobiliario' 'muebles',
+		name_mp	'muebles',
+		gender	G_FEMENINO,
+		description [
+			i obj;
+			i = obj = 0;
+			objectloop(obj in self && obj hasnt concealed) i++;
+			if (i == 0) return O__M(self, 1);
+			else return O__M(self, 2);
+		],
+		before [;
+			DefaultAction, Examine, LetGo, Receive, Search:
+				return false;
+			default:
+				print "No es necesario que se preocupe por ";
+				SpanishNominativePronoun(self);
+				".";
+		],
+ has	concealed female scenery supporter transparent;
+
+Atrezzo	-> -> Cafetera "cafetera de cápsulas"
+ with	name_f	'cafetera',
+		gender	G_FEMENINO,
+		adjectives 'capsulas',
+		description [; return O__M(self, 1); ],
+ has	female;
+
+Atrezzo	-> -> Radiocasete "radiocasete"
+ with	name_f	'radio',
+		name_m	'radiocasete',
+		gender	G_MASCULINO,
+		description [; return O__M(self, 1); ],
+ has	male;
+
+Furniture	-> MesaCocina "mesa"
+ with	name_f	'mesa' 'silla',
+		name_fp	'sillas',
 		name_m	'mobiliario' 'mueble',
 		name_mp	'muebles',
 		gender	G_FEMENINO,
 		description [; return O__M(self, 1); ],
- has	female supporter transparent;
+ has	concealed female supporter transparent;
 
 Item	-> -> Bolso "bolso"
+ class	Clothes,
  with	name_f	'bandolera' 'bolsa',
 		name_m	'bolso',
 		gender	G_MASCULINO,
 		adjectives 'silvia' 'su',
 		article "su",
-		description [; return O__M(self, 1); ],
- has	container male open;
+		description [
+			i obj;
+			i = obj = 0;
+			objectloop(obj in self && obj hasnt concealed) i++;
+			O__M(self, 1);
+			if (i > 0) O__M(self, 2);
+			new_line;
+			return true;
+		],
+		before [;
+			self.Clothes::before();
+		],
+		after [
+			i obj;
+			LetGo, Receive:
+				i = obj = 0;
+				objectloop(obj in self && obj has remarkable) i++;
+				if (i > 0) give self remarkable;
+				else give self ~remarkable;
+			Take:
+				if (parent(self) has supporter) return O__M(self, 3);
+				if (parent(self) has container) return O__M(Self, 4);
+		],
+		level 2,
+ has	container male open remarkable;
 
-Item	-> -> -> LlaveroSilvia "llavero de silvia"
- with	name_f	'llave',
+Item	-> -> -> Llaves "llaves"
+ with	name_f	'llave' 'muñeca' 'muñequita' 'sally',
 		name_fp	'llaves',
-		name_m	'llavero',
-		gender	G_MASCULINO,
+		name_m	'llavero' 'muñeco' 'muñequito',
+		gender	G_FEMENINO + G_PLURAL,
 		adjectives 'silvia' 'su',
-		article	"el",
-		description [; return O__M(self, 1); ],
- has	male;
+		article	"sus",
+		description [;
+			O__M(self, 1);
+			if (self hasnt described) { new_line; O__M(self, 2); }
+			return true;
+		],
+ has	female pluralname remarkable;
 
 
 !!==============================================================================
@@ -295,14 +382,24 @@ Outdoors	Patio "Patio delantero"
 		gender	G_MASCULINO,
 		adjectives 'delantera' 'delantero',
 		description [;
-			if (player in self) return O__M(self, 1);
-			else return O__M(self, 2);
+			O__M(self, 1);
+			if (player in self) return O__M(self, 2);
+			else return O__M(self, 3);
 		],
-		n_to	PuertaDelantera,
-		in_to	[; return self.n_to(); ],
+		after [;
+			Go:
+				give PuertaDelantera ~open;
+				self.in_destination = PuertaDelantera;
+		],
+		n_to [;
+			if (PuertaDelantera hasnt open) give PuertaDelantera open;
+			return PuertaDelantera;
+		],
+		in_to	[; <<Enter self.in_destination>>; ],
+		in_destination PuertaDelantera,
  has	male;
 
-Atrezzo	-> PatioCasa "casa"
+Atrezzo	-> Casa "casa"
  with	name_f	'casa' 'enredadera' 'fachada',
 		name_fp	'enredaderas',
 		name_m	'edificio' 'verdin',
@@ -310,24 +407,47 @@ Atrezzo	-> PatioCasa "casa"
 		adjectives 'blanca' 'blanco' 'planta',
 		description [; return O__M(self, 1); ],
 		before [;
+			Patio.in_destination = self;
 			Enter:
 				<<Go n_obj>>;
 		],
  has	enterable female;
 
-Atrezzo	-> PatioCamino "camino de grava"
+Atrezzo	-> CaminoGrava "camino de grava"
  with	name_f	'carretera' 'grava' 'gravilla',
 		name_m	'acceso' 'camino',
 		gender	G_FEMENINO,
 		adjectives 'secundaria',
-		description [; return O__M(self, 1); ],
+		description [; <<Look>>; ],
  has	female;
 
-Item	-> PatioCoche "coche"
+Item	-> Coche "coche"
+ class	SmartEnterable
  with	name_m	'coche' 'vehiculo',
 		gender	G_MASCULINO,
-		description [; return O__M(self, 1); ],
+		adjectives 'aparcado' 'granate',
+		description [;
+			if (player in self) <<Look>>;
+			if (self hasnt described) return O__M(self, 1);
+			else return O__M(self, 2);
+		],
+		react_before [;
+			if (self.SmartEnterable::react_before()) return true;
+			Exit:
+				if (player in self && noun == nothing) <<Exit self>>;
+			Lock:
+				if (noun == self && second == nothing
+					&& IndirectlyContains(player, self.with_key))
+					second = self.with_key;
+			SwitchOnEngine:
+				if (noun == nothing) <<SwitchOn self>>;
+			Unlock:
+				if (noun == self && second == nothing
+					&& IndirectlyContains(player, self.with_key))
+					second = self.with_key;
+		],
 		before [;
+			Patio.in_destination = self;
 			DefaultAction:
 				if (player notin self) {
 					print (parser) "entra en el coche", "^";
@@ -335,9 +455,36 @@ Item	-> PatioCoche "coche"
 				}
 				print (parser) "enciende el coche", "^";
 				<<SwitchOn self>>;
+			Enter:
+				if (player in self) return false;
+				if (self hasnt open) <Open self>;
+				if (self hasnt open) return true;
+				else self.automatic_enter = true;
+			Open:
+				if (self has open) return false;
+				if (self has locked) <<Unlock self>>;
+			Unlock:
+				if (self hasnt locked) return false;
+				if (~~IndirectlyContains(player, self.with_key)) {
+					if (self.tried_to_open) return O__M(self, 3);
+					self.tried_to_open = true;
+					O__M(self, 4);
+					new_line;
+					if (IndirectlyContains(Cocina, Bolso)
+						&& Bolso hasnt moved) {
+						return O__M(self, 5);
+					}
+					if (IndirectlyContains(player, Bolso)) {
+						return O__M(self, 6);
+					}
+					return O__M(self, 7);
+				}
 			SwitchOn:
 				if (player notin self) return false;
-				O__M(self, 4);
+				FadeOutTrack(MUS_PRESENTE, 0, 100);
+				O__M(BotonArranque, 5); ! FIXME
+				new_line;
+				HorizontalRule();
 				PressAnyKey();
 				new_line;
 				print (header) "FIN";
@@ -347,14 +494,66 @@ Item	-> PatioCoche "coche"
 				print (parser) "Pulsa una tecla para terminar";
 				quit;
 		],
- has	concealed container enterable male ~open openable static switchable;
+		after [;
+			Enter:
+				move BotonArranque to self;
+				give self ~open;
+				if (self.automatic_enter) self.automatic_enter = false;
+				else O__M(self, 10);
+				new_line;
+				<<Look>>;
+			Exit:
+				move BotonArranque to LIMBO;
+				give self ~open;
+				O__M(self, 11);
+				new_line;
+				<<Look>>;
+			Lock:
+				return O__M(self, 8);
+			Unlock:
+				give self open;
+				return O__M(self, 9);
+		],
+		with_key Llaves,
+ private
+		automatic_enter false,
+		tried_to_open false,
+ has	concealed container enterable lockable locked male ~open openable
+		remarkable static transparent;
+
+Item	BotonArranque "botón de arranque" LIMBO
+ with	name_m	'boton',
+		gender	G_MASCULINO,
+		adjectives 'arranque',
+		describe [; new_line; return O__M(self, 2); ],
+		description [; return O__M(self, 1); ],
+		before [;
+			Push:
+				<<SwitchOn Coche>>;
+		],
+ has	male static;
+
+Atrezzo	Cristalera "cristalera de colores"
+ with	found_in Patio Recibidor,
+		name_f	'cristalera',
+		name_m	'panel',
+		adjectives
+			'coloreada' 'colores' 'policromada' 'policromado' 'tintada'
+			'tintado' 'traslúcida' 'traslúcido',
+		description [;
+			if (location == Patio) return O__M(self, 1);
+			O__M(self, 2);
+			if (self hasnt described) O__M(self, 3);
+			return O__M(self, 4);
+		],
+ has	female;
 
 Item	PuertaDelantera "puerta de entrada"
  with	found_in Patio Recibidor,
 		name_f	'entrada' 'puerta' 'salida',
 		gender	G_FEMENINO,
-		adjectives 'delantera' 'principal',
-		desription [;
+		adjectives 'casa' 'delantera' 'principal',
+		description [;
 			if (location == Patio) return O__M(self, 1);
 			return O__M(self, 2);
 		],
@@ -362,27 +561,38 @@ Item	PuertaDelantera "puerta de entrada"
 			if (location == Patio) return n_to;
 			return s_to;
 		],
-		door_to [;
+		door_to [
+			obj i ks;
+			obj = i = ks = 0;
+			!! 1) Al entrar en la casa:
 			if (location == Patio) return Recibidor;
-			switch (DungeonMaster.leave_house()) {
-				1:	! El abrigo no está en el perchero
-					O__M(self, 3);
-					new_line;
-				2:	! Silvia no puede coger el abrigo porque ya está cargada
-					! con demasiadas cosas
-					! FIXME - Modificar de forma que; si la capacidad total del
-					! PC está cubierta, y tiene el frasco de sales de colores
-					! en las manos, al intentar coger otro objeto el frasco se
-					! cae y se rompe
-					O__M(self, 4);
-					return true;
-				3:	! Silvia coge el abrigo del perchero y sale
-					O__M(self, 5);
-					new_line;
+			!! 2) Al salir de la casa. Si el abrigo no está en el perchero:
+			if (abrigo notin RecibidorPerchero) {
+				O__M(self, 3);
+				new_line;
+				return Patio;
 			}
-			return patio;
+			!! 3) Al salir. Si Silvia no puede coger el abrigo porque ya está
+			!! cargada con demasiadas cosas:
+			!! FIXME - Modificar de forma que; si la capacidad total del PC
+			!! está cubierta, y tiene el frasco de sales de colores en las
+			!! manos, al intentar coger otro objeto el frasco se cae y se rompe
+			objectloop(obj in player) i++;
+			if ((i + 1) > player.capacity) {
+				O__M(self, 4);
+				return true;
+			}
+			!! 4) Al salir. Silvia coge el abrigo del perchero automáticamente:
+			ks = keep_silent;
+			keep_silent = true;
+			<Take abrigo>;
+			keep_silent = ks;
+			O__M(self, 5);
+			new_line;
+			return Patio;
 		],
 		before [;
+			Patio.in_destination = self;
 			DefaultAction:
 				if (self hasnt open) {
 					print (parser) "abre puerta", "^";
@@ -399,19 +609,6 @@ Item	PuertaDelantera "puerta de entrada"
 		],
  has	door female ~open openable remarkable scenery;
 
-Atrezzo	Cristalera "cristalera de colores"
- with	found_in Patio Recibidor,
-		name_f	'cristalera',
-		name_m	'panel',
-		adjectives
-			'coloreada' 'colores' 'policromada' 'policromado' 'tintada'
-			'tintado' 'traslúcida' 'traslúcido',
-		description [;
-			if (location == Patio) return O__M(self, 1);
-			return O__M(self, 2);
-		],
- has	female;
-
 
 !!==============================================================================
 !!
@@ -419,14 +616,16 @@ Atrezzo	Cristalera "cristalera de colores"
 !!
 !!------------------------------------------------------------------------------
 
-!!	-	'general' se activa tras abandonar la localidad por primera vez
+!!	-	'general' se activa cuando Silvia regresa a la localidad después de
+!!		haber estado ya en ella
+Array colorFlags -> 3; ! hasta 16 flags
 Indoors	Recibidor "Recibidor"
  with	name_f	'antesala' 'estancia' 'habitacion',
 		name_m	'hall' 'recibidor' 'vestibulo',
 		gender	G_MASCULINO,
 		description [;
 			if (self hasnt visited) {
-				O__M(DungeonMaster, 4);
+				O__M(Silvia, 3);
 				new_line;
 				return O__M(self, 1);
 			}
@@ -446,9 +645,24 @@ Indoors	Recibidor "Recibidor"
 				if (self hasnt general)
 					give self general;
 		],
-		n_to	Salon,
-		s_to	PuertaDelantera,
-		out_to	[; return self.s_to(); ],
+		n_to Salon,
+		s_to [;
+			if (PuertaDelantera hasnt open) give PuertaDelantera open;
+			return PuertaDelantera;
+		],
+		out_to [; return self.s_to(); ],
+		get_random_color [;
+			switch (Shuffle(8, colorFlags)) {
+				1:	return "amarillos";
+				2:	return "naranjas";
+				3:	return "violetas";
+				4:	return "verdes";
+				5:	return "rojos";
+				6:	return "dorados";
+				7:	return "turquesas";
+				8:	return "cobaltos";
+			}
+		],
  has	male;
 
 Item	-> RecibidorPerchero "perchero alto"
@@ -476,6 +690,7 @@ Item	-> RecibidorPerchero "perchero alto"
 			return O__M(self, 3);
 		],
 		react_before [;
+!			Drop, Hang:
 			Drop:
 				if ((IndirectlyContains(player, noun))
 					&& (noun has clothing)
@@ -499,11 +714,18 @@ Item	-> RecibidorPerchero "perchero alto"
  has	male supporter transparent;
 
 Item	-> -> Abrigo "abrigo"
+ class	Clothes,
  with	name_m	'abrigo',
 		gender	G_MASCULINO,
+		description [; return O__M(self, 1); ],
+		before [;
+			self.Clothes::before();
+		],
+		level 1,
  has	clothing male;
 
 Furniture	-> RecibidorComoda "cómoda"
+ class	Receptacle
  with	name_f	'comoda',
 		name_m	'mobiliario' 'mueble',
 		gender	G_FEMENINO,
@@ -547,6 +769,13 @@ Atrezzo	-> SalonEstanterias "estanterías"
 		description [; return O__M(self, 1); ],
  has	female pluralname supporter transparent;
 
+Atrezzo	-> -> SalonFiguras "figuras"
+ with	name_f	'figura',
+		name_fp	'figuras',
+		gender	G_FEMENINO + G_PLURAL,
+		description [; return O__M(self, 1); ],
+ has	female pluralname;
+
 Atrezzo	-> -> SalonLibros "libros"
  with	name_m	'libro',
 		name_mp	'libros',
@@ -568,6 +797,7 @@ Atrezzo	-> SalonMuebleBar "mueblebar"
  has	male ~open openable;
 
 Furniture	-> SalonSofa "sofá"
+ class	SmartEnterable
  with	name_m	'sofa',
 		gender	G_MASCULINO,
 		description [; return O__M(self, 1); ],
