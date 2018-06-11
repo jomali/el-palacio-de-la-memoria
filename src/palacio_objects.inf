@@ -13,11 +13,11 @@
 !!	Sistema:		Inform-INFSP 6
 !!	Plataforma:		Máquina-Z/Glulx
 !!	Versión:		0.0
-!!	Fecha:			2018/03/04
+!!	Fecha:			2018/06/11
 !!
 !!------------------------------------------------------------------------------
 !!
-!!	Este archivo forma parte del relato interactivo
+!!	Este archivo forma parte de la ficción interactiva
 !!	EL PALACIO DE LA MEMORIA.
 !!
 !!	EL PALACIO DE LA MEMORIA es software libre: usted puede
@@ -36,12 +36,6 @@
 !!	<http://www.gnu.org/licenses/>.
 !!
 !!	Copyright (c) 2018, J. Francisco Martín
-!!
-!!------------------------------------------------------------------------------
-!!
-!!	HISTORIAL DE VERSIONES
-!!
-!!	0.0: 2018/03/04	Inicio de desarrollo.
 !!
 !!------------------------------------------------------------------------------
 !!
@@ -330,12 +324,190 @@ Indoors	Dormitorio "Dormitorio principal"
 		adjectives 'principal',
  has	male;
 
-Furniture	-> DormitorioCama "cama"
- with	name_f	'cama',
-		name_m	'mobiliario' 'mueble',
+!!	-	'general' se activa para evitar las comprobaciones de 'react_before'
+Atrezzo	-> Oscuridad "oscuridad"
+ with	name_f	'lobreguez' 'negrura' 'oscuridad' 'penumbra' 'tenebrosidad',
+		name_fp	'penumbras' 'sombras' 'tinieblas',
 		gender	G_FEMENINO,
-		description [; return O__M(self, 1); ],
+		article	"la",
+		description [; <<Look>>; ],
+		react_before [;
+			if (self has general) return false;
+			Blow, Listen, Rub, SetTo, Smell, Taste, Touch:
+				if (self has general) return false;
+				if (noun == nothing or player or self)
+					return false;
+				if (IndirectlyContains(player, noun))
+					return false;
+				if (noun == self.exception)
+					return false;
+				return self.cannot_find_object(noun);
+			Close:
+				if (noun hasnt openable)
+					return false;
+				if (noun == self.exception)
+					return false;
+				return self.cannot_find_object(noun);
+			Consult, Examine, Look, LookUnder, Read, Search:
+				if (noun == nothing or player or self)
+					return false;
+				if (noun == location or real_location)
+					return false;
+				if (noun == self.exception)
+					return false;
+				return self.cannot_see_object(noun);
+			Dance:
+				return O__M(self, 1);
+			Empty, EmptyT, Insert, PutOn, Remove, Transfer:
+				if (noun hasnt supporter or container)
+					return false;
+				if (IndirectlyContains(player, noun))
+					return false;
+				if (second ~= nothing && IndirectlyContains(player, second))
+					return false;
+				return self.cannot_find_object(noun);
+			Jump, JumpOver:
+				return O__M(self, 2);
+			Lock, Unlock:
+				if (noun hasnt lockable)
+					return false;
+				if (IndirectlyContains(player, noun))
+					return false;
+				return self.cannot_find_object(noun);
+			Open:
+				if (noun hasnt openable)
+					return false;
+				if (noun == self.exception)
+					return false;
+				return self.cannot_find_object(noun);
+			Pull, Push, PushDir, Take:
+				if (noun has scenery or static)
+					return false;
+				if (noun == nothing or player)
+					return false;
+				if (IndirectlyContains(player, noun))
+					return false;
+				if (noun == self.exception)
+					return false;
+				return self.cannot_find_object(noun);
+			Swing:
+				return self.not_a_good_idea("columpiándose");
+			Wear:
+				if (noun hasnt clothing) return false;
+				return self.cannot_find_object(noun);
+		],
+		exception Cortinas,
+ private
+		cannot_see_object [ obj;
+		],
+		cannot_find_object [ obj;
+		],
+		not_a_good_idea [ action_text;
+		],
+ has	female;
+
+Atrezzo	-> Cortinas "cortinas"
+ with	name_f	'colgadura' 'cortina' 'persiana' 'ventana',
+		name_fp	'colgaduras' 'cortinas' 'persianas',
+		name_m	'cortinaje' 'ventanal' 'visillo',
+		name_mp	'cortinajes' 'visillos',
+		gender	G_FEMENINO + G_PLURAL,
+		adjectives
+			'abierta' 'abiertas' 'abierto' 'abiertos' 'cerrada' 'cerradas'
+			'cerrado' 'cerrados' 'tela',
+		description [;
+			if (self has open) return O__M(self, 2);
+			else return O__M(self, 1);
+		],
+		after [;
+			Close:
+				O__M(self, 3);
+				<<Look>>;
+			Open:
+				O__M(self, 4);
+				<<Look>>;
+		],
+ has	female openable pluralname;
+
+Furniture	-> Cama "cama"
+ class	SmartEnterable
+ with	name_f	'cama' 'piltra',
+		name_m	'camastro' 'catre' 'colchon' 'jergon' 'lecho' 'mobiliario'
+				'mueble' 'somier',
+		name_mp	'muebles',
+		gender	G_FEMENINO,
+		!! 'clarification' define el mensaje personalizado que se imprime junto
+		!! al título de la localidad cuando el PJ se encuentra en un objeto
+		clarification "sentada en la cama",
+		description [;
+			switch (self.wrinkled_sheets) {
+				0:	return O__M(self, 1);
+				1:	return O__M(self, 3);
+				2:	return O__M(self, 2);
+			}
+		],
+		react_before [;
+			if (self.SmartEnterable::react_before()) return true;
+			Sleep:
+				if (noun == nothing) <<Sleep self>>;
+			StandUp:
+				if (noun == nothing && player in self) <<Exit self>>;
+			Swing:
+				if (noun == nothing && player in self) <<JumpOver self>>;
+		],
+		before [;
+			Climb:
+				<<Enter self>>;
+			Enter:
+				if (player in self) return O__M(self, 8);
+				return false;
+			!! Iron:
+			!! 	if (self.wrinkled_sheets == 2) return O__M(self, 4);
+			!! 	else {
+			!! 		self.wrinkled_sheets = 2;
+			!! 		return O__M(self, 5);
+			!! 	}
+			Jump, JumpOver:
+				return O__M(self, 6);
+			LookUnder:
+				return O__M(self, 7);
+			Sit:
+				<<Enter self>>;
+			Sleep:
+				return O__M(self, 11);
+			Smell:
+				return O__M(self, 12);
+			StandUp:
+				if (player in self) <<Exit self>>;
+		],
+		after [;
+			Enter:
+				if (self.wrinkled_sheets == 2) self.wrinkled_sheets = 1;
+				return O__M(self, 9);
+			Exit:
+				return O__M(self, 10);
+		],
+ private
+		wrinkled_sheets 0, ! 0 - deshecho; 1 - arrugadas; 2 - estiradas
  has	enterable female supporter transparent;
+
+Atrezzo	-> -> Sabanas "sábanas"
+ with	name_f	'almohada' 'manta' 'sabana',
+		name_fp	'mantas' 'sabanas',
+		name_m	'almohadon' 'cojin' 'edredon',
+		gender	G_FEMENINO,
+		adjectives 'arrugada' 'arrugadas' 'cama' 'deshecha' 'deshechas',
+		before [;
+			Examine:
+				<<Examine Cama>>;
+			!! Iron, Pull, Turn:
+			!! 	<<Iron Cama>>;
+			Search, LookUnder:
+				return O__M(self, 1);
+			Smell:
+				<<Smell Cama>>;
+		],
+ has	female;
 
 
 !!==============================================================================
@@ -761,10 +933,10 @@ Atrezzo	-> SalonVentanales "ventanales"
  has	male pluralname;
 
 Atrezzo	-> SalonEstanterias "estanterías"
- with	name_f	'estanteria',
-		name_fp	'estanterias',
-		name_m	'estante',
-		name_mp	'estantes',
+ with	name_f	'balda' 'estanteria' 'repisa',
+		name_fp	'baldas' 'estanterias' 'repisas',
+		name_m	'anaquel' 'estante' 'pluteo',
+		name_mp	'anaqueles' 'estantes' 'pluteos',
 		gender	G_FEMENINO + G_PLURAL,
 		description [; return O__M(self, 1); ],
  has	female pluralname supporter transparent;

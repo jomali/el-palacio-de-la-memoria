@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ifindex version="1.0" xmlns="http://babel.ifarchive.org/protocol/iFiction/">
+    <story>
+        <identification>
+            <ifid>9D50BC2B-39D6-42BC-BF6F-7ECE7D4A5D87</ifid>
+            <format>glulx</format>
+        </identification>
+        <bibliographic>
+            <title>El Palacio de la Memoria</title>
+            <author>J. Francisco Martin Lisaso</author>
+            <language>ES</language>
+            <headline>Una ficción interactiva</headline>
+            <genre>fiction</genre>
+            <forgiveness>merciful</forgiveness>
+            <description></description>
+        </bibliographic>
+        <contacts>
+            <authoremail>jfm.lisaso@gmail.com</authoremail>
+            <url>https://jomali.itch.io/</url>
+        </contacts>
+        <release>
+            <version>1</version>
+            <releasedate>2018/06/11</releasedate>
+        </release>
+        <colophon>
+            <generator>Babble</generator>
+            <originated>2018/06/11</originated>
+        </colophon>
+    </story>
+</ifindex>

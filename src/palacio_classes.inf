@@ -13,11 +13,11 @@
 !!	Sistema:		Inform-INFSP 6
 !!	Plataforma:		Máquina-Z/Glulx
 !!	Versión:		0.0
-!!	Fecha:			2018/03/04
+!!	Fecha:			2018/06/11
 !!
 !!------------------------------------------------------------------------------
 !!
-!!	Este archivo forma parte del relato interactivo
+!!	Este archivo forma parte de la ficción interactiva
 !!	EL PALACIO DE LA MEMORIA.
 !!
 !!	EL PALACIO DE LA MEMORIA es software libre: usted puede
@@ -36,12 +36,6 @@
 !!	<http://www.gnu.org/licenses/>.
 !!
 !!	Copyright (c) 2018, J. Francisco Martín
-!!
-!!------------------------------------------------------------------------------
-!!
-!!	HISTORIAL DE VERSIONES
-!!
-!!	0.0: 2018/03/04	Inicio de desarrollo.
 !!
 !!------------------------------------------------------------------------------
 !!
@@ -322,7 +316,8 @@ Class	Receptacle
  with	before [;
 			Receive:
 				switch (CheckIfObjectFits(self, noun)) {
-					-1:	print "En ", (the) self, " ya no ";
+					-1:
+						print "En ", (the) self, " ya no ";
 						switch (_grammatical_inflection) {
 							FIRST_PERSON_PRESENT,
 							SECOND_PERSON_PRESENT,
@@ -338,28 +333,23 @@ Class	Receptacle
 								print "cabrán";
 						}
 						" más cosas.";
-					-2:	print (The) noun, " ";
+					-2:
+						print (The) noun, " ";
 						switch (_grammatical_inflection) {
 							FIRST_PERSON_PRESENT,
 							SECOND_PERSON_PRESENT,
 							THIRD_PERSON_PRESENT:
-								if (IsPluralNoun(noun)) print "son";
-								else print "es";
+								print (es) noun;
 							FIRST_PERSON_PAST,
 							SECOND_PERSON_PAST,
 							THIRD_PERSON_PAST:
-								if (IsPluralNoun(noun)) print "eran";
-								else print "era";
+								print "era", (n) noun;
 							FIRST_PERSON_FUTURE,
 							SECOND_PERSON_FUTURE,
 							THIRD_PERSON_FUTURE:
-								if (IsPluralNoun(noun)) print "serán";
-								else print "será";
+								print "será", (n) noun;
 						}
-						print " demasiado ";
-						if (IsPluralNoun(noun)) print "grandes";
-						else print "grande";
-						print " para ";
+						print " demasiado grande", (s) noun, " para ";
 						if (self has container) {
 							print "meterl", (o) noun, " en";
 						}
@@ -367,23 +357,21 @@ Class	Receptacle
 							print "colocarl", (o) noun, " sobre";
 						}
 						" ", (the) self, ".";
-					-3:	print (The) noun, " ";
+					-3:
+						print (The) noun, " ";
 						switch (_grammatical_inflection) {
 							FIRST_PERSON_PRESENT,
 							SECOND_PERSON_PRESENT,
 							THIRD_PERSON_PRESENT:
-								if (IsPluralNoun(noun)) print "son";
-								else print "es";
+								print (es) noun;
 							FIRST_PERSON_PAST,
 							SECOND_PERSON_PAST,
 							THIRD_PERSON_PAST:
-								if (IsPluralNoun(noun)) print "eran";
-								else print "era";
+								print "era", (n) noun;
 							FIRST_PERSON_FUTURE,
 							SECOND_PERSON_FUTURE,
 							THIRD_PERSON_FUTURE:
-								if (IsPluralNoun(noun)) print "serán";
-								else print "será";
+								print "será", (n) noun;
 						}
 						print " demasiado voluminos", (o) noun, " para ";
 						if (self has container) {
@@ -393,7 +381,8 @@ Class	Receptacle
 							print "colocarl", (o) noun, " sobre";
 						}
 						" ", (the) self, ".";
-					-4:	print "No ";
+					-4:
+						print "No ";
 						switch (_grammatical_inflection) {
 							FIRST_PERSON_PRESENT,
 							SECOND_PERSON_PRESENT,
@@ -412,23 +401,21 @@ Class	Receptacle
 						if (self has container) print "meter";
 						if (self has supporter) print "colocar";
 						" ", (the) noun, ".";
-					-5:	print (The) noun, " ";
+					-5:
+						print (The) noun, " ";
 						switch (_grammatical_inflection) {
 							FIRST_PERSON_PRESENT,
 							SECOND_PERSON_PRESENT,
 							THIRD_PERSON_PRESENT:
-								if (IsPluralNoun(noun)) print "son";
-								else print "es";
+								print (es) noun;
 							FIRST_PERSON_PAST,
 							SECOND_PERSON_PAST,
 							THIRD_PERSON_PAST:
-								if (IsPluralNoun(noun)) print "eran";
-								else print "era";
+								print "era", (n) noun;
 							FIRST_PERSON_FUTURE,
 							SECOND_PERSON_FUTURE,
 							THIRD_PERSON_FUTURE:
-								if (IsPluralNoun(noun)) print "serán";
-								else print "será";
+								print "será", (n) noun;
 						}
 						print " demasiado pesad", (o) noun, " para ";
 						if (self has container) {
@@ -438,7 +425,8 @@ Class	Receptacle
 							print "colocarl", (o) noun, " sobre";
 						}
 						" ", (the) self, ".";
-					-6:	switch (_grammatical_inflection) {
+					-6:
+						switch (_grammatical_inflection) {
 							FIRST_PERSON_PRESENT,
 							SECOND_PERSON_PRESENT,
 							THIRD_PERSON_PRESENT:
@@ -452,7 +440,7 @@ Class	Receptacle
 							THIRD_PERSON_FUTURE:
 								print "Será";
 						}
-						" demasiado peso para ", (the) self, ".";
+						" demasiado pesado para ", (the) self, ".";
 				}
 		];
 
@@ -506,7 +494,7 @@ Class	Room
 		!! comportamiento de la acción ##Look en el archivo de mensajes de la
 		!! librería):
 		inhibit_object_list false,
- has	light remarkable;
+ has	light;
 
 !!==============================================================================
 !!	+	Outdoors
@@ -751,7 +739,44 @@ Class	Clothes
 			Disrobe, Wear:
 				objectloop(obj in player && obj ofclass Clothes
 					&& obj has worn && obj.level > self.level) {
-					print (lm_ttienes) player, " que quitar", (lm_te) player,
+					switch (_grammatical_inflection) {
+						FIRST_PERSON_PAST:
+							if (IsPluralNoun(player))
+								print "Teníamos que quitarnos";
+							else print "Tenías que quitarme";
+						SECOND_PERSON_PAST:
+							if (IsPluralNoun(player))
+								print "Teníais que quitaros";
+							else print "Tenías que quitarte";
+						THIRD_PERSON_PAST:
+							if (IsPluralNoun(player))
+								print "Tenían que quitarse";
+							else print "Tenía que quitarse";
+						FIRST_PERSON_PRESENT:
+							if (IsPluralNoun(player))
+								print "Tenemos que quitarnos";
+							else print "Tengo que quitarme";
+						SECOND_PERSON_PRESENT:
+							if (IsPluralNoun(player))
+								print "Tenéis que quitaros";
+							else print "Tienes que quitarte";
+						THIRD_PERSON_PRESENT:
+							if (IsPluralNoun(player))
+								print "Tienen que quitarse";
+							else print "Tiene que quitarse";
+						FIRST_PERSON_FUTURE:
+							if (IsPluralNoun(player))
+								print "Tendremos que quitarnos";
+							else print "Tendré que quitarme";
+						SECOND_PERSON_FUTURE:
+							if (IsPluralNoun(player))
+								print "Tendréis que quitaros";
+							else print "Tendrás que quitarte";
+						THIRD_PERSON_FUTURE:
+							if (IsPluralNoun(player))
+								print "Tendrán que quitarse";
+							else print "Tendrá que quitarse";
+					}
 					" ", (the) noun, " primero.";
 				}
 		],

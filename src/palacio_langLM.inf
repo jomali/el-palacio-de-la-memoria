@@ -13,11 +13,11 @@
 !!	Sistema:		Inform-INFSP 6
 !!	Plataforma:		Máquina-Z/Glulx
 !!	Versión:		0.0
-!!	Fecha:			2018/03/04
+!!	Fecha:			2018/06/11
 !!
 !!------------------------------------------------------------------------------
 !!
-!!	Este archivo forma parte del relato interactivo
+!!	Este archivo forma parte de la ficción interactiva
 !!	EL PALACIO DE LA MEMORIA.
 !!
 !!	EL PALACIO DE LA MEMORIA es software libre: usted puede
@@ -36,12 +36,6 @@
 !!	<http://www.gnu.org/licenses/>.
 !!
 !!	Copyright (c) 2018, J. Francisco Martín
-!!
-!!------------------------------------------------------------------------------
-!!
-!!	HISTORIAL DE VERSIONES
-!!
-!!	0.0: 2018/03/04	Inicio de desarrollo.
 !!
 !!------------------------------------------------------------------------------
 !!
@@ -115,23 +109,22 @@ Object	LibraryMessages
 	LMode1:
 		!! La acción LMode1 se genera ante el comando BREVE. La librería
 		!! imprime la constante Story y a continuación este mensaje.
-		print_ret (parser) "La obra está ahora en su modo ~breve~, que da
-		sólo descripciones largas de los lugares la primera vez que son
-		visitadas, y descripciones cortas en otro caso.";
+		print_ret (parser) "La obra está ahora en su modo @<<breve@>>,
+		que imprime sólo descripciones largas de las localidades la primera vez
+ 		que son visitadas, y descripciones cortas en otro caso.";
 
 	LMode2:
 		!! La acción LMode2 se genera ante el comando LARGO (o NORMAL). La
 		!! librería imprime la constante Historia y a continuación este
 		!! mensaje.
-		print_ret (parser) "La obra está ahora en su modo normal ~largo~, que
-		siempre da descripciones largas de los lugares (incluso si ya habías
-		estado antes).";
+		print_ret (parser) "La obra está ahora en su modo normal @<<largo@>>,
+		que imprime siempre descripciones largas de las localidades (incluso si
+		ya habías estado antes).";
 
 	LMode3:
-		print_ret (parser) "La obra está ahora en su modo ~superbreve~, que
-		siempre da descripciones cortas de los lugares (incluso si nunca habías
-		estado antes).";
-
+		print_ret (parser) "La obra está ahora en su modo @<<superbreve@>>,
+		que imprime siempre descripciones cortas de las localidades (incluso si
+		nunca habías estado antes).";
 
 	Miscellany:
 		!! Esta es una falsa acción, que se usa simplemente para agrupar aquí
@@ -152,16 +145,16 @@ Object	LibraryMessages
 				referido.";
 			6:
 				!! Error si el intérprete no tiene "undo"
-				print_ret (parser) "Tu intérprete no puede ~DESHACER~
+				print_ret (parser) "Tu intérprete no puede @<<DESHACER@>>
 				acciones.";
 			7:
 				#Ifdef TARGET_ZCODE; ![6/11]
 				!! Otro error si el intérprete no tiene "undo", pero no había
 				!! sido detectado correctamente.
-				print_ret (parser) "~DESHACER~ falló. (Puede que tu intérprete
-				no permita realizar esa acción).";
+				print_ret (parser) "@<<DESHACER@>> falló. (Puede que tu
+				intérprete no permita realizar esa acción).";
 				#Ifnot; ! TARGET_GLULX
-				print_ret (parser) "No puedes ~DESHACER~ más.";
+				print_ret (parser) "No puedes @<<DESHACER@>> más.";
 				#Endif; ! TARGET_
 			8:
 				!! Si el usuario no responde correctamente a la pregunta del
@@ -175,11 +168,12 @@ Object	LibraryMessages
 				return true;
 			11:
 				!! Si el usuario intenta "undo" al principio del juego
-				print_ret (parser) "No se puede ~DESHACER~ algo que no has
+				print_ret (parser) "No se puede @<<DESHACER@>> algo que no has
 				hecho.";
 			12:
 				!! Si el usuario pone "undo" dos veces.
-				print_ret (parser) "No se puede ~DESHACER~ dos veces seguidas.";
+				print_ret (parser) "No se puede @<<DESHACER@>> dos veces
+				seguidas.";
 			13:
 				!! Éxito en el "undo".
 				print_ret (parser) "Retrocediendo al turno anterior.";
@@ -194,19 +188,21 @@ Object	LibraryMessages
 				print_ret (parser) "Eso no puede corregirse.";
 			15:
 				!! Se usa EEPA sin especificar la palabra corregida.
-				print_ret (parser) "Has utilizado ~EEPA~ sin especificar qué
-				palabra deseabas corregir.";
+				print_ret (parser) "Has utilizado @<<EEPA@>> sin especificar
+				qué palabra deseabas corregir.";
 			16:
 				!! Si el usuario pone EEPA seguido de dos o más palabras.
-				print_ret (parser) "~EEPA~ sólo puede corregir una palabra.";
+				print_ret (parser) "@<<EEPA@>> sólo puede corregir una
+				palabra.";
 			19:
 				!! Descripción del personaje controlado por el usuario.
 				<<Inv>>;
 			20:
 				!! Cuando el usuario pone PNJ, REPITE para que el PNJ haga otra
 				!! vez la última acción.
-				print_ret (parser) "Para repetir un comando como ~PERSONAJE,
-				SALTA~, escribe ~REPITE~, en lugar de ~PERSONAJE, REPITE~.";
+				print_ret (parser) "Para repetir un comando como @<<PERSONAJE,
+				SALTA@>>, escribe @<<REPITE@>>, en lugar de @<<PERSONAJE,
+				REPITE@>>.";
 			21:
 				!! Cuando el usuario pone REPITE como primer commando del juego.
 				print_ret (parser) "No hay comando que repetir.";
@@ -235,7 +231,52 @@ Object	LibraryMessages
 				!! Hay palabras no comprendidas entre el nombre de un PNJ y la
 				!! coma, ej: PEPE ZAFDSRGG, SALTA.
 				print_ret (parser) "Para iniciar una conversación, intenta
-				órdenes del tipo: PERSONAJE, HOLA.";
+				órdenes del tipo: @<<PERSONAJE, HOLA@>>.";
+			44:
+				!! El usuario ha intentado objetos múltiples usando TODO
+				!! pero el parser no ha encontrado ninguno. Por ejemplo, COGE
+				!! TODO o DEJA TODO si no hay nada cerca o en el inventario.
+				!! Modificado en [020621] para dar un mensaje más coherente
+				!! si el usuario tiene algún objeto en su inventario.
+				previous_style = UseTextStyle(TEXT_STYLE_PARSER);
+				print (string) TEXT_STYLE_PARSER_PREFIX;
+				if (action_to_be == ##Drop) {
+					print "No tienes nada que ";
+					LanguageVerb(verb_word);
+					print ".";
+				} else {
+					print "No hay nada que ";
+					LanguageVerb(verb_word);
+					print ".";
+				}
+				print (string) TEXT_STYLE_PARSER_SUFIX;
+				UseTextStyle(previous_style);
+				new_line;
+				return true;
+			45:
+				!! El usuario ha nombrado un PNJ ambiguo (hay más de noun con
+				!! el mismo name cerca). El parser le pide aclaración. Este
+				!! mensaje es la primera parte de la pregunta, el resto lo pone
+				!! el parser (que es la lista de PNJs entre los que duda).
+				!! Debemos poner a 1 la variable PreguntaCualExactamente cuando
+				!! se generan este tipo de preguntas aclaratorias.
+				previous_style = UseTextStyle(TEXT_STYLE_PARSER);
+				print (string) TEXT_STYLE_PARSER_PREFIX;
+				print "¿Quién concretamente: ";
+				PreguntaCualExactamente=1;
+				ImprimirListaDudosos("o");
+			46:
+				!! El usuario ha nombrado un objeto ambiguo (hay más de objeto
+				!! con el mismo nombre cerca). El parser le pide aclaración.
+				!! Este mensaje es la primera parte de la pregunta, el resto lo
+				!! pone el parser (que es la lista de objetos entre los que
+				!! duda). Debemos poner a 1 la variable PreguntaCualExactamente
+				!! cuando se generan este tipo de preguntas aclaratorias.
+				previous_style = UseTextStyle(TEXT_STYLE_PARSER);
+				print (string) TEXT_STYLE_PARSER_PREFIX;
+				print "¿Cuál concretamente: ";
+				PreguntaCualExactamente=1;
+				ImprimirListaDudosos("o");
 			47:
 				!! El usuario ha respondido "TODOS" o "AMBOS" a una pregunta
 				!! aclaratoria como la anterior, pero el verbo no admite
@@ -262,6 +303,7 @@ Object	LibraryMessages
 				new_line;
 				return true;
 			49:
+				!! FIXME - ¿Qué quieres comerse?
 				!! El usuario ha escrito una frase u orden incompleta, como
 				!! COGE (verbo aplicado sobre objetos normalmente). El parser
 				!! le pregunta para que complete la frase.
@@ -292,10 +334,35 @@ Object	LibraryMessages
 				print_ret (parser) "Comentario guardado.";
 			55:
 				print_ret (parser) "Comentario NO guardado.";
+			56:
+				!! FIXME - Probar
+				print ".", (string) TEXT_STYLE_PARSER_SUFIX;
+				UseTextStyle(TEXT_STYLE_UPRIGHT);
+				new_line;
+			57:
+				!! FIXME - Probar
+				print "?", (string) TEXT_STYLE_PARSER_SUFIX;
+				UseTextStyle(TEXT_STYLE_UPRIGHT);
+				new_line;
 		}
 
 	NotifyOff:
 		print_ret (parser) "Notificación de puntuación desactivada.";
+
+	Places:
+		!! El verbo "LUGARES" muestra un listado de los lugares que el usuario
+		!! ha visitado. Aquí debemos escribir el texto introductorio a esa
+		!! lista.
+		switch (n) {
+			1:
+				previous_style = UseTextStyle(TEXT_STYLE_PARSER);
+				print (string) TEXT_STYLE_PARSER_PREFIX;
+				print "Has visitado: ";
+			2:
+				print ".", (string) TEXT_STYLE_PARSER_SUFIX;
+				UseTextStyle(previous_style);
+				new_line;
+		}
 
 	!! XXX - Mensaje personalizado del narrador
 	Pray:
@@ -333,14 +400,6 @@ Object	LibraryMessages
 		}
 		return true;
 
-	Prompt:
-		!! El prompt aparece justo antes de pedir una nueva línea al usuario.
-		!! Puede definirse para que sea una frase, o se genere una frase
-		!! aleatoria en cada turno, por ejemplo.
-		new_line;
-		print (string) PS1;
-		return true;
-
 	Quit:
 		!!	1:	Respuesta al comando FIN.
 		!!	2:	Respuesta si el jugador escribe algo distinto de "si" o "no".
@@ -348,22 +407,22 @@ Object	LibraryMessages
 			1:
 				previous_style = UseTextStyle(TEXT_STYLE_PARSER);
 				print (string) TEXT_STYLE_PARSER_PREFIX;
-				print "Por favor, responde ";
+				print "Por favor, responde @<<";
 				print "SÍ"; ! Hyperlink("SÍ"); !! TODO
-				print " o ";
+				print "@>> o @<<";
 				print "NO"; ! Hyperlink("NO"); !! TODO
-				print ":";
+				print "@>>:";
 				print (string) TEXT_STYLE_PARSER_SUFIX;
 				UseTextStyle(previous_style);
 				print " ";
 			2:
 				previous_style = UseTextStyle(TEXT_STYLE_PARSER);
 				print (string) TEXT_STYLE_PARSER_PREFIX;
-				print "¿Realmente quieres abandonar el relato? (";
+				print "¿Realmente quieres abandonar el relato? (@<<";
 				print "SÍ"; ! Hyperlink("SÍ"); !! TODO
-				print "/";
+				print "@>> / @<<";
 				print "NO"; ! Hyperlink("NO"); !! TODO
-				print ")";
+				print "@>>)";
 				print (string) TEXT_STYLE_PARSER_SUFIX;
 				UseTextStyle(previous_style);
 				print " ";
@@ -377,11 +436,11 @@ Object	LibraryMessages
 			1:
 				previous_style = UseTextStyle(TEXT_STYLE_PARSER);
 				print (string) TEXT_STYLE_PARSER_PREFIX;
-				print "¿Realmente quieres reiniciar el relato? (";
+				print "¿Realmente quieres reiniciar el relato? (@<<";
 				print "SÍ"; ! Hyperlink("SÍ"); !! TODO
-				print "/";
+				print "@>> / @<<";
 				print "NO"; ! Hyperlink("NO"); !! TODO
-				print ")";
+				print "@>>)";
 				print (string) TEXT_STYLE_PARSER_SUFIX;
 				UseTextStyle(previous_style);
 				print " ";
@@ -469,29 +528,9 @@ Object	LibraryMessages
 
 	Strong:
 		!! Respuesta si se usa como primera palabra algún taco.
-		!! TODO - Cambiar por un mensaje más apropiado (¿recomendar AYUDA?)
-		previous_style = UseTextStyle(TEXT_STYLE_PARSER);
-		print (string) TEXT_STYLE_PARSER_PREFIX;
-		print "No ";
-		switch (_grammatical_inflection) {
-			FIRST_PERSON_PRESENT,
-			SECOND_PERSON_PRESENT,
-			THIRD_PERSON_PRESENT:
-				print "es";
-			FIRST_PERSON_PAST,
-			SECOND_PERSON_PAST,
-			THIRD_PERSON_PAST:
-				print "era";
-			FIRST_PERSON_FUTURE,
-			SECOND_PERSON_FUTURE,
-			THIRD_PERSON_FUTURE:
-				print "será";
-		}
-		print " necesario utilizar ese vocabulario.";
-		print (string) TEXT_STYLE_PARSER_SUFIX;
-		UseTextStyle(previous_style);
-		new_line;
-		return true;
+		print_ret (parser) "No sirve de nada utilizar ese vocabulario. Si estás
+ 		bloqueado y no sabes cómo avanzar tal vez quieras teclear
+		@<<AYUDA@>>.";
 
 	VagueGo:
 		!! El usuario ha dicho IR sin especificar a dónde
@@ -513,7 +552,7 @@ Object	LibraryMessages
 		}
 
 	Yes:
-		print_ret (parser) "La instrucción ~SÍ~ no tiene sentido en esta
+		print_ret (parser) "La instrucción @<<SÍ@>> no tiene sentido en esta
 		situación.";
 
 ];
@@ -538,9 +577,9 @@ Object	LibraryMessages
 				previous_style = UseTextStyle(TEXT_STYLE_PARSER);
 				print (string) TEXT_STYLE_PARSER_PREFIX;
 				print "Intenta de nuevo porque solo se pudo entender que
-				quieres ~";
+				quieres @<<";
 				PrintCommand();
-				print "~.";
+				print "@>>.";
 				print (string) TEXT_STYLE_PARSER_SUFIX;
 				UseTextStyle(previous_style);
 				new_line;
@@ -562,14 +601,14 @@ Object	LibraryMessages
 				!! #32: El objeto que el usuario intenta usar no está en su
 				!! poder. El parser ha intentado "cogerlo de forma automatica",
 				!! pero ha fallado.
-				"No ", (lm_tienes) player, " eso.";
+				print_ret (parser) "No tienes eso.";
 		MULTI_PE:
 				!! #33: El usuario ha intentado usar objetos múltiples (o
 				!! "TODO") con un verbo que en su gramática no lo admite.
 				previous_style = UseTextStyle(TEXT_STYLE_PARSER);
 				print (string) TEXT_STYLE_PARSER_PREFIX;
-				print "No se pueden especificar objetos múltiples con ~",
-				(address) verb_word, "~.";
+				print "No se pueden especificar objetos múltiples con @<<",
+				(address) verb_word, "@>>.";
 				print (string) TEXT_STYLE_PARSER_SUFIX;
 				UseTextStyle(previous_style);
 				new_line;
@@ -584,8 +623,8 @@ Object	LibraryMessages
 				!! parser no tiene asignado un valor a ese pronombre.
 				previous_style = UseTextStyle(TEXT_STYLE_PARSER);
 				print (string) TEXT_STYLE_PARSER_PREFIX;
-				print "No está claro a qué te refieres con ~",
-				(address) pronoun_word ,"~.";
+				print "No está claro a qué te refieres con @<<",
+				(address) pronoun_word, "@>>.";
 				print (string) TEXT_STYLE_PARSER_SUFIX;
 				UseTextStyle(previous_style);
 				new_line;
@@ -610,10 +649,10 @@ Object	LibraryMessages
 				!! orden a un PNJ).
 				previous_style = UseTextStyle(TEXT_STYLE_PARSER);
 				print (string) TEXT_STYLE_PARSER_PREFIX;
-				print "La instrucción ~";
+				print "La instrucción @<<";
 				for (j = 0: j < WordLength(1): j++)
 					print (char) WordAddress(1) -> j;
-				print "~ no está definida.";
+				print "@>> no está definida.";
 				print (string) TEXT_STYLE_PARSER_SUFIX;
 				UseTextStyle(previous_style);
 				new_line;
@@ -628,8 +667,8 @@ Object	LibraryMessages
 				previous_style = UseTextStyle(TEXT_STYLE_PARSER);
 				print (string) TEXT_STYLE_PARSER_PREFIX;
 				print "Ahora mismo no se puede encontrar lo que representa el
-				pronombre ~", (address) pronoun_word ,"~ (", (the) pronoun_obj,
-				").";
+				pronombre @<<", (address) pronoun_word ,"@>> (",
+				(the) pronoun_obj, ").";
 				print (string) TEXT_STYLE_PARSER_SUFIX;
 				UseTextStyle(previous_style);
 				new_line;
@@ -681,6 +720,6 @@ Object	LibraryMessages
 		InformLibrary.end_turn_sequence();
 		return true;
 	}
-	print_ret (parser) "No es necesario referirse a eso para terminar
+	print_ret (parser) "No es necesario referirse a eso para continuar
 	la historia.";
 ];

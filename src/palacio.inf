@@ -18,11 +18,11 @@
 !!	Sistema:		Inform-INFSP 6
 !!	Plataforma:		Máquina-Z/Glulx
 !!	Versión:		0.0
-!!	Fecha:			2018/03/04
+!!	Fecha:			2018/06/11
 !!
 !!------------------------------------------------------------------------------
 !!
-!!	Este archivo forma parte del relato interactivo
+!!	Este archivo forma parte de la ficción interactiva
 !!	EL PALACIO DE LA MEMORIA.
 !!
 !!	EL PALACIO DE LA MEMORIA es software libre: usted puede
@@ -73,8 +73,10 @@
 !!	-	Información bibliográfica
 !!	-	Definiciones generales
 !!	-	Definiciones de la librería Inform
-!!	-	Definiciones de la extensión 'textStyles'
-!!	-	Definiciones de la librería de mensajes 'SpanishLM'
+!!	-	Configuración de la interfaz gráfica con 'GWindows'
+!!	-	Configuración de la extensión 'hyperlinks'
+!!	-	Configuración de la librería de mensajes 'SpanishLM'
+!!	-	Configuración de la extensión 'textStyles'
 !!------------------------------------------------------------------------------
 
 !!------------------------------------------------------------------------------
@@ -95,21 +97,19 @@ Release 0;						! v0.0
 !!	Definiciones generales
 !!------------------------------------------------------------------------------
 
+!! Utilización del gestor de audio Damusix:
+Constant USE_DAMUSIX;
+!! Utilización de extensiones a las rutinas por defecto de la librería:
+Constant USE_EXTENDED_LIBRARY;
+!! Utilización de interfaz gráfica GWindows:
+Constant USE_GWINDOWS;
+!! Utilización de hipervínculos Glk:
+Constant USE_HYPERLINKS;
 !! Utilización de mensajes personalizados de la librería:
-Constant CUSTOM_LIBRARY_MESSAGES;
-!! Utilización de reemplazos de rutinas por defecto de la librería:
-Constant EXTENDED_LIBRARY;
-
-!! Acción por defecto utilizada al seleccionar un hipervínculo:
-Constant HYPERLINKS_COMMAND "";
-!! Inductor:
-Constant PS1 "> ";
-!! Color de fondo del estilo de texto Usuario 1:
-Constant USR1_STYLE_BGC	$CFF5F8;
-!! Color frontal del estilo de texto Usuario 2:
-Constant USR2_STYLE_FGC $808080;
+Constant USE_SPANISH_LM;
 
 !! Variables globales con los estilos de texto para resaltar objetos:
+!! (Requiere la extensión 'textStyles')
 
 Global _highlight_style_1 = TEXT_STYLE_USER1;	! Objetos destacados
 Global _highlight_style_2 = TEXT_STYLE_UPRIGHT;	! Direcciones y puertas
@@ -119,56 +119,29 @@ Global _highlight_style_3 = TEXT_STYLE_UPRIGHT;	! Otros objetos
 !!	Definiciones de la librería Inform
 !!------------------------------------------------------------------------------
 
-Constant MANUAL_PRONOUNS;		! Los pronoms. refieren a objetos ya mencionados
+Constant MANUAL_PRONOUNS;		! Los prons. refieren a objetos ya mencionados
 Constant MAX_CARRIED 3;			! Máx. de objetos que se pueden llevar en mano
 Constant NO_PLACES;				! Acciones LUGARES y OBJETOS desactivadas
 Constant NO_SCORE;				! No se lleva conteo de puntuación
 Constant SACK_OBJECT Bolso;		! Contenedor principal para la librería
 
-#Ifdef CUSTOM_LIBRARY_MESSAGES;
+#Ifdef USE_SPANISH_LM;
 Constant SIN_MENSAJES;			! Se omiten los mensajes por defecto de la lib.
-#Endif; ! CUSTOM_LIBRARY_MESSAGES;
+#Endif; ! USE_SPANISH_LM;
 
-#Ifdef EXTENDED_LIBRARY;
+#Ifdef USE_EXTENDED_LIBRARY;
 Constant WITHOUT_DIRECTIONS;	! Se omiten las dir. por defecto de la lib.
-#Endif; ! EXTENDED_LIBRARY;
+#Endif; ! USE_EXTENDED_LIBRARY;
+
 
 !!------------------------------------------------------------------------------
-!!	Definiciones de la extensión 'textStyles'
-!!------------------------------------------------------------------------------
-
-Constant TEXT_STYLE_PARSER TEXT_STYLE_USER2;
-Constant TEXT_STYLE_PARSER_PREFIX "[";
-Constant TEXT_STYLE_PARSER_SUFIX "]";
-
-!!------------------------------------------------------------------------------
-!!	Definiciones de la librería de mensajes 'SpanishLM'
-!!------------------------------------------------------------------------------
-
-#Ifdef CUSTOM_LIBRARY_MESSAGES;
-Global FORMER__TX	= "tu antiguo ~yo~";
-Global YOURSELF__TX	= "ti mismo";
-Global CANTGO__TX	= "No puedes ir por ahí.";
-Global IS__TX		= " ves";
-Global ARE__TX		= " ves";
-Global IS2__TX		= "ves ";
-Global ARE2__TX		= "ves ";
-Global YOU__TX		= "Tú";
-Global PARTICULA_TE	= "te";
-#Ifnot;
-[ IsPluralNoun; return false; ];
-[ SetGrammaticalInflection; ];
-[ lm_as_; print "as"; ];
-[ lm_estas; print "estás"; ];
-[ lm_tienes; print "tienes"; ];
-#Endif; ! CUSTOM_LIBRARY_MESSAGES;
-
-!!------------------------------------------------------------------------------
-!!	Configuración de la interfaz gráfica (sólo en Glulx)
+!!	-	Configuración de la interfaz gráfica con 'GWindows' (sólo en Glulx)
 !!------------------------------------------------------------------------------
 
 #Ifdef TARGET_GLULX;
+!! Color de los márgenes de la interfaz:
 Constant GUICONFIG_MARGIN_COLOR $FFFFFF;
+!! Distribución de ventanas:
 Object	GUIConfig "(GUI Configuration)"
  with	!!----------------------------------------------------------------------
 		graphic_window_flag true,	! estado de las ventanas gráficas
@@ -212,6 +185,53 @@ Object	GUIConfig "(GUI Configuration)"
 ;
 #Endif; ! TARGET_GLULX;
 
+!!------------------------------------------------------------------------------
+!!	Configuración de la extensión 'hyperlinks'
+!!------------------------------------------------------------------------------
+
+#Ifdef USE_HYPERLINKS;
+!! Acción por defecto utilizada al seleccionar un hipervínculo:
+Global _hyperlinks_command = "";
+#Endif; ! USE_HYPERLINKS;
+
+!!------------------------------------------------------------------------------
+!!	Configuración de la librería de mensajes 'SpanishLM'
+!!------------------------------------------------------------------------------
+
+Constant PS1 "^> ";				! Inductor
+
+#Ifdef USE_SPANISH_LM;
+Global FORMER__TX	= "tu antiguo ~yo~";
+Global YOURSELF__TX	= "ti mismo";
+Global CANTGO__TX	= "No puedes ir por ahí.";
+Global IS__TX		= " ves";
+Global ARE__TX		= " ves";
+Global IS2__TX		= "ves ";
+Global ARE2__TX		= "ves ";
+Global YOU__TX		= "Tú";
+Global PARTICULA_TE	= "te";
+#Endif; ! USE_SPANISH_LM;
+
+
+!!------------------------------------------------------------------------------
+!!	Configuración de la extensión 'textStyles'
+!!------------------------------------------------------------------------------
+
+!! Color frontal para el estilo de texto encabezado:
+Constant HEADER_STYLE_FGC $FF3FA4; ! #FF3FA4
+!! Color de fondo del estilo de texto Usuario 1:
+Constant USR1_STYLE_BGC	$CFF5F8; ! #CFF5F8
+!! Color frontal del estilo de texto Usuario 2:
+Constant USR2_STYLE_FGC $808080; ! #808080
+
+Constant TEXT_STYLE_PARSER TEXT_STYLE_USER2;
+Constant TEXT_STYLE_PARSER_PREFIX "[";
+Constant TEXT_STYLE_PARSER_SUFIX "]";
+
+#Ifdef TARGET_ZCODE;
+Constant TEXT_STYLE_PARSER TEXT_STYLE_MONOSPACED;
+#Endif; ! TARGET_
+
 
 !!==============================================================================
 !!
@@ -219,17 +239,16 @@ Object	GUIConfig "(GUI Configuration)"
 !!
 !!------------------------------------------------------------------------------
 
-#Ifdef CUSTOM_LIBRARY_MESSAGES;
+#Ifdef USE_SPANISH_LM;
 Replace ChangePlayer;			! Rutina para cambiar el objeto PC
-#Endif; ! CUSTOM_LIBRARY_MESSAGES;
+#Endif; ! USE_SPANISH_LM;
 
-#Ifdef EXTENDED_LIBRARY;
+#Ifdef USE_EXTENDED_LIBRARY;
 Replace Banner;					! Créditos generales de la aplicación
-Replace ChangePlayer;			! Rutina para cambiar el objeto PC
 Replace DrawStatusLine;			! Dibuja la barra de estado
 Replace ExamineSub;				! Rutina para la acción ##Examine
 Replace GetGNAOfObject;			! Rutina para obtener el GNA de un objeto
-Replace InvSub;					! Rutina para tomar inventario del PC
+Replace InvSub;					! Rutina para listar inventario del PJ
 Replace LanguageDirection;		! Imprime el nombre de las direcciones
 Replace LMode1Sub;				! Lookmode 1: Breve
 Replace LMode2Sub;				! Lookmode 2: Largo (establecido por defecto)
@@ -237,9 +256,11 @@ Replace LMode3Sub;				! Lookmode 3: Superbreve
 Replace LookSub;				! Rutina para la acción ##Look
 Replace PSN__;					! Rutina para imprimir nombre corto de un obj.
 Replace VersionSub;				! Créditos detallados de la aplicación
-#Endif; ! EXTENDED_LIBRARY;
+#Endif; ! USE_EXTENDED_LIBRARY;
 
-Replace HyperlinkSetStyle;		! Gestión de estilos de texto de hipervínculos
+#Ifdef USE_HYPERLINKS;
+!! Replace HyperlinkSetStyle;		! Gestión de estilos de texto de hipervínculos
+#Endif; ! USE_HYPERLINKS;
 
 
 !!==============================================================================
@@ -249,25 +270,29 @@ Replace HyperlinkSetStyle;		! Gestión de estilos de texto de hipervínculos
 !!------------------------------------------------------------------------------
 
 #Ifdef TARGET_GLULX;
+#Ifdef USE_GWINDOWS;
 Include "gwindefs.h";			! GWindows: Definiciones
+#Endif; ! USE_GWINDOWS;
 #Endif; ! TARGET_GLULX;
 
 Include "Parser.h";				! Decodifica la entrada del teclado
 Include "textStyles.h";			! Selección de estilo de los textos
 
-#Ifdef CUSTOM_LIBRARY_MESSAGES;
+#Ifdef USE_SPANISH_LM;
 Include "SpanishLM.h";			! Mensajes de la librería
-#Endif; ! CUSTOM_LIBRARY_MESSAGES;
+#Endif; ! USE_SPANISH_LM;
 
-#Ifdef EXTENDED_LIBRARY;
+#Ifdef USE_EXTENDED_LIBRARY;
 Include ">palacio_lib.inf";		! Personalizaciones de la librería Inform
-#Endif; ! EXTENDED_LIBRARY;
+#Endif; ! USE_EXTENDED_LIBRARY;
 
 Include ">palacio_langLM.inf";	! Mensajes personalizados de la librería
 Include ">palacio_langOM.inf";	! Mensajes de los objetos
 
 #Ifdef TARGET_GLULX;
+#Ifdef USE_GWINDOWS;
 Include "gwincls.h";			! GWindows: Window Class Framework
+#Endif; ! USE_GWINDOWS;
 #Endif; ! TARGET_GLULX;
 
 
@@ -284,6 +309,7 @@ Include "gwincls.h";			! GWindows: Window Class Framework
 !!------------------------------------------------------------------------------
 
 #Ifdef TARGET_GLULX;
+#Ifdef USE_GWINDOWS;
 !!------------------------------------------------------------------------------
 !! Punto de entrada para manejar eventos Glk con la librería GWindows.
 !! Reemplaza al habitual 'HandleGlkEvent()'.
@@ -314,25 +340,27 @@ Include "gwincls.h";			! GWindows: Window Class Framework
 !!		entradas de caracter). Cualquier otro valor de retorno continuará con
 !!		la ejecución normal de la librería
 !!------------------------------------------------------------------------------
-[ GWindowsGlkEvent ev context abortres
-	previous_style i;
+[ GWindowsGlkEvent ev context abortres;
 	!! Gestión de efecto de 'fade' en Damusix en tiempo real:
 	Damusix.NotificarFade(ev);
 	!! Gestión de los eventos de selección de hipervínculo:
 	if (HandleHyperlinkEvent(ev, context, abortres)) {
-!!		previous_style = UseTextStyle(TEXT_STYLE_PARSER);
-!!		print (string) TEXT_STYLE_PARSER_PREFIX;
-!!		for (i = WORDSIZE : i < (abortres-->0) + WORDSIZE : i++) {
-!!			print (char) abortres->i;
-!!		}
-!!		print (string) TEXT_STYLE_PARSER_SUFIX;
-!!		UseTextStyle(previous_style);
-!!		new_line;
 		return 2; ! finaliza el turno
 	}
-	previous_style = i;
 ];
+#Ifnot;
+!! Versión del punto de entrada anterior cuando no se utiliza GWindows:
+[ HandleGlkEvent ev context abortres;
+	!! Gestión de efecto de 'fade' en Damusix en tiempo real:
+	Damusix.NotificarFade(ev);
+	!! Gestión de los eventos de selección de hipervínculo:
+	if (HandleHyperlinkEvent(ev, context, abortres)) {
+		return 2; ! finaliza el turno
+	}
+];
+#Endif; ! USE_GWINDOWS;
 
+#Ifdef USE_GWINDOWS;
 !!------------------------------------------------------------------------------
 !! 'GWindowsGlkIdentify() permite conocer qué objetos Glk existen; útil para
 !! gestionar las directivas RESTORE, RESTART y UNDO puesto que, al utilizar
@@ -354,7 +382,17 @@ Include "gwincls.h";			! GWindows: Window Class Framework
 
 	phase = type + ref + rock; ! (por evitar alertas del compilador)
 ];
+#Ifnot;
+!! Versión del punto de entrada anterior cuando no se utiliza GWindows:
+[ IdentifyGlkObject phase type ref rock;
+	!! Se identifican todos los objetos de sonido gestionados por Damusix:
+	Damusix.IdentificarSonidos(phase);
 
+	phase = type + ref + rock; ! (por evitar alertas del compilador)
+];
+#Endif; ! USE_GWINDOWS;
+
+#Ifdef USE_GWINDOWS;
 !!------------------------------------------------------------------------------
 !! La librería GWindows hace uso del punto de entrada 'InitGlkWindow()'. En su
 !! lugar, ofrece este punto de entrada, sin argumentos, que es equivalente a
@@ -374,37 +412,57 @@ Include "gwincls.h";			! GWindows: Window Class Framework
 	!! Propuestas de estilos de texto de 'textStyles':
 	InitialiseStyleHints(GG_MAINWIN_ROCK);
 
+	#Ifdef HEADER_STYLE_FGC;
+	glk($00B0, 0, 3, 7, HEADER_STYLE_FGC); ! header: stylehint_TextColor
+	#Endif; ! HEADER_STYLE_FGC
+
 	!! Propuestas de estilo de texto personalizado: Usuario 1
-	#Ifdef USR1_STYLE_BGC;
-	glk_stylehint_set(wintype_TextBuffer, style_User1,
-		stylehint_BackColor, USR1_STYLE_BGC);
-	#Endif; ! USR1_STYLE_BGC;
 	#Ifdef USR1_STYLE_FGC;
-	glk_stylehint_set(wintype_TextBuffer, style_User1,
-		stylehint_TextColor, USR1_STYLE_FGC);
+	glk($00B0, 0, 9, 7, USR1_STYLE_FGC); ! glk_stylehint_set()
 	#Endif; ! USR1_STYLE_FGC;
-	glk_stylehint_set(wintype_TextBuffer, style_User1,
-		stylehint_Oblique, 0);
-	glk_stylehint_set(wintype_TextBuffer, style_User1,
-		stylehint_Weight, 0);
+	#Ifdef USR1_STYLE_BGC;
+	glk($00B0, 0, 9, 8, USR1_STYLE_BGC); ! glk_stylehint_set()
+	#Endif; ! USR1_STYLE_BGC;
 
 	!! Propuestas de estilo de texto personalizado: Usuario 2
-	#Ifdef USR2_STYLE_BGC;
-	glk_stylehint_set(wintype_TextBuffer, style_User2,
-		stylehint_BackColor, USR2_STYLE_BGC);
-	#Endif; ! USR2_STYLE_BGC;
 	#Ifdef USR2_STYLE_FGC;
-	glk_stylehint_set(wintype_TextBuffer, style_User2,
-		stylehint_TextColor, USR2_STYLE_FGC);
+	glk($00B0, 0, 10, 7, USR2_STYLE_FGC); ! glk_stylehint_set()
 	#Endif; ! USR2_STYLE_FGC;
-	glk_stylehint_set(wintype_TextBuffer, style_User2,
-		stylehint_Oblique, 0);
-	glk_stylehint_set(wintype_TextBuffer, style_User2,
-		stylehint_Weight, 0);
+	#Ifdef USR2_STYLE_BGC;
+	glk($00B0, 0, 10, 8, USR2_STYLE_BGC); ! glk_stylehint_set()
+	#Endif; ! USR2_STYLE_BGC;
 
 	return false;
 ];
+#Ifnot;
+!! Versión del punto de entrada anterior cuando no se utiliza GWindows:
+[ InitGlkWindow;
+	!! Propuestas de estilos de texto de 'textStyles':
+	InitialiseStyleHints(GG_MAINWIN_ROCK);
 
+	#Ifdef HEADER_STYLE_FGC;
+	glk($00B0, 0, 3, 7, HEADER_STYLE_FGC); ! header: stylehint_TextColor
+	#Endif; ! HEADER_STYLE_FGC
+
+	!! Propuestas de estilo de texto personalizado: Usuario 1
+	#Ifdef USR1_STYLE_FGC;
+	glk($00B0, 0, 9, 7, USR1_STYLE_FGC); ! glk_stylehint_set()
+	#Endif; ! USR1_STYLE_FGC;
+	#Ifdef USR1_STYLE_BGC;
+	glk($00B0, 0, 9, 8, USR1_STYLE_BGC); ! glk_stylehint_set()
+	#Endif; ! USR1_STYLE_BGC;
+
+	!! Propuestas de estilo de texto personalizado: Usuario 2
+	#Ifdef USR2_STYLE_FGC;
+	glk($00B0, 0, 10, 7, USR2_STYLE_FGC); ! glk_stylehint_set()
+	#Endif; ! USR2_STYLE_FGC;
+	#Ifdef USR2_STYLE_BGC;
+	glk($00B0, 0, 10, 8, USR2_STYLE_BGC); ! glk_stylehint_set()
+	#Endif; ! USR2_STYLE_BGC;
+
+	return false;
+];
+#Endif; ! USE_GWINDOWS;
 #Endif; ! TARGET_GLULX;
 
 
@@ -414,24 +472,27 @@ Include "gwincls.h";			! GWindows: Window Class Framework
 !!
 !!------------------------------------------------------------------------------
 
-#Ifdef TARGET_ZCODE;
-Constant MUS_PRESENTE 1;
-Constant PIC_0001 1;
-Constant PIC_0002 2;
-Constant PIC_0003 3;
-Constant PIC_0004 4;
-Constant PIC_0005 5;
-#Ifnot; ! TARGET_GLULX;
+#Ifdef TARGET_GLULX;
+#Ifdef USE_DAMUSIX;
 Include "damusix.h";			! Administrador unificado de sonido en GLULX
+#Endif; ! USE_DAMUSIX;
+
+#Ifdef USE_GWINDOWS;
 Include "gwindows.h";			! GWindows: Reemplazos de la librería
 Include "gWindowsGUI.h";		! Interfaz gráfica adaptativa con GWindows
+#Endif; ! USE_GWINDOWS;
+
 Include ">palacio.bli";			! Recursos multimedia de la aplicación
 #Endif; ! TARGET_
+
 Include "capacities.h";			! Extensión a las reglas de capacidad
 Include "choiceSet.h";			! Sistema de selección de acciones sobre lista
-Include	"hyperlinks.h";			! Rutinas de apoyo para el uso de hipervínculos
 Include "pPreprocessor.h";		! Preprocesador del parser
 Include "shuffle.h";			! Barajeado de números aleatorios
+
+#Ifdef USE_HYPERLINKS;
+Include	"hyperlinks.h";			! Rutinas de apoyo para el uso de hipervínculos
+#Endif; ! USE_HYPERLINKS;
 
 Include "VerbLib.h";			! Define cómo trabajan las acciones
 
@@ -477,9 +538,7 @@ Global _current_location = 0;
 !!	@returns Nada
 !!------------------------------------------------------------------------------
 [ BeforeParsing;
-	#Ifdef TARGET_GLULX;
 	ParsingPreprocessor.run();
-	#Endif; ! TARGET_GLULX;
 ];
 
 !!------------------------------------------------------------------------------
@@ -498,7 +557,8 @@ Global _current_location = 0;
 	!! Comprobaciones del intérprete -------------------------------------------
 	#Ifdef TARGET_GLULX;
 	!! Comprobaciones de las capacidades multimedia:
-	if (~~(glk_gestalt(gestalt_Sound, 0) && glk_gestalt(gestalt_SoundMusic, 0)
+	if (~~(glk_gestalt(gestalt_Sound, 0)
+		&& glk_gestalt(gestalt_SoundMusic, 0)
 		&& glk_gestalt(gestalt_Graphics, 0))) {
 		print (strong) "ADVERTENCIA:", " Esta aplicación incluye contenidos
 		gráficos y de audio, pero tu intérprete GLULX no los soporta
@@ -514,7 +574,7 @@ Global _current_location = 0;
 	!! Inicializaciones para la VM Glulx ---------------------------------------
 	#Ifdef TARGET_GLULX;
 	!! Establece la escucha de eventos glk para el uso de hipervínculos:
-	glk($0102, gg_mainwin); ! glk_request_hyperlink_event
+	ListenHyperlinkEvents();
 	!! Establece la imagen inicial presente durante el menu:
 	DrawRandomImage();
 	!! Inicializa los canales de audio (10 reales + 10 virtuales):
@@ -522,7 +582,9 @@ Global _current_location = 0;
 	!!	-	CANAL: Número del canal [0-9]
 	!!	-	PORCENTAJE DE VOLUMEN: [0-100]. -1 para usar el volumen global
 	!!	-	NÚM. DE REPETICIONES: (Opcional) 1 por defecto. -1 para infinitas
+	#Ifdef USE_DAMUSIX;
 	Damusix.AsignarCanal(MUS_PRESENTE, 0, 100, -1);
+	#Endif; ! USE_DAMUSIX;
 	!! Inicia la reproducción de la música de fondo:
 	FadeInTrack(MUS_PRESENTE, -1, 0);
 	#Endif; ! TARGET_
@@ -638,6 +700,7 @@ Global _current_location = 0;
 !!	-	FadeOutTrack()
 !!	-	HorizontalRule()
 !!	-	HyperlinkSetStyle()
+!!	-	PlaySFX()
 !!	-	PressAnyKey()
 !!	-	SpanishNominativePronoun()
 !!	-	TopHolder()
@@ -649,26 +712,52 @@ Global _current_location = 0;
 !!	@returns {boolean} Verdadero
 !!	@version 1.0
 !!------------------------------------------------------------------------------
-[ DrawRandomImage;
+#Ifdef TARGET_GLULX;
+#Ifdef USE_GWINDOWS;
+Array pastPictureFlags -> 3;	! hasta 16 flags
+Array presentPictureFlags -> 3;	! hasta 16 flags
+#Endif; ! USE_GWINDOWS;
+#Endif; ! TARGET_GLULX;
+
+Global _test = true;
+[ DrawRandomImage
+	img;
 	#Ifdef TARGET_GLULX;
-	switch (random(5)) {
-		1:
-			graphicWindowLeft.setImage(PIC_0001);
-			graphicWindowRight.setImage(PIC_0001);
-		2:
-			graphicWindowLeft.setImage(PIC_0002);
-			graphicWindowRight.setImage(PIC_0002);
-		3:
-			graphicWindowLeft.setImage(PIC_0003);
-			graphicWindowRight.setImage(PIC_0003);
-		4:
-			graphicWindowLeft.setImage(PIC_0004);
-			graphicWindowRight.setImage(PIC_0004);
-		5:
-			graphicWindowLeft.setImage(PIC_0005);
-			graphicWindowRight.setImage(PIC_0005);
+	#Ifdef USE_GWINDOWS;
+	if (_test) {
+		switch (Shuffle(12, presentPictureFlags)) {
+			1:	img = PIC_PRESENTE_01;
+			2:	img = PIC_PRESENTE_02;
+			3:	img = PIC_PRESENTE_03;
+			4:	img = PIC_PRESENTE_04;
+			5:	img = PIC_PRESENTE_05;
+			6:	img = PIC_PRESENTE_06;
+			7:	img = PIC_PRESENTE_07;
+			8:	img = PIC_PRESENTE_08;
+			9:	img = PIC_PRESENTE_09;
+			10:	img = PIC_PRESENTE_10;
+			11:	img = PIC_PRESENTE_11;
+			12:	img = PIC_PRESENTE_12;
+		}
+	} else {
+		switch (Shuffle(10, pastPictureFlags)) {
+			1:	img = PIC_PASADO_01;
+			2:	img = PIC_PASADO_02;
+			3:	img = PIC_PASADO_03;
+			4:	img = PIC_PASADO_04;
+			5:	img = PIC_PASADO_05;
+			6:	img = PIC_PASADO_06;
+			7:	img = PIC_PASADO_07;
+			8:	img = PIC_PASADO_08;
+			9:	img = PIC_PASADO_09;
+			10:	img = PIC_PASADO_10;
+		}
 	}
+	graphicWindowLeft.setImage(img);
+	graphicWindowRight.setImage(img);
+	#Endif; ! USE_GWINDOWS;
 	#Endif; ! TARGET_GLULX;
+	img++; ! (por evitar alertas del compilador)
 ];
 
 !!------------------------------------------------------------------------------
@@ -709,10 +798,11 @@ Global _current_location = 0;
 !!		'fade in' desde un volumen del 0% al especificado por 'volume'
 !!	@returns {boolean} Falso si el volumen pasado como parámetro es inferior al
 !!		volumen actual del sonido. Verdadero en caso contrario
-!!	@version 1.0
+!!	@version 1.1
 !!------------------------------------------------------------------------------
 [ FadeInTrack track volume fade_time;
 	#Ifdef TARGET_GLULX;
+	#Ifdef USE_DAMUSIX;
 	if (Damusix.EnFade()) Damusix.AbortarFade();
 	if (volume == 0) volume = -1;
 	if (fade_time == 0) {
@@ -725,6 +815,7 @@ Global _current_location = 0;
 		}
 		Damusix.FadeIn(track, fade_time, volume);
 	}
+	#Endif; ! USE_DAMUSIX;
 	#Endif; ! TARGET_GLULX;
 	return true;
 ];
@@ -745,16 +836,18 @@ Global _current_location = 0;
 !!	@param {Sound} [post_track=0] - Recurso de audio a reproducir tras lanzar
 !!		el efecto de 'fade out' sobre el 'track'
 !!	@returns {boolean} Verdadero
-!!	@version 1.0
+!!	@version 1.1
 !!------------------------------------------------------------------------------
 [ FadeOutTrack track volume fade_time post_track;
 	#Ifdef TARGET_GLULX;
+	#Ifdef USE_DAMUSIX;
 	if (Damusix.EnFade()) Damusix.AbortarFade();
 	if (fade_time == 0) {
 		if (volume == 0) Damusix.Parar(track);
 		else Damusix.Volumen(track, volume);
 		if (post_track) Damusix.Tocar(post_track);
 	} else Damusix.FadeOut(track, fade_time, volume, post_track);
+	#Endif; ! USE_DAMUSIX;
 	#Endif; ! TARGET_GLULX;
 	return true;
 ];
@@ -791,21 +884,63 @@ Global _current_location = 0;
 !!		función de sus características
 !!	@returns {integer} Código numérico del estilo utilizado con anterioridad
 !!------------------------------------------------------------------------------
-[ HyperlinkSetStyle style item
-	result;
-	if (metaclass(item) == Object) {
-		!! Objetos importantes en la obra:
-		if (item has remarkable)
-			result = UseTextStyle(_highlight_style_1);
-		!! Objetos hacia los que el PC puede desplazarse:
-		else if ((item ofclass Room or CompassDirection) || (item has door))
-			result = UseTextStyle(_highlight_style_2);
-		!! Otros objetos:
-		else result = UseTextStyle(_highlight_style_3);
-	} else {
-		result = UseTextStyle(style);
+#Ifdef USE_HYPERLINKS;
+!! [ HyperlinkSetStyle style item
+!! 	result;
+!! 	if (metaclass(item) == Object) {
+!! 		!! Objetos importantes en la obra:
+!! 		if (item has remarkable)
+!! 			result = UseTextStyle(_highlight_style_1);
+!! 		!! Objetos hacia los que el PC puede desplazarse:
+!! 		else if ((item ofclass Room or CompassDirection) || (item has door))
+!! 			result = UseTextStyle(_highlight_style_2);
+!! 		!! Otros objetos:
+!! 		else result = UseTextStyle(_highlight_style_3);
+!! 	} else {
+!! 		result = UseTextStyle(style);
+!! 	}
+!! 	return result;
+!! ];
+#Ifnot;
+[ ListenHyperlinkEvents; return false; ];
+[ HandleHyperlinkEvent; return false; ];
+[ Hyperlink item alternative;
+	if (metaclass(item) ~= String or Object) return false;
+	!! Imprime el texto del hipervínculo:
+	if (metaclass(alternative) == String) item = alternative;
+	switch (metaclass(item)) {
+		String:
+			print (string) item;
+		Object:
+			if (indef_mode && item.&short_name_indef ~= 0
+				&& PrintOrRun(item, short_name_indef, 1) ~= 0)
+				return true;
+			if (item.&short_name ~= 0 && PrintOrRun(item, short_name, 1) ~= 0)
+				return true;
+			print (object) item;
 	}
-	return result;
+];
+#Endif; ! USE_HYPERLINKS;
+
+!!------------------------------------------------------------------------------
+!! Reproduce un efecto de audio por uno de los canales virtuales.
+!! (Sólo en GLULX).
+!!
+!!	@param {Sound} sound - Efecto de audio
+!!	@param {integer} [volume=100] - Volumen final en tanto por ciento con el
+!!		que se reproduce el efecto de audio
+!!	@returns {boolean} Verdadero
+!!	@version 1.1
+!!------------------------------------------------------------------------------
+[ PlaySFX sound volume;
+	#Ifdef TARGET_ZCODE;
+	sound = volume = 0;
+	#Ifnot; ! TARGET_GLULX;
+	#Ifdef USE_DAMUSIX;
+	if (volume == 0) volume = 100;
+	Damusix.TocarV(sound, volume);
+	#Endif; ! USE_DAMUSIX;
+	#Endif; ! TARGET_
 ];
 
 !!------------------------------------------------------------------------------
@@ -817,12 +952,14 @@ Global _current_location = 0;
 !!		cumpla la cantidad 'delay' de décimas de segundo antes de continuar.
 !!		En caso contrario, espera a una pulsación de tecla del usuario
 !!	@returns {char} Caracter introducido por el usuario
-!!	@version 1.0
+!!	@version 1.1
 !!------------------------------------------------------------------------------
 [ PressAnyKey delay
 	result;
 	#Ifdef TARGET_GLULX;
+	#Ifdef USE_DAMUSIX;
 	if (Damusix.EnFade()) delay = 0;
+	#Endif; ! USE_DAMUSIX;
 	#Endif; ! TARGET_GLULX;
 	if (delay > 0) result = KeyDelay(delay);
 	else result = KeyCharPrimitive();
@@ -895,6 +1032,7 @@ VerboIrregular "colgar" with imperativo 'cuelga';
 !!------------------------------------------------------------------------------
 
 #Ifdef TARGET_GLULX;
+#Ifdef USE_DAMUSIX;
 Verb meta 'audio' 'music' 'musica' 'sonido' 'sonidos'
 	*								-> Audio
 	* 'on' / 'si'					-> AudioOn
@@ -923,6 +1061,7 @@ VerboIrregular "establecer la reproducción de audio" with imperativo
 	Damusix.DesactivarAudio();
 	print_ret (parser) "Reproducción de audio desactivada.";
 ];
+#Endif; ! USE_DAMUSIX;
 #Endif; ! TARGET_GLULX;
 
 !!------------------------------------------------------------------------------
@@ -1131,20 +1270,20 @@ Verb	'conversa' 'platica'
 [ TalkToSub;
 	!! 1) El personaje intenta hablar consigo mismo:
 	if ( noun == player ) {
-		print "Hablar ", (lm_contigo) player, " mism", (o) player, " ";
+		print "Hablar con un", (o) player, " mism", (o) player, " ";
 		switch (_grammatical_inflection) {
 			FIRST_PERSON_PRESENT,
 			SECOND_PERSON_PRESENT,
 			THIRD_PERSON_PRESENT:
-				"no resulta especialmente divertido.";
+				"no resulta especialmente interesante.";
 			FIRST_PERSON_PAST,
 			SECOND_PERSON_PAST,
 			THIRD_PERSON_PAST:
-				"no resultaba especialmente divertido.";
+				"no resultaba especialmente interesante.";
 			FIRST_PERSON_FUTURE,
 			SECOND_PERSON_FUTURE,
 			THIRD_PERSON_FUTURE:
-				"no resultará especialmente divertido.";
+				"no resultará especialmente interesante.";
 		}
 	}
 	!! 2) El personaje intenta hablar con un objeto inanimado:
@@ -1169,7 +1308,7 @@ Verb	'conversa' 'platica'
 	}
 	!! 3) El personaje intenta hablar con un objeto animado:
 	switch (_grammatical_inflection) {
-		FIRST_PERSON_PRESENT,
+		FIRST_PERSON_PRESENT:
 		SECOND_PERSON_PRESENT,
 		THIRD_PERSON_PRESENT:
 			print (The) noun, " no parecen", (n) noun;
@@ -1182,7 +1321,7 @@ Verb	'conversa' 'platica'
 		THIRD_PERSON_FUTURE:
 			print (The) noun, " no parecerá", (n) noun;
 	}
-	" interesad", (o) noun, " en hablar ", (lm_contigo) player, ".";
+	" interesad", (o) noun, " en hablar ", (contigo) player, ".";
 ];
 
 !!------------------------------------------------------------------------------
@@ -1236,6 +1375,18 @@ Verb 'teleport.verb'
 	}
 
 	PlayerTo(noun, 2);
+];
+
+!! FIXME - eliminar
+Verb 'test'
+	*							-> Test
+;
+
+[ TestSub;
+	if (_test) _test = false;
+	else _test = true;
+	DrawRandomImage();
+	print_ret (parser) "Cambio de imágenes.";
 ];
 
 

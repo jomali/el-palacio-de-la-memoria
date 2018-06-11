@@ -7,17 +7,17 @@
 !!
 !!==============================================================================
 !!
-!!	Archivo:		palacio_texts.inf
+!!	Archivo:		palacio_objects.txt
 !!	Autor(es):		J. Francisco Martín <jfm.lisaso@gmail.com>
 !!	Idioma:			ES (Español)
 !!	Sistema:		Inform-INFSP 6
 !!	Plataforma:		Máquina-Z/Glulx
 !!	Versión:		0.0
-!!	Fecha:			2018/03/04
+!!	Fecha:			2018/06/11
 !!
 !!------------------------------------------------------------------------------
 !!
-!!	Este archivo forma parte del relato interactivo
+!!	Este archivo forma parte de la ficción interactiva
 !!	EL PALACIO DE LA MEMORIA.
 !!
 !!	EL PALACIO DE LA MEMORIA es software libre: usted puede
@@ -27,7 +27,7 @@
 !!	cualquier versión posterior.
 !!
 !!	EL PALACIO DE LA MEMORIA se distribuye con la esperanza de que sea
-!!	útil, pero SIN GARANTíA ALGUNA; ni siquiera la garantía implícita
+!!	útil, pero SIN GARANTÍA ALGUNA; ni siquiera la garantía implícita
 !!	MERCANTIL o de APTITUD PARA UN PROPÓSITO DETERMINADO. Consulte los
 !!	detalles de la Licencia Pública General GNU para más información.
 !!
@@ -36,12 +36,6 @@
 !!	<http://www.gnu.org/licenses/>.
 !!
 !!	Copyright (c) 2018, J. Francisco Martín
-!!
-!!------------------------------------------------------------------------------
-!!
-!!	HISTORIAL DE VERSIONES
-!!
-!!	0.0: 2018/03/04	Inicio de desarrollo.
 !!
 !!------------------------------------------------------------------------------
 !!
@@ -157,6 +151,59 @@ return true;
 print "Necesitaría meterle primero una cápsula de café y, en cualquier caso, ahora no le apetece uno.";
 !! TODO
 !!print "Necesita meterle primero una cápsula de café.";
+new_line;
+return true;
+}
+
+!!------------------------------------------------------------------------------
+Cama: switch (n) {
+!! TODO - Cambiar descripciones
+1:	! ##Examine (A - si está deshecha)
+print "Está desecha, con las sábanas completamente arrugadas.";
+new_line;
+return true;
+2:	! ##Examine (B - si está hecha)
+print "Ahora está hecha, con las sábanas perfectamente estiradas.";
+new_line;
+return true;
+3:	! ##Examine (C - si está hecha, pero arrugada)
+print "Ahora está hecha, pero las sábanas están algo arrugadas.";
+new_line;
+return true;
+4:	! ##Iron (A - desecha)
+print "Se toma un momento en estirar bien las sábanas.";
+new_line;
+return true;
+5:	! ##Iron (B - ya está hecha)
+print "Las sábanas ya están perfectamente estiradas.";
+new_line;
+return true;
+6:	! ##Jump / ##JumpOver
+print "Su padre le castigó más de una vez por saltar en las camas en el pasado. Si pudiese castigarla ahora saltaría una vez más.";
+new_line;
+return true;
+7:	! ##LookUnder
+print "Bajo [la Cama] sólo hay polvo y sombras.";
+new_line;
+return true;
+8:	! ##Enter
+print "Ya estaba sentada en [la Cama].";
+new_line;
+return true;
+9:	! ##Enter (after)
+print "Se sienta en [la Cama].";
+new_line;
+return true;
+10:	! ##Exit (after)
+print "Se levanta [del Cama].";
+new_line;
+return true;
+11:	! ##Sleep
+print "No podría aunque quisiera. Ahora tiene la cabeza llena de demasiadas cosas...";
+new_line;
+return true;
+12:	! ##Smell
+print "Aún se puede sentir un ligero olor a sudor entre las sábanas. Resulta extraño oler el sudor de una persona muerta.";
 new_line;
 return true;
 }
@@ -296,7 +343,7 @@ return true;
 !!------------------------------------------------------------------------------
 Limbo: switch (n) {
 1:	! ##Examine (A)
-print "Est", (lm_estas) player, " más allá de la barrera casi insuperable que separa la realidad de todo lo demás. Un lugar etéreo, donde la vida, la materia y la vitalidad no son necesariamente constantes; un lugar donde el el tiempo y el espacio no existen tal y como los capta nuestro ser despierto...";
+print "Más allá de la barrera casi insuperable que separa la realidad de todo lo demás. Un lugar etéreo, donde la vida, la materia y la vitalidad no son necesariamente constantes; un lugar donde el el tiempo y el espacio no existen tal y como los capta nuestro ser despierto...";
 return true;
 2:	! ##Examine (B - primera vez)
 print " ¿Qué? ¿Cómo?... ¿cómo he llegado aquí?";
@@ -330,6 +377,37 @@ print "Sobre [la MesaCocina] puede ver [lista de objetos sobre MesaCocina].";
 return true;
 4:
 print ", y puede ver también [lista de objetos sobre MesaCocina] en [la MesaCocina].";
+return true;
+}
+
+!!------------------------------------------------------------------------------
+Oscuridad: switch (n) {
+1:	! ##Dance
+print "Decide que no es muy buena idea ponerse a bailar a oscuras.";
+new_line;
+return true;
+2:	! ##Jump, ##JumpOver
+print "Posiblemente sería una mala idea andar saltando por ahí en la oscuridad.";
+new_line;
+return true;
+
+
+1:	! cannot_see_object (A):
+print "No puede ver nada en la oscuridad.";
+new_line;
+return true;
+
+1:	! cannot_find_object (A)
+print "No acierta a dar con [el x1] en la oscuridad.";
+new_line;
+return true;
+2:	! cannot_find_object (B)
+print "En la oscuridad de la habitación no es capaz de dar con [el x1].";
+new_line;
+return true;
+3:	! cannot_find_object (C)
+print "No es capaz de dar con [el x1] a oscuras.";
+new_line;
 return true;
 }
 
@@ -503,6 +581,14 @@ return true;
 }
 
 !!------------------------------------------------------------------------------
+Sabanas: switch (n) {
+1:	! ##Search / ##LookUnder
+print "No hay nada escondido entre [las Sabanas].";
+new_line;
+return true;
+}
+
+!!------------------------------------------------------------------------------
 Salon: switch (n) {
 1:	! ##Examine
 print "Como virtualmente en cualquier otra casa, un amplio sofá hace de centro de gravedad de todo el salón; colocado de manera que se puede contemplar con la misma facilidad tanto el mar tras los ventanales como el televisor. Varias estanterías atestadas de libros y un mueble bar completan este paréntesis entre el recibidor, al [s_obj], y las puertas de doble hoja que conducen al [w_obj] hasta la cocina.";
@@ -583,9 +669,9 @@ Durante años Silvia había vivido en aquella casa. Recordaba cuando era niña y, d
 ^^
 Recordaba a su padre y a sus tíos insistiendo en que no debía tener miedo a la enfermedad, que todo saldría bien. El ligero temblor en la voz al decirle aquello, las miradas perdidas. Recordaba cuando tenía once años y nada salió bien. Durante mucho tiempo siguió bajando a menudo hasta la cala ella sola, después de la muerte de su madre, intentando escabullirse allí del mundo.
 ^^
-Al terminar bachillerato entró en una universidad de otra provincia y más tarde, tras sus estudios, encontró trabajo y construyó su vida en la ciudad, lejos de aquel lugar.
+Al terminar el bachillerato entró en una universidad de otra provincia y más tarde, tras sus estudios, encontró trabajo y construyó su vida en la ciudad, lejos de aquel lugar.
 ^^
-Ahora su padre había muerto también y la casa se había quedado vacía. Ya nadie visitaba la pequeña cala.
+Ahora su padre había muerto también y la casa se había quedado vacía. Ya nadie visitaba la pequeña cala...
 ^^
 Sólo los cangrejos.";
 new_line;
