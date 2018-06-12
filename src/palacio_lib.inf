@@ -13,11 +13,11 @@
 !!	Sistema:		Inform-INFSP 6
 !!	Plataforma:		Máquina-Z/Glulx
 !!	Versión:		0.0
-!!	Fecha:			2018/03/04
+!!	Fecha:			2018/06/12
 !!
 !!------------------------------------------------------------------------------
 !!
-!!	Este archivo forma parte del relato interactivo
+!!	Este archivo forma parte de la ficción interactiva
 !!	EL PALACIO DE LA MEMORIA.
 !!
 !!	EL PALACIO DE LA MEMORIA es software libre: usted puede
@@ -36,12 +36,6 @@
 !!	<http://www.gnu.org/licenses/>.
 !!
 !!	Copyright (c) 2018, J. Francisco Martín
-!!
-!!------------------------------------------------------------------------------
-!!
-!!	HISTORIAL DE VERSIONES
-!!
-!!	0.0: 2018/03/04	Inicio de desarrollo.
 !!
 !!------------------------------------------------------------------------------
 !!
@@ -64,7 +58,6 @@
 !!	-	LMode3Sub()
 !!	-	LookSub()
 !!	-	ParseNoun()
-!!	-	PSN__()
 !!	-	VersionSub()
 !!
 !!------------------------------------------------------------------------------
@@ -835,30 +828,6 @@ CompassDirection d_obj "abajo" compass
 	if (m == 0) return 0;
 
 	return n; ! Se retorna número de palabras reconocidas
-];
-
-
-!!==============================================================================
-!! Rutina para imprimir el nombre corto de un objeto. Además, crea un
-!! hipervínculo relacionado con el objeto y, si el objeto tiene el atributo
-!! 'remarkable' utiliza un estilo resaltado para imprimir el nombre.
-!!
-!!	@returns {boolean} Verdadero
-!!	@override parserm.h
-!!	@version 1.0
-!!------------------------------------------------------------------------------
-[ PSN__ obj;
-    if (obj == 0) { print (string) NOTHING__TX; rtrue; }
-    switch (metaclass(obj)) {
-	    Routine:  print "<routine ", obj, ">"; rtrue;
-	    String:   print "<string ~", (string) obj, "~>"; rtrue;
-	    nothing:  print "<illegal object number ", obj, ">"; rtrue;
-    }
-    if (obj == player) { print (string) YOURSELF__TX; rtrue; }
-    #Ifdef LanguagePrintShortName;
-    if (LanguagePrintShortName(obj)) rtrue;
-    #Endif; ! LanguagePrintShortName
-	return Hyperlink(obj);
 ];
 
 

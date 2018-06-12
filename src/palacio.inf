@@ -1,9 +1,5 @@
-!% -v8
 !% -SD
 !% +language_name=Spanish
-!% $MAX_LABELS=5000
-!% $MAX_STATIC_DATA=15000
-!% $MAX_ZCODE_SIZE=75000
 !% $list
 
 !!==============================================================================
@@ -18,7 +14,7 @@
 !!	Sistema:		Inform-INFSP 6
 !!	Plataforma:		Máquina-Z/Glulx
 !!	Versión:		0.0
-!!	Fecha:			2018/06/11
+!!	Fecha:			2018/06/12
 !!
 !!------------------------------------------------------------------------------
 !!
@@ -55,7 +51,7 @@
 !!	1)	Constantes y variables globales de la obra
 !!	2)	Reemplazos de rutinas utilizadas por la librería Inform
 !!	3)	Librerías y extensiones (parte 1 de 2)
-!!	4)	Puntos de entrada Glk con GWindows (sólo en GLULX)
+!!	4)	Puntos de entrada Glk (sólo en Glulx)
 !!	5)	Librerías y extensiones (parte 2 de 2)
 !!	6)	Puntos de entrada de la obra
 !!	7)	Otras rutinas
@@ -70,13 +66,13 @@
 !!	1)	Constantes y variables globales de la obra
 !!
 !!------------------------------------------------------------------------------
-!!	-	Información bibliográfica
-!!	-	Definiciones generales
-!!	-	Definiciones de la librería Inform
-!!	-	Configuración de la interfaz gráfica con 'GWindows'
-!!	-	Configuración de la extensión 'hyperlinks'
-!!	-	Configuración de la librería de mensajes 'SpanishLM'
-!!	-	Configuración de la extensión 'textStyles'
+!!	<>	Información bibliográfica
+!!	<>	Definiciones generales
+!!	<>	Definiciones de la librería Inform
+!!	<>	Configuración de la interfaz gráfica con 'GWindows'
+!!	<>	Configuración de la extensión 'hyperlinks'
+!!	<>	Configuración de la librería de mensajes 'SpanishLM'
+!!	<>	Configuración de la extensión 'textStyles'
 !!------------------------------------------------------------------------------
 
 !!------------------------------------------------------------------------------
@@ -108,12 +104,19 @@ Constant USE_HYPERLINKS;
 !! Utilización de mensajes personalizados de la librería:
 Constant USE_SPANISH_LM;
 
-!! Variables globales con los estilos de texto para resaltar objetos:
-!! (Requiere la extensión 'textStyles')
+!! Estilos de texto de las palabras destacadas:
+Constant DEFAULT_HIGHLIGHT_ST_1 TEXT_STYLE_USER1;
+Constant DEFAULT_HIGHLIGHT_ST_2 TEXT_STYLE_STRESSED;
+Constant DEFAULT_HIGHLIGHT_ST_3 TEXT_STYLE_UPRIGHT;
+Global _highlight_style_1 = DEFAULT_HIGHLIGHT_ST_1;	! Objetos destacados
+Global _highlight_style_2 = DEFAULT_HIGHLIGHT_ST_2;	! Direcciones y puertas
+Global _highlight_style_3 = DEFAULT_HIGHLIGHT_ST_3;	! Otros objetos
 
-Global _highlight_style_1 = TEXT_STYLE_USER1;	! Objetos destacados
-Global _highlight_style_2 = TEXT_STYLE_UPRIGHT;	! Direcciones y puertas
-Global _highlight_style_3 = TEXT_STYLE_UPRIGHT;	! Otros objetos
+!! Estado de los hipervínculos:
+Constant DEFAULT_HYPERLINKS_STATUS = 1;
+Global _hyperlinks_active_1 = DEFAULT_HYPERLINKS_STATUS; ! Objetos destacados
+Global _hyperlinks_active_2 = DEFAULT_HYPERLINKS_STATUS; ! Direcciones y puertas
+Global _hyperlinks_active_3 = DEFAULT_HYPERLINKS_STATUS; ! Otros objetos
 
 !!------------------------------------------------------------------------------
 !!	Definiciones de la librería Inform
@@ -133,9 +136,8 @@ Constant SIN_MENSAJES;			! Se omiten los mensajes por defecto de la lib.
 Constant WITHOUT_DIRECTIONS;	! Se omiten las dir. por defecto de la lib.
 #Endif; ! USE_EXTENDED_LIBRARY;
 
-
 !!------------------------------------------------------------------------------
-!!	-	Configuración de la interfaz gráfica con 'GWindows' (sólo en Glulx)
+!!	Configuración de la interfaz gráfica con 'GWindows' (sólo en Glulx)
 !!------------------------------------------------------------------------------
 
 #Ifdef TARGET_GLULX;
@@ -198,9 +200,8 @@ Global _hyperlinks_command = "";
 !!	Configuración de la librería de mensajes 'SpanishLM'
 !!------------------------------------------------------------------------------
 
-Constant PS1 "^> ";				! Inductor
-
 #Ifdef USE_SPANISH_LM;
+Global PS1			= "^> "; ! Inductor
 Global FORMER__TX	= "tu antiguo ~yo~";
 Global YOURSELF__TX	= "ti mismo";
 Global CANTGO__TX	= "No puedes ir por ahí.";
@@ -211,7 +212,6 @@ Global ARE2__TX		= "ves ";
 Global YOU__TX		= "Tú";
 Global PARTICULA_TE	= "te";
 #Endif; ! USE_SPANISH_LM;
-
 
 !!------------------------------------------------------------------------------
 !!	Configuración de la extensión 'textStyles'
@@ -259,7 +259,8 @@ Replace VersionSub;				! Créditos detallados de la aplicación
 #Endif; ! USE_EXTENDED_LIBRARY;
 
 #Ifdef USE_HYPERLINKS;
-!! Replace HyperlinkSetStyle;		! Gestión de estilos de texto de hipervínculos
+Replace HyperlinkSetStyle;		! Gestión de estilos de texto de hipervínculos
+Replace HyperlinkStatus;		! Gestión de estado de hipervínculos
 #Endif; ! USE_HYPERLINKS;
 
 
@@ -298,21 +299,20 @@ Include "gwincls.h";			! GWindows: Window Class Framework
 
 !!==============================================================================
 !!
-!!	4)	Puntos de entrada Glk con GWindows (sólo en GLULX)
+!!	4)	Puntos de entrada Glk (sólo en Glulx)
 !!
 !!------------------------------------------------------------------------------
-!!	GWindows hace uso de los puntos de entrada Glk por defecto por lo cuál
-!!	define los suyos propios para reemplazar aquellos de la librería:
-!!	-	GWindowsGlkEvent(), en lugar de 'HandleGlkEvent()'
-!!	-	GWindowsGlkIdentify(), en lugar de 'IdentifyGlkObject()'
-!!	-	InitGWindows(), en lugar de 'InitGlkWindow()'
+!!	<>	HandleGlkEventExe() / HandleGlkEvent() / GWindowsGlkEvent()
+!!	<>	IdentifyGlkObjectExe() / IdentifyGlkObject() / GWindowsGlkIdentify()
+!!	<>	InitGlkWindowExe() / InitGlkWindow() / InitGWindows()
+!!
+!! NOTA: GWindows hace uso de los puntos de entrada Glk por defecto, por lo
+!! cuál define los suyos propios para reemplazar aquellos de la librería.
 !!------------------------------------------------------------------------------
 
 #Ifdef TARGET_GLULX;
-#Ifdef USE_GWINDOWS;
 !!------------------------------------------------------------------------------
-!! Punto de entrada para manejar eventos Glk con la librería GWindows.
-!! Reemplaza al habitual 'HandleGlkEvent()'.
+!! Punto de entrada para manejar eventos Glk.
 !!
 !!	@param {array} ev - Array de 4 palabras que describe el evento. ev-->0
 !!		registra un código numérico con que se determina el tipo de evento. La
@@ -340,34 +340,34 @@ Include "gwincls.h";			! GWindows: Window Class Framework
 !!		entradas de caracter). Cualquier otro valor de retorno continuará con
 !!		la ejecución normal de la librería
 !!------------------------------------------------------------------------------
+#Ifdef USE_GWINDOWS;
 [ GWindowsGlkEvent ev context abortres;
-	!! Gestión de efecto de 'fade' en Damusix en tiempo real:
-	Damusix.NotificarFade(ev);
-	!! Gestión de los eventos de selección de hipervínculo:
-	if (HandleHyperlinkEvent(ev, context, abortres)) {
-		return 2; ! finaliza el turno
-	}
+ 	return HandleGlkEventExe(ev, context, abortres);
 ];
 #Ifnot;
-!! Versión del punto de entrada anterior cuando no se utiliza GWindows:
 [ HandleGlkEvent ev context abortres;
+ 	return HandleGlkEventExe(ev, context, abortres);
+];
+#Endif; ! USE_GWINDOWS;
+[ HandleGlkEventExe ev context abortres;
 	!! Gestión de efecto de 'fade' en Damusix en tiempo real:
+	#Ifdef USE_DAMUSIX;
 	Damusix.NotificarFade(ev);
+	#Endif; ! USE_DAMUSIX;
+
 	!! Gestión de los eventos de selección de hipervínculo:
+	#Ifdef USE_HYPERLINKS;
 	if (HandleHyperlinkEvent(ev, context, abortres)) {
 		return 2; ! finaliza el turno
 	}
+	#Endif; ! USE_HYPERLINKS
 ];
-#Endif; ! USE_GWINDOWS;
 
-#Ifdef USE_GWINDOWS;
 !!------------------------------------------------------------------------------
-!! 'GWindowsGlkIdentify() permite conocer qué objetos Glk existen; útil para
-!! gestionar las directivas RESTORE, RESTART y UNDO puesto que, al utilizar
+!! 'IdentifyGlkObject()' permite conocer qué objetos Glk existen; útil para
+!! gestionar las directivas RESTORE, RESTART y UNDO puesto que, tras utilizar
 !! estas entradas, las variables globales con objetos Glk pueden contener
 !! valores desfasados y erróneos.
-!!
-!! Reemplaza a 'IdentifyGlkObject(phase, type, ref, rock)'.
 !!
 !!	@param {integer} phase - Código numérico indicando la fase en la que se
 !!		invoca a la rutina. Toma los valores: 0, 1 o 2
@@ -376,93 +376,126 @@ Include "gwincls.h";			! GWindows: Window Class Framework
 !!	@param {Object} ref
 !!	@param {integer} rock
 !!------------------------------------------------------------------------------
+#Ifdef USE_GWINDOWS;
 [ GWindowsGlkIdentify phase type ref rock;
-	!! Se identifican todos los objetos de sonido gestionados por Damusix:
-	Damusix.IdentificarSonidos(phase);
-
-	phase = type + ref + rock; ! (por evitar alertas del compilador)
+	return IdentifyGlkObjectExe(phase, type, ref, rock);
 ];
 #Ifnot;
-!! Versión del punto de entrada anterior cuando no se utiliza GWindows:
 [ IdentifyGlkObject phase type ref rock;
+	return IdentifyGlkObjectExe(phase, type, ref, rock);
+];
+#Endif; ! USE_GWINDOWS;
+[ IdentifyGlkObjectExe phase type ref rock;
 	!! Se identifican todos los objetos de sonido gestionados por Damusix:
+	#Ifdef USE_DAMUSIX;
 	Damusix.IdentificarSonidos(phase);
+	#Endif; ! USE_DAMUSIX;
 
 	phase = type + ref + rock; ! (por evitar alertas del compilador)
 ];
-#Endif; ! USE_GWINDOWS;
 
-#Ifdef USE_GWINDOWS;
 !!------------------------------------------------------------------------------
-!! La librería GWindows hace uso del punto de entrada 'InitGlkWindow()'. En su
-!! lugar, ofrece este punto de entrada, sin argumentos, que es equivalente a
-!! invocar 'InitGlkWindow(0)'. La librería llama a este punto de entrada
-!! cuando se crea la interfaz de usuario por primera vez. Debe establecer las
-!! variables 'Active_UI', con la raíz del árbol de ventanas; y 'Main_GWindow',
-!! con el objeto 'GWindow' que sirve de ventana principal de la aplicación. Se
-!! cumple que la variables Inform 'gg_mainwin == Main_GWindow.winid'.
+!! 'InitGlkWindow()' es un punto de entrada es invocado por la librería cuando
+!! establece las ventanas por defecto: la ventana de texto principal, la
+!! ventana de estado y la ventana para caja de citas (en caso de utilizarlas).
+!! La ventana de texto principal y la ventana de estado son creadas al iniciar
+!! la aplicación (antes de 'Initialise()'). La ventana de citas es creada y
+!! destruida según se necesite. Este punto de entrada es invocado en 5 fases:
 !!
-!!	@returns {boolean} Falso
+!!	1)	Al inicio de la ejecución (antes incluso del punto de entrada
+!!		'Initialise()') se hace la invocación 'InitGlkWindow(0)'. Aquí se
+!!		pueden efectuar cualesquiera inicializaciones de ventanas Glk (se debe
+!!		tener en cuenta, no obstante, que las ventanas de texto principal y de
+!!		estado pueden estar ya inicializadas ---por ejemplo si el usuario acaba
+!!		de utilizar la instrucción RESTART---). Este es un buen momento para
+!!		establecer 'gg_statuswin_size' a un valor distinto de 1. Retornar 0
+!!		para proceder con el resto de inicializaciones de ventanas por defecto
+!!		de la librería, o 1 si ya se han inicializado todas las ventanas
+!!		manualmente.
+!!	2)	La librería invoca a 'InitGlkWindow(GG_MAINWIN_ROCK)' antes de crear la
+!!		ventana de texto principal. Este es un buen momento para inicializar
+!!		las recomendaciones de aspecto de la ventana de texto. Retornar 0 para
+!!		permitir que la librería continúe normalmente con la creación de la
+!!		ventana, o 1 si la ventana ya se ha creado y registrado en la variable
+!!		'gg_mainwin' manualmente.
+!!	3)	La librería invoca a 'InitGlkWindow(GG_STATUSWIN_ROCK)' antes de crear
+!!		la ventana de estado. De nuevo, se puede retornar 0 para permitir que
+!!		la librería cree la ventana normalmente, o 1 si la ventana ya se ha
+!!		creado y registrado en la variable 'gg_statuswin' manualmente.
+!!	4)	Al final de la inicialización de las ventanas Glk se invoca
+!!		'InitGlkWindow(1)'. En este momento se pueden abrir otras ventanas Glk
+!!		(o pueden abrirse igualmente en la rutina 'Initialise()').
+!!	5)	La librería invoca 'InitGlkWindow(GG_QUOTEWIN_ROCK)' antes de crear la
+!!		ventana de caja de citas. Esto no ocurre durante la inicialización de
+!!		la aplicación sino durante la ejecución, siempre que se efectúe una
+!!		impresión en la caja de citas, y la ventana es destruída después un
+!!		turno más tarde. Como siempre, se puede retornar 1 para indicar que la
+!!		ventana ya ha sido creada y registrada en 'gg_quotewin' manualmente.
+!!		(El número de líneas deseadas para la ventana puede consultarse en
+!!		'gg_arguments-->0').
+!!
+!! Independientemente de la forma en que se gestione la inicialización de las
+!! ventanas, debe tenerse en cuenta que la librería requiere de una ventana
+!! principal registrada en 'gg_mainwin'. En caso de no crear una manualmente y
+!! no permitir que la librería lo haga de manera automática, la aplicación se
+!! cerrará. Las ventanas de estado y de caja de citas, por el contrario, son
+!! completamante opcionales; la librería se comportará correctamente sin ellas.
+!!
+!! La librería GWindows hace uso del punto de entrada 'InitGlkWindow()'. En su
+!! lugar, ofrece el punto de entrada 'InitGlkWindow()', sin argumentos, que es
+!! equivalente a invocar 'InitGlkWindow(0)'. Debe establecer las variables
+!! 'Active_UI', con la raíz del árbol de ventanas; y 'Main_GWindow', con el
+!! objeto 'GWindow' que sirve de ventana principal de la aplicación. Se cumple
+!! que la variable: 'gg_mainwin == Main_GWindow.winid'.
+!!
+!!	@param {integer} winrock
+!!	@returns {integer}
 !!------------------------------------------------------------------------------
+#Ifdef USE_GWINDOWS;
 [ InitGWindows;
-	!! Inicializaciones de la interfaz gráfica:
+	!! Inicializaciones de la interfaz gráfica GWindows:
 	Active_UI = rootUI;
 	Main_GWindow = textWindow;
-
-	!! Propuestas de estilos de texto de 'textStyles':
-	InitialiseStyleHints(GG_MAINWIN_ROCK);
-
-	#Ifdef HEADER_STYLE_FGC;
-	glk($00B0, 0, 3, 7, HEADER_STYLE_FGC); ! header: stylehint_TextColor
-	#Endif; ! HEADER_STYLE_FGC
-
-	!! Propuestas de estilo de texto personalizado: Usuario 1
-	#Ifdef USR1_STYLE_FGC;
-	glk($00B0, 0, 9, 7, USR1_STYLE_FGC); ! glk_stylehint_set()
-	#Endif; ! USR1_STYLE_FGC;
-	#Ifdef USR1_STYLE_BGC;
-	glk($00B0, 0, 9, 8, USR1_STYLE_BGC); ! glk_stylehint_set()
-	#Endif; ! USR1_STYLE_BGC;
-
-	!! Propuestas de estilo de texto personalizado: Usuario 2
-	#Ifdef USR2_STYLE_FGC;
-	glk($00B0, 0, 10, 7, USR2_STYLE_FGC); ! glk_stylehint_set()
-	#Endif; ! USR2_STYLE_FGC;
-	#Ifdef USR2_STYLE_BGC;
-	glk($00B0, 0, 10, 8, USR2_STYLE_BGC); ! glk_stylehint_set()
-	#Endif; ! USR2_STYLE_BGC;
-
-	return false;
+	return InitGlkWindowExe(GG_MAINWIN_ROCK);
 ];
 #Ifnot;
-!! Versión del punto de entrada anterior cuando no se utiliza GWindows:
-[ InitGlkWindow;
-	!! Propuestas de estilos de texto de 'textStyles':
-	InitialiseStyleHints(GG_MAINWIN_ROCK);
-
-	#Ifdef HEADER_STYLE_FGC;
-	glk($00B0, 0, 3, 7, HEADER_STYLE_FGC); ! header: stylehint_TextColor
-	#Endif; ! HEADER_STYLE_FGC
-
-	!! Propuestas de estilo de texto personalizado: Usuario 1
-	#Ifdef USR1_STYLE_FGC;
-	glk($00B0, 0, 9, 7, USR1_STYLE_FGC); ! glk_stylehint_set()
-	#Endif; ! USR1_STYLE_FGC;
-	#Ifdef USR1_STYLE_BGC;
-	glk($00B0, 0, 9, 8, USR1_STYLE_BGC); ! glk_stylehint_set()
-	#Endif; ! USR1_STYLE_BGC;
-
-	!! Propuestas de estilo de texto personalizado: Usuario 2
-	#Ifdef USR2_STYLE_FGC;
-	glk($00B0, 0, 10, 7, USR2_STYLE_FGC); ! glk_stylehint_set()
-	#Endif; ! USR2_STYLE_FGC;
-	#Ifdef USR2_STYLE_BGC;
-	glk($00B0, 0, 10, 8, USR2_STYLE_BGC); ! glk_stylehint_set()
-	#Endif; ! USR2_STYLE_BGC;
-
-	return false;
+[ InitGlkWindow winrock;
+	return InitGlkWindowExe(winrock);
 ];
 #Endif; ! USE_GWINDOWS;
+[ InitGlkWindowExe winrock
+	wintype;
+	if (winrock == GG_MAINWIN_ROCK) {
+		!! [0:wintype_AllTypes, 1:wintype_Pair, 2:wintype_Blank,
+		!! 3:wintype_TextBuffer, 4:wintype_TextGrid, 5:wintype_Graphics]
+		wintype = 0;
+
+	    !! Sugerencias de aspecto de 'textStyles':
+	    InitialiseStyleHints(winrock, wintype);
+
+		#Ifdef HEADER_STYLE_FGC;
+		glk($00B0, 0, 3, 7, HEADER_STYLE_FGC); ! header: stylehint_TextColor
+		#Endif; ! HEADER_STYLE_FGC
+
+		!! Propuestas de estilo de texto personalizado: Usuario 1
+		#Ifdef USR1_STYLE_FGC;
+		glk($00B0, 0, 9, 7, USR1_STYLE_FGC); ! glk_stylehint_set()
+		#Endif; ! USR1_STYLE_FGC;
+		#Ifdef USR1_STYLE_BGC;
+		glk($00B0, 0, 9, 8, USR1_STYLE_BGC); ! glk_stylehint_set()
+		#Endif; ! USR1_STYLE_BGC;
+
+		!! Propuestas de estilo de texto personalizado: Usuario 2
+		#Ifdef USR2_STYLE_FGC;
+		glk($00B0, 0, 10, 7, USR2_STYLE_FGC); ! glk_stylehint_set()
+		#Endif; ! USR2_STYLE_FGC;
+		#Ifdef USR2_STYLE_BGC;
+		glk($00B0, 0, 10, 8, USR2_STYLE_BGC); ! glk_stylehint_set()
+		#Endif; ! USR2_STYLE_BGC;
+	}
+    !! Se continúa con el proceso normal de la librería:
+    return false;
+];
 #Endif; ! TARGET_GLULX;
 
 
@@ -502,12 +535,12 @@ Include "VerbLib.h";			! Define cómo trabajan las acciones
 !!	6)	Puntos de entrada de la obra
 !!
 !!------------------------------------------------------------------------------
-!!	-	AfterPrompt()
-!!	-	BeforeParsing()
-!!	-	Initialise()
-!!	-	InScope()
-!!	-	PrintVerb()
-!!	-	UnknownVerb()
+!!	<>	AfterPrompt()
+!!	<>	BeforeParsing()
+!!	<>	Initialise()
+!!	<>	InScope()
+!!	<>	PrintVerb()
+!!	<>	UnknownVerb()
 !!------------------------------------------------------------------------------
 
 !!------------------------------------------------------------------------------
@@ -574,7 +607,9 @@ Global _current_location = 0;
 	!! Inicializaciones para la VM Glulx ---------------------------------------
 	#Ifdef TARGET_GLULX;
 	!! Establece la escucha de eventos glk para el uso de hipervínculos:
+	#Ifdef USE_HYPERLINKS;
 	ListenHyperlinkEvents();
+	#Endif; ! USE_HYPERLINKS;
 	!! Establece la imagen inicial presente durante el menu:
 	DrawRandomImage();
 	!! Inicializa los canales de audio (10 reales + 10 virtuales):
@@ -587,6 +622,8 @@ Global _current_location = 0;
 	#Endif; ! USE_DAMUSIX;
 	!! Inicia la reproducción de la música de fondo:
 	FadeInTrack(MUS_PRESENTE, -1, 0);
+	!! Lee el fichero de configuración:
+	ReadConfigFile();
 	#Endif; ! TARGET_
 
 	!! Inicializaciones de la obra ---------------------------------------------
@@ -694,17 +731,99 @@ Global _current_location = 0;
 !!	7)	Otras rutinas
 !!
 !!------------------------------------------------------------------------------
-!!	-	DrawRandomImage()
-!!	-	EraseWindow()
-!!	-	FadeInTrack()
-!!	-	FadeOutTrack()
-!!	-	HorizontalRule()
-!!	-	HyperlinkSetStyle()
-!!	-	PlaySFX()
-!!	-	PressAnyKey()
-!!	-	SpanishNominativePronoun()
-!!	-	TopHolder()
+!!	<>	CheckHighlightStyles()
+!!	<>	DrawRandomImage()
+!!	<>	EraseWindow()
+!!	<>	FadeInTrack()
+!!	<>	FadeOutTrack()
+!!	<>	HorizontalRule()
+!!	<>	HyperlinkSetStyle()
+!!	<>	HyperlinkStatus()
+!!	<>	PlaySFX()
+!!	<>	PressAnyKey()
+!!	<>	PSN__()
+!!	<>	ReadConfigFile()
+!!	<>	SpanishNominativePronoun()
+!!	<>	TopHolder()
+!!	<>	WriteConfigFile()
 !!------------------------------------------------------------------------------
+
+!!------------------------------------------------------------------------------
+!! La aplicación utiliza dos sistemas interconectados de palabras clave e
+!! hipervínculos asociados a tres clases de objetos: 1) objetos importantes en
+!! el desarrollo de la historia, 2) direcciones y objetos hacia los que el PJ
+!! puede desplazarse y 3) otros objetos interactivos. De manera que los estilos
+!! disponibles en un momento dado para el sistema de palabras clave dependen de
+!! el estado de los hipervínculos de esa clase (si están activados o no). Esta
+!! rutina comprueba si una determianda configuración pasada como parámetro de
+!! estilo de palabra clave y estado de los hipervínculos de una determinada
+!! clase de objetos es compatible, y retorna el estilo que debería utilizarse
+!! en caso de no ser así.
+!!
+!! Si se invoca con el parámetro opcional 'next' activado (==verdadero), el
+!! estilo que retorna es el siguiente en la rotación de estilos disponibles
+!! para la configuración de estilo y estado pasados como parámetros.
+!!
+!!	@param {integer} text_style - Código numérico de un estilo de texto
+!!		utilizado por una clase de objetos dada
+!!	@param {boolean} hyperlink_status - Estado de los hipervínculos para la
+!!		misma clase de objetos del primer parámetro 'text_style'
+!!	@param {boolean} [next=false] - Si es verdadero, la rutina hace la
+!!		comprobación para el siguiente estilo en la rotación de estilos
+!!		disponibles
+!!	@returns {integer} Código del estilo adecuado para la configuración
+!!		pasada como parámetro
+!!	@version 1.0
+!!------------------------------------------------------------------------------
+[ CheckHighlightStyles text_style hyperlink_status next
+	result;
+	if (next) {
+		switch (text_style) {
+			TEXT_STYLE_UPRIGHT:
+				text_style = TEXT_STYLE_STRESSED;
+			TEXT_STYLE_STRESSED:
+				text_style = TEXT_STYLE_NOTE;
+			TEXT_STYLE_NOTE:
+				text_style = TEXT_STYLE_IMPORTANT;
+			TEXT_STYLE_IMPORTANT:
+				text_style = TEXT_STYLE_HEADER;
+			TEXT_STYLE_HEADER:
+				text_style = TEXT_STYLE_MONOSPACED;
+			TEXT_STYLE_MONOSPACED:
+				text_style = TEXT_STYLE_REVERSED;
+			TEXT_STYLE_REVERSED:
+				text_style = TEXT_STYLE_USER1;
+			TEXT_STYLE_USER1:
+				text_style = TEXT_STYLE_UPRIGHT;
+			default:
+				text_style = -1;
+		}
+	}
+	switch (text_style) {
+		TEXT_STYLE_UPRIGHT:
+			result = TEXT_STYLE_UPRIGHT;
+		TEXT_STYLE_STRESSED:
+			result = TEXT_STYLE_STRESSED;
+		TEXT_STYLE_NOTE:
+			if (hyperlink_status) result = TEXT_STYLE_IMPORTANT;
+			else result = TEXT_STYLE_NOTE;
+		TEXT_STYLE_IMPORTANT:
+			result = TEXT_STYLE_IMPORTANT;
+		TEXT_STYLE_HEADER:
+			if (hyperlink_status) result = TEXT_STYLE_MONOSPACED;
+			else result = TEXT_STYLE_HEADER;
+		TEXT_STYLE_MONOSPACED:
+			result = TEXT_STYLE_MONOSPACED;
+		TEXT_STYLE_REVERSED:
+			if (hyperlink_status) result = TEXT_STYLE_USER1;
+			else result = TEXT_STYLE_REVERSED;
+		TEXT_STYLE_USER1:
+			result = TEXT_STYLE_USER1;
+		default:
+			result = -1;
+	}
+	return result;
+];
 
 !!------------------------------------------------------------------------------
 !! Coloca una imagen aleatoria en la ventana gráfica de la interfaz.
@@ -719,7 +838,7 @@ Array presentPictureFlags -> 3;	! hasta 16 flags
 #Endif; ! USE_GWINDOWS;
 #Endif; ! TARGET_GLULX;
 
-Global _test = true;
+Global _test = true; !! FIXME - eliminar
 [ DrawRandomImage
 	img;
 	#Ifdef TARGET_GLULX;
@@ -856,6 +975,7 @@ Global _test = true;
 !! Imprime una regla horizontal centrada en pantalla.
 !!
 !!	@returns {boolean} Verdadero
+!!	@version 1.0
 !!------------------------------------------------------------------------------
 [ HorizontalRule
 	previous_style;
@@ -883,42 +1003,64 @@ Global _test = true;
 !!		selecciona automáticamente (con indiferencia del valor de 'style') en
 !!		función de sus características
 !!	@returns {integer} Código numérico del estilo utilizado con anterioridad
+!!	@version 1.1
 !!------------------------------------------------------------------------------
 #Ifdef USE_HYPERLINKS;
-!! [ HyperlinkSetStyle style item
-!! 	result;
-!! 	if (metaclass(item) == Object) {
-!! 		!! Objetos importantes en la obra:
-!! 		if (item has remarkable)
-!! 			result = UseTextStyle(_highlight_style_1);
-!! 		!! Objetos hacia los que el PC puede desplazarse:
-!! 		else if ((item ofclass Room or CompassDirection) || (item has door))
-!! 			result = UseTextStyle(_highlight_style_2);
-!! 		!! Otros objetos:
-!! 		else result = UseTextStyle(_highlight_style_3);
-!! 	} else {
-!! 		result = UseTextStyle(style);
-!! 	}
-!! 	return result;
-!! ];
-#Ifnot;
-[ ListenHyperlinkEvents; return false; ];
-[ HandleHyperlinkEvent; return false; ];
-[ Hyperlink item alternative;
-	if (metaclass(item) ~= String or Object) return false;
-	!! Imprime el texto del hipervínculo:
-	if (metaclass(alternative) == String) item = alternative;
-	switch (metaclass(item)) {
-		String:
-			print (string) item;
-		Object:
-			if (indef_mode && item.&short_name_indef ~= 0
-				&& PrintOrRun(item, short_name_indef, 1) ~= 0)
-				return true;
-			if (item.&short_name ~= 0 && PrintOrRun(item, short_name, 1) ~= 0)
-				return true;
-			print (object) item;
+[ HyperlinkSetStyle item style
+	result;
+	if (metaclass(item) == Object) {
+		!! Objetos importantes en la obra:
+		if (item has remarkable) {
+			result = UseTextStyle(_highlight_style_1);
+		}
+		!! Objetos hacia los que el PC puede desplazarse:
+		else if ((item ofclass Room or CompassDirection) || (item has door)) {
+			result = UseTextStyle(_highlight_style_2);
+		!! Otros objetos:
+		} else {
+			result = UseTextStyle(_highlight_style_3);
+		}
+	} else {
+		if (style < 0) style = style * -1;
+		result = UseTextStyle(style);
 	}
+
+	return result;
+];
+#Endif; ! USE_HYPERLINKS;
+
+!!------------------------------------------------------------------------------
+!! Determina si el próximo hipervínculo está o no activado.
+!!
+!!	@param {Object|String} item - Contiene al objeto o la cadena de caracteres
+!!		sobre la que se va a generar el hipervínculo
+!!	@param {integer} [code=0] - Si 'item' es una cadena de caracteres, se puede
+!!		invocar la rutina con este parámetro negativo para forzar la
+!!		desactivación del hipervínculo
+!!	@returns {boolean} Verdadero para indicar que el hipervínculo está
+!!		activado. Falso en caso contrario
+!!------------------------------------------------------------------------------
+#Ifdef USE_HYPERLINKS;
+[ HyperlinkStatus item cancel
+	result;
+	result = true;
+	if (metaclass(item) == Object) {
+		!! Objetos importantes en la obra:
+		if (item has remarkable) {
+			result = _hyperlinks_active_1;
+		}
+		!! Objetos hacia los que el PC puede desplazarse:
+		else if ((item ofclass Room or CompassDirection) || (item has door)) {
+			result = _hyperlinks_active_2;
+		!! Otros objetos:
+		} else {
+			result = _hyperlinks_active_3;
+		}
+	} else {
+		if (cancel) result = false;
+	}
+
+	return result;
 ];
 #Endif; ! USE_HYPERLINKS;
 
@@ -967,6 +1109,101 @@ Global _test = true;
 ];
 
 !!------------------------------------------------------------------------------
+!! Rutina para imprimir el nombre corto de un objeto. Si se incluye la
+!! extensión 'hyperlinks.h' se crea un hipervínculo relacionado con el objeto.
+!!
+!!	@returns {boolean} Verdadero
+!!	@override parserm.h
+!!	@version 1.1
+!!------------------------------------------------------------------------------
+[ PSN__ obj;
+    if (obj == 0) { print (string) NOTHING__TX; rtrue; }
+    switch (metaclass(obj)) {
+      Routine:  print "<routine ", obj, ">"; rtrue;
+      String:   print "<string ~", (string) obj, "~>"; rtrue;
+      nothing:  print "<illegal object number ", obj, ">"; rtrue;
+    }
+    if (obj == player) { print (string) YOURSELF__TX; rtrue; }
+    #Ifdef LanguagePrintShortName;
+    if (LanguagePrintShortName(obj)) rtrue;
+    #Endif; ! LanguagePrintShortName
+    if (indef_mode && obj.&short_name_indef ~= 0
+		&& PrintOrRun(obj, short_name_indef, 1) ~= 0)
+		rtrue;
+    if (obj.&short_name ~= 0 && PrintOrRun(obj, short_name, 1) ~= 0)
+		rtrue;
+	#Ifdef USE_HYPERLINKS;
+	Hyperlink(obj);
+	#Ifnot;
+    print (object) obj;
+	#Endif; ! USE_HYPERLINKS;
+];
+
+!!------------------------------------------------------------------------------
+!! Lee de un fichero de texto externo los parámetros de configuración
+!! establecidos en una partida previa.
+!!
+!!	@returns {boolean} Verdadero si lee el fichero con éxito. Falso en
+!!		caso contrario
+!!	@version 1.0
+!!------------------------------------------------------------------------------
+#Ifdef TARGET_GLULX;
+Array _configFileName -> $E0 'p''a''l''a''c''i''o''.''c''c''o''n''f''i''g';
+#Endif; ! TARGET_GLULX;
+[ ReadConfigFile
+	file_ref str ch i;
+	#Ifdef TARGET_GLULX;
+	file_ref = glk_fileref_create_by_name(
+		fileusage_Data + fileusage_BinaryMode,
+		ChangeAnyToCString(_configFileName),
+		0);
+	if (file_ref ~= 0) {
+		str = glk_stream_open_file(file_ref, filemode_Read, 0);
+		glk_fileref_destroy(file_ref);
+		for (i = 0 : i < 6 : i++) {
+			do ch = glk_get_char_stream(str);
+			until ((ch == null) || (ch >= 48 && ch <= 57));
+			if (ch == null) break;
+			switch (i) {
+				0:	_hyperlinks_active_1 = (ch-48);
+				1:	_hyperlinks_active_2 = (ch-48);
+				2:	_hyperlinks_active_3 = (ch-48);
+				3:	_highlight_style_1 = (ch-48);
+				4:	_highlight_style_2 = (ch-48);
+				5:	_highlight_style_3 = (ch-48);
+			}
+		}
+		!! Cierra el archivo:
+		glk_stream_close(str, 0);
+		!! Comprueba que los valores leídos sean correctos:
+		if (_hyperlinks_active_1 < 0 || _hyperlinks_active_1 > 1)
+			_hyperlinks_active_1 = DEFAULT_HYPERLINKS_STATUS;
+		if (_hyperlinks_active_2 < 0 || _hyperlinks_active_2 > 1)
+			_hyperlinks_active_2 = DEFAULT_HYPERLINKS_STATUS;
+		if (_hyperlinks_active_3 < 0 || _hyperlinks_active_3 > 1)
+			_hyperlinks_active_3 = DEFAULT_HYPERLINKS_STATUS;
+		_highlight_style_1 = CheckHighlightStyles(
+			_highlight_style_1,
+			_hyperlinks_active_1);
+		_highlight_style_2 = CheckHighlightStyles(
+			_highlight_style_2,
+			_hyperlinks_active_2);
+		_highlight_style_3 = CheckHighlightStyles(
+			_highlight_style_3,
+			_hyperlinks_active_3);
+		if (_highlight_style_1 < 0)
+			_highlight_style_1 = DEFAULT_HIGHLIGHT_ST_1;
+		if (_highlight_style_2 < 0)
+			_highlight_style_2 = DEFAULT_HIGHLIGHT_ST_2;
+		if (_highlight_style_3 < 0)
+			_highlight_style_3 = DEFAULT_HIGHLIGHT_ST_3;
+		return true;
+	}
+	#Endif; ! TARGET_GLULX;
+	return false;
+];
+
+!!------------------------------------------------------------------------------
 !! Imprime el pronombre nominativo correcto correspondiente a un objeto.
 !!
 !!	@param {Object} obj - Obj. del que se desea imprimir su pronombre nominativo
@@ -1002,6 +1239,49 @@ Global _test = true;
 	return obj;
 ];
 
+!!------------------------------------------------------------------------------
+!! Guarda en un fichero externo un registro con los parámetros de configuración
+!! de la aplicación.
+!!
+!!	@returns {boolean} Verdadero si escribe el fichero con éxito. Falso en
+!!		caso contrario
+!!	@version 1.0
+!!------------------------------------------------------------------------------
+[ WriteConfigFile
+	file_ref str;
+	#Ifdef TARGET_GLULX;
+	!! Crea el fichero externo y redirige el flujo de salida a él:
+	file_ref = glk_fileref_create_by_name(
+		fileusage_Data + fileusage_BinaryMode,
+		ChangeAnyToCString(_configFileName),
+		0);
+	if (file_ref ~= 0) {
+		str = glk_stream_open_file(file_ref, filemode_Write, 0);
+		glk_fileref_destroy(file_ref);
+		glk_stream_set_current(str);
+
+		print _hyperlinks_active_1;
+		print " # Estado de los hipervínculos (objetos destacados)^";
+		print _hyperlinks_active_2;
+		print " # Estado de los hipervinculos (direcciones)^";
+		print _hyperlinks_active_3;
+		print " # Estado de los hipervinculos (otros objetos)^";
+		print _highlight_style_1;
+		print " # Estilo de texto de hipervínculos (objetos destacados)^";
+		print _highlight_style_2;
+		print " # Estilo de texto de hipervínculos (direcciones)^";
+		print _highlight_style_3;
+		print " # Estilo de texto de hipervínculos (otros objetos)^";
+
+		!! Cierra el archivo y termina la operación:
+		glk_set_window(gg_mainwin);
+		glk_stream_close(str, 0);
+		return true;
+	}
+	#Endif; ! TARGET_GLULX;
+	return false;
+];
+
 
 !!==============================================================================
 !!
@@ -1011,8 +1291,9 @@ Global _test = true;
 !!	IMPORTANTE: Los mensajes de algunas de las acciones que se añaden requieren
 !!	la extensión 'SpanishLM.h'. Acciones añadidas o modificadas:
 !!	-	##Audio / ##AudioOn / ##AudioOff
+!!	-	##Confguration
 !!	-	##DefaultAction
-!!	-	##Highlight / ##HighlightOn / ##HighlightOff
+!!	-	##Highlight
 !!	-	##LMode2
 !!	-	##NoSuchVerb --- Permite eliminar las acciones:
 !!		-	##Sorry
@@ -1065,6 +1346,158 @@ VerboIrregular "establecer la reproducción de audio" with imperativo
 #Endif; ! TARGET_GLULX;
 
 !!------------------------------------------------------------------------------
+!! ##Configuration
+!!------------------------------------------------------------------------------
+
+Verb meta 'config' 'configuracion' 'enlace' 'enlaces' 'hipervinculo'
+	'hipervinculos' 'resaltado'
+	*								-> Configuration
+;
+
+VerboIrregular "establecer opciones de configuración" with imperativo
+	'config' 'configuracion' 'enlace' 'enlaces' 'hipervinculo'
+	'hipervinculos' 'resaltado';
+
+[ ConfigurationSub
+	flag previous_style a b i;
+	flag = false;
+	while (flag == false) {
+		EraseWindow();
+		previous_style = UseTextStyle(TEXT_STYLE_HEADER);
+		print (string) Story;
+		UseTextStyle(previous_style);
+		print " utiliza un sistema de hipervínculos para interactuar con los
+		objetos presentes en la obra a través del ratón. Hay tres clases de
+		hipervínculo: 1) asociado a objetos importantes en la historia, 2)
+		objetos o direcciones hacia los que te puedes desplazar, y 3) otros
+		objetos interactivos. Puedes activar o desactivar cada tipo de
+		hipervínculo introduciendo el número de su clase:";
+		new_line;
+		new_line;
+		for (i = 1 : i <= 3 : i++) {
+			switch (i) {
+				1:	print "1) Objetos importantes: ";
+					a = _hyperlinks_active_1;
+				2:	print "2) Direcciones ";
+					a = _hyperlinks_active_2;
+				3:	print "3) Otros objetos: ";
+					a = _hyperlinks_active_3;
+			}
+			if (a) print "@<<activados@>>";
+			else print (user2) "@<<desactivados@>>";
+			print ".";
+			new_line;
+		}
+		new_line;
+		print (parser) "Pulsa @<<INTRO@>> para aceptar.";
+		new_line;
+		switch (PressAnyKey()) {
+			32, -6:
+				flag = true;
+			'1':
+				if (_hyperlinks_active_1) _hyperlinks_active_1 = false;
+				else _hyperlinks_active_1 = true;
+				_highlight_style_1 = CheckHighlightStyles(
+					_highlight_style_1, _hyperlinks_active_1, false);
+				if (_highlight_style_1 < 0) {
+					_highlight_style_1 = DEFAULT_HIGHLIGHT_ST_1;
+				}
+			'2':
+				if (_hyperlinks_active_2) _hyperlinks_active_2 = false;
+				else _hyperlinks_active_2 = true;
+				_highlight_style_2 = CheckHighlightStyles(
+					_highlight_style_2, _hyperlinks_active_2, false);
+				if (_highlight_style_2 < 0) {
+					_highlight_style_2 = DEFAULT_HIGHLIGHT_ST_2;
+				}
+			'3':
+				if (_hyperlinks_active_3) _hyperlinks_active_3 = false;
+				else _hyperlinks_active_3 = true;
+				_highlight_style_3 = CheckHighlightStyles(
+					_highlight_style_3, _hyperlinks_active_3, false);
+				if (_highlight_style_3 < 0) {
+					_highlight_style_3 = DEFAULT_HIGHLIGHT_ST_3;
+				}
+		}
+	}
+	flag = false;
+	while (flag == false) {
+		EraseWindow();
+		print "Puedes, además, modificar el aspecto con el que se imprimen las
+ 		palabras destacadas del relato ---incluso aunque hayas desactivado los
+		hipervínculos---. Introduce el número de la clase de palabra destacada
+ 		para rotar entre los distintos estilos de resaltado disponibles y
+		seleccionar aquel que se adecue mejor a tus preferencias personales:";
+		new_line;
+		new_line;
+		for (i=1 : i <= 3 : i++) {
+			switch (i) {
+				1:	print "1) Objetos importantes: ";
+					a = _highlight_style_1;
+					b = ~~_hyperlinks_active_1;
+				2:	print "2) Direcciones: ";
+					a = _highlight_style_2;
+					b = ~~_hyperlinks_active_2;
+				3:	print "3) Otros objetos: ";
+					a = _highlight_style_3;
+					b = ~~_hyperlinks_active_3;
+			}
+			switch (a) {
+				TEXT_STYLE_UPRIGHT:
+					Hyperlink("sin estilo", 0, a, b);
+				TEXT_STYLE_STRESSED:
+					Hyperlink("enfatizado (a)", 0, a, b);
+				TEXT_STYLE_NOTE:
+					Hyperlink("enfatizado (b)", 0, a, b);
+				TEXT_STYLE_IMPORTANT:
+					Hyperlink("destacado (a)", 0, a, b);
+				TEXT_STYLE_HEADER:
+					Hyperlink("destacado (b)", 0, a, b);
+				TEXT_STYLE_MONOSPACED:
+					Hyperlink("monoespaciado", 0, a, b);
+				TEXT_STYLE_REVERSED:
+					Hyperlink("invertido", 0, a, b);
+				TEXT_STYLE_USER1:
+					Hyperlink("color de fondo", 0, a, b);
+			}
+			print ".";
+			new_line;
+		}
+		new_line;
+		print "NOTA: Cuando los hipervínculos están desactivados hay menos
+		opciones de estilos disponibles.";
+		new_line;
+		new_line;
+		print (parser) "Pulsa @<<INTRO@>> para aceptar y salir.";
+		new_line;
+		switch (PressAnyKey()) {
+			32, -6:	flag = true;
+			'1':
+				_highlight_style_1 = CheckHighlightStyles(
+					_highlight_style_1, _hyperlinks_active_1, true);
+				if (_highlight_style_1 < 0) {
+					_highlight_style_1 = DEFAULT_HIGHLIGHT_ST_1;
+				}
+			'2':
+				_highlight_style_2 = CheckHighlightStyles(
+					_highlight_style_2, _hyperlinks_active_2, true);
+				if (_highlight_style_2 < 0) {
+					_highlight_style_2 = DEFAULT_HIGHLIGHT_ST_2;
+				}
+			'3':
+				_highlight_style_3 = CheckHighlightStyles(
+					_highlight_style_3, _hyperlinks_active_3, true);
+				if (_highlight_style_3 < 0) {
+					_highlight_style_3 = DEFAULT_HIGHLIGHT_ST_3;
+				}
+		}
+	}
+	WriteConfigFile();
+	EraseWindow();
+	<<Look>>;
+];
+
+!!------------------------------------------------------------------------------
 !! ##DefaultAction
 !!------------------------------------------------------------------------------
 !!	Los objetos pueden definir una propiedad: 'action_set', con un array de
@@ -1079,118 +1512,16 @@ Verb 'no.verb'
 ;
 
 [ DefaultActionSub;
+	!! Por evitar redundancias, cuando la instrucción por defecto lanza
+	!! ##Examine no se muestra aclaración de la entrada y se hace únicamente en
+	!! los demás casos:
+	!! previous_style = UseTextStyle(TEXT_STYLE_PARSER);
+	!! print (string) TEXT_STYLE_PARSER_PREFIX;
+	!! print "examina ", (name) noun;
+	!! print (string) TEXT_STYLE_PARSER_SUFIX;
+	!! UseTextStyle(previous_style);
+	!! new_line;
 	<<Examine noun>>;
-];
-
-!!------------------------------------------------------------------------------
-!! ##Highlight / ##HighlightOn / ##HighlightOff
-!!------------------------------------------------------------------------------
-
-Verb meta 'highlight' 'resaltado'
-	*								-> Highlight
-;
-VerboIrregular "establecer estilo de texto resaltado" with imperativo
-	'highlight' 'resaltado';
-
-[ HighlightSub
-	previous_style flag;
-	while (flag == false) {
-		EraseWindow();
-		previous_style = UseTextStyle(TEXT_STYLE_IMPORTANT);
-		print (string) Story;
-		UseTextStyle(previous_style);
-		print " utiliza un sistema de palabras clave para destacar objetos
-		interactivos del relato. Hay tres clases de palabras clave: 1) nombres
-		de objetos importantes en la historia, 2) objetos o direcciones hacia
-		las que te puedes desplazar, y 3) nombres de otros objetos
-		interactivos. Introduce el número de la clase de palabra clave para
-		rotar entre los estilos de resaltado disponibles y seleccionar aquel
-		que se adeque mejor a tus preferencias personales:";
-		new_line;
-		new_line;
-		print "1) Objetos importantes: ";
-		previous_style = UseTextStyle(_highlight_style_1);
-		switch (_highlight_style_1) {
-			TEXT_STYLE_UPRIGHT:		print "sin estilo";
-			TEXT_STYLE_STRESSED:	print "enfatizado";
-			TEXT_STYLE_IMPORTANT:	print "destacado";
-			TEXT_STYLE_MONOSPACED:	print "monoespaciado";
-			TEXT_STYLE_USER1:		print "color de fondo 1";
-			TEXT_STYLE_USER2:		print "color de fondo 2";
-		}
-		UseTextStyle(previous_style);
-		print ".^";
-		print "2) Direcciones: ";
-		previous_style = UseTextStyle(_highlight_style_2);
-		switch (_highlight_style_2) {
-			TEXT_STYLE_UPRIGHT:		print "sin estilo";
-			TEXT_STYLE_STRESSED:	print "enfatizado";
-			TEXT_STYLE_IMPORTANT:	print "destacado";
-			TEXT_STYLE_MONOSPACED:	print "monoespaciado";
-			TEXT_STYLE_USER1:		print "color de fondo 1";
-		}
-		UseTextStyle(previous_style);
-		print ".^";
-		print "3) Otros objetos: ";
-		previous_style = UseTextStyle(_highlight_style_3);
-		switch (_highlight_style_3) {
-			TEXT_STYLE_UPRIGHT:		print "sin estilo";
-			TEXT_STYLE_STRESSED:	print "enfatizado";
-			TEXT_STYLE_IMPORTANT:	print "destacado";
-			TEXT_STYLE_MONOSPACED:	print "monoespaciado";
-			TEXT_STYLE_USER1:		print "color de fondo 1";
-		}
-		UseTextStyle(previous_style);
-		print ".^";
-		new_line;
-		print (parser) "Pulsa INTRO para aceptar y salir.";
-		new_line;
-		switch (PressAnyKey()) {
-			32, -6:
-				flag = true;
-			'1':
-				switch (_highlight_style_1) {
-					TEXT_STYLE_UPRIGHT:
-						_highlight_style_1 = TEXT_STYLE_STRESSED;
-					TEXT_STYLE_STRESSED:
-						_highlight_style_1 = TEXT_STYLE_IMPORTANT;
-					TEXT_STYLE_IMPORTANT:
-						_highlight_style_1 = TEXT_STYLE_MONOSPACED;
-					TEXT_STYLE_MONOSPACED:
-						_highlight_style_1 = TEXT_STYLE_USER1;
-					TEXT_STYLE_USER1:
-						_highlight_style_1 = TEXT_STYLE_UPRIGHT;
-				}
-			'2':
-				switch (_highlight_style_2) {
-					TEXT_STYLE_UPRIGHT:
-						_highlight_style_2 = TEXT_STYLE_STRESSED;
-					TEXT_STYLE_STRESSED:
-						_highlight_style_2 = TEXT_STYLE_IMPORTANT;
-					TEXT_STYLE_IMPORTANT:
-						_highlight_style_2 = TEXT_STYLE_MONOSPACED;
-					TEXT_STYLE_MONOSPACED:
-						_highlight_style_2 = TEXT_STYLE_USER1;
-					TEXT_STYLE_USER1:
-						_highlight_style_2 = TEXT_STYLE_UPRIGHT;
-				}
-			'3':
-				switch (_highlight_style_3) {
-					TEXT_STYLE_UPRIGHT:
-						_highlight_style_3 = TEXT_STYLE_STRESSED;
-					TEXT_STYLE_STRESSED:
-						_highlight_style_3 = TEXT_STYLE_IMPORTANT;
-					TEXT_STYLE_IMPORTANT:
-						_highlight_style_3 = TEXT_STYLE_MONOSPACED;
-					TEXT_STYLE_MONOSPACED:
-						_highlight_style_3 = TEXT_STYLE_USER1;
-					TEXT_STYLE_USER1:
-						_highlight_style_3 = TEXT_STYLE_UPRIGHT;
-				}
-		}
-	}
-	EraseWindow();
-	<<Look>>;
 ];
 
 !!------------------------------------------------------------------------------

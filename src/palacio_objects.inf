@@ -13,7 +13,7 @@
 !!	Sistema:		Inform-INFSP 6
 !!	Plataforma:		Máquina-Z/Glulx
 !!	Versión:		0.0
-!!	Fecha:			2018/06/11
+!!	Fecha:			2018/06/12
 !!
 !!------------------------------------------------------------------------------
 !!
@@ -398,11 +398,11 @@ Atrezzo	-> Oscuridad "oscuridad"
 		],
 		exception Cortinas,
  private
-		cannot_see_object [ obj;
+		cannot_see_object [;
 		],
-		cannot_find_object [ obj;
+		cannot_find_object [;
 		],
-		not_a_good_idea [ action_text;
+		not_a_good_idea [;
 		],
  has	female;
 
