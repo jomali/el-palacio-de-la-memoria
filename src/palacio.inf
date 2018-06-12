@@ -104,6 +104,9 @@ Constant USE_HYPERLINKS;
 !! Utilización de mensajes personalizados de la librería:
 Constant USE_SPANISH_LM;
 
+!! Nombre del fichero de configuración:
+Constant CONFIG_FILE_NAME "palacio.cconfig";
+
 !! Estilos de texto de las palabras destacadas:
 Constant DEFAULT_HIGHLIGHT_ST_1 TEXT_STYLE_USER1;
 Constant DEFAULT_HIGHLIGHT_ST_2 TEXT_STYLE_STRESSED;
@@ -166,22 +169,23 @@ Object	GUIConfig "(GUI Configuration)"
 		threshold_C 660,		! (px)
 		!! Configuración por defecto D. Ancho de ventana >= threshold_D
 		graphic_width_D 0 225,	! (px)
-		margin_D 0 26 0 6,		! (%)
-		padding_D 0 0 8 20,		! (px)
+		margin_D 0 16 0 4,		! (%)
+		padding_D 0 0 8 18,		! (px)
 		threshold_D 900,		! (px)
 		!! Configuración por defecto E. Ancho de ventana >= threshold_E
 		graphic_width_E 0 225,	! (px)
-		margin_E 0 38 0 4,		! (%)
+		margin_E 0 20 0 4,		! (%)
 		padding_E 0 0 8 20,		! (px)
 		threshold_E 1050,		! (px)
 		!! Configuración por defecto F. Ancho de ventana >= threshold_F
 		graphic_width_F 0 300,	! (px)
-		margin_F 0 25 0 4,		! (%)
+		margin_F 0 24 0 6,		! (%)
 		padding_F 0 0 8 40,		! (px)
 		threshold_F 1224,		! (px)
 		!! Configuración por defecto G. Ancho de ventana >= threshold_G
-		graphic_width_G 0 225,	! (px)
-		margin_G 0 42 0 4,		! (%)
+		!! TODO
+		graphic_width_G 0 300,	! (px)
+		margin_G 0 32 0 6,		! (%)
 		padding_G 0 0 8 20,		! (px)
 		threshold_G 1400,		! (px)
 ;
@@ -623,14 +627,13 @@ Global _current_location = 0;
 	!! Inicia la reproducción de la música de fondo:
 	FadeInTrack(MUS_PRESENTE, -1, 0);
 	!! Lee el fichero de configuración:
-	ReadConfigFile();
+	ReadConfigFile(CONFIG_FILE_NAME);
 	#Endif; ! TARGET_
 
 	!! Inicializaciones de la obra ---------------------------------------------
 	!! Texto introductorio:
 	new_line;
 	O__M(Silvia, 1);
-	PressAnyKey();
 	new_line;
 	print (parser) "Pulsa una tecla para continuar";
 	PressAnyKey();
@@ -1147,21 +1150,16 @@ Global _test = true; !! FIXME - eliminar
 !!		caso contrario
 !!	@version 1.0
 !!------------------------------------------------------------------------------
-#Ifdef TARGET_GLULX;
-Array _configFileName -> $E0 'p''a''l''a''c''i''o''.''c''c''o''n''f''i''g';
-#Endif; ! TARGET_GLULX;
-[ ReadConfigFile
+[ ReadConfigFile fileName
 	file_ref str ch i;
 	#Ifdef TARGET_GLULX;
-	file_ref = glk_fileref_create_by_name(
-		fileusage_Data + fileusage_BinaryMode,
-		ChangeAnyToCString(_configFileName),
-		0);
+	file_ref = glk($0061, fileusage_Data + fileusage_BinaryMode,
+		ChangeAnyToCString(fileName), 0); ! glk_fileref_create_by_name
 	if (file_ref ~= 0) {
-		str = glk_stream_open_file(file_ref, filemode_Read, 0);
-		glk_fileref_destroy(file_ref);
+		str = glk($0042, file_ref, filemode_Read, 0); ! glk_stream_open_file
+		glk($0063, file_ref); ! glk_fileref_destroy
 		for (i = 0 : i < 6 : i++) {
-			do ch = glk_get_char_stream(str);
+			do ch = glk($0090, str); ! glk_get_char_stream
 			until ((ch == null) || (ch >= 48 && ch <= 57));
 			if (ch == null) break;
 			switch (i) {
@@ -1174,7 +1172,7 @@ Array _configFileName -> $E0 'p''a''l''a''c''i''o''.''c''c''o''n''f''i''g';
 			}
 		}
 		!! Cierra el archivo:
-		glk_stream_close(str, 0);
+		glk($0044, str, 0); ! glk_stream_close
 		!! Comprueba que los valores leídos sean correctos:
 		if (_hyperlinks_active_1 < 0 || _hyperlinks_active_1 > 1)
 			_hyperlinks_active_1 = DEFAULT_HYPERLINKS_STATUS;
@@ -1247,19 +1245,17 @@ Array _configFileName -> $E0 'p''a''l''a''c''i''o''.''c''c''o''n''f''i''g';
 !!		caso contrario
 !!	@version 1.0
 !!------------------------------------------------------------------------------
-[ WriteConfigFile
+[ WriteConfigFile fileName
 	file_ref str;
 	#Ifdef TARGET_GLULX;
 	!! Crea el fichero externo y redirige el flujo de salida a él:
-	file_ref = glk_fileref_create_by_name(
-		fileusage_Data + fileusage_BinaryMode,
-		ChangeAnyToCString(_configFileName),
-		0);
+	file_ref = glk($0061, fileusage_Data + fileusage_BinaryMode,
+		ChangeAnyToCString(fileName), 0); ! glk_fileref_create_by_name
 	if (file_ref ~= 0) {
-		str = glk_stream_open_file(file_ref, filemode_Write, 0);
-		glk_fileref_destroy(file_ref);
-		glk_stream_set_current(str);
-
+		str = glk($0042, file_ref, filemode_Write, 0); ! glk_stream_open_file
+		glk($0063, file_ref); ! glk_fileref_destroy
+		glk($0047, str); ! glk_stream_set_current
+		!! Escritura en fichero de los parámetros de configuración:
 		print _hyperlinks_active_1;
 		print " # Estado de los hipervínculos (objetos destacados)^";
 		print _hyperlinks_active_2;
@@ -1272,10 +1268,9 @@ Array _configFileName -> $E0 'p''a''l''a''c''i''o''.''c''c''o''n''f''i''g';
 		print " # Estilo de texto de hipervínculos (direcciones)^";
 		print _highlight_style_3;
 		print " # Estilo de texto de hipervínculos (otros objetos)^";
-
 		!! Cierra el archivo y termina la operación:
-		glk_set_window(gg_mainwin);
-		glk_stream_close(str, 0);
+		glk($002F, gg_mainwin); ! glk_set_window
+		glk($0044, str, 0); ! glk_stream_close
 		return true;
 	}
 	#Endif; ! TARGET_GLULX;
@@ -1492,7 +1487,7 @@ VerboIrregular "establecer opciones de configuración" with imperativo
 				}
 		}
 	}
-	WriteConfigFile();
+	WriteConfigFile(CONFIG_FILE_NAME);
 	EraseWindow();
 	<<Look>>;
 ];

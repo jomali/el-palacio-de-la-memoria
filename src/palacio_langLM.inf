@@ -418,11 +418,7 @@ Object	LibraryMessages
 			2:
 				previous_style = UseTextStyle(TEXT_STYLE_PARSER);
 				print (string) TEXT_STYLE_PARSER_PREFIX;
-				print "¿Realmente quieres abandonar el relato? (@<<";
-				print "SÍ"; ! Hyperlink("SÍ"); !! TODO
-				print "@>> / @<<";
-				print "NO"; ! Hyperlink("NO"); !! TODO
-				print "@>>)";
+				print "¿Realmente quieres abandonar el relato?";
 				print (string) TEXT_STYLE_PARSER_SUFIX;
 				UseTextStyle(previous_style);
 				print " ";
@@ -436,11 +432,7 @@ Object	LibraryMessages
 			1:
 				previous_style = UseTextStyle(TEXT_STYLE_PARSER);
 				print (string) TEXT_STYLE_PARSER_PREFIX;
-				print "¿Realmente quieres reiniciar el relato? (@<<";
-				print "SÍ"; ! Hyperlink("SÍ"); !! TODO
-				print "@>> / @<<";
-				print "NO"; ! Hyperlink("NO"); !! TODO
-				print "@>>)";
+				print "¿Realmente quieres reiniciar el relato?";
 				print (string) TEXT_STYLE_PARSER_SUFIX;
 				UseTextStyle(previous_style);
 				print " ";
