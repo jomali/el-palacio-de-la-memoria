@@ -107,6 +107,12 @@ Constant USE_SPANISH_LM;
 !! Nombre del fichero de configuración:
 Constant CONFIG_FILE_NAME "palacio.cconfig";
 
+!! Estado de los hipervínculos:
+Constant DEFAULT_HYPERLINKS_STATUS 1;
+Global _hyperlinks_active_1 = DEFAULT_HYPERLINKS_STATUS; ! Objetos destacados
+Global _hyperlinks_active_2 = DEFAULT_HYPERLINKS_STATUS; ! Direcciones y puertas
+Global _hyperlinks_active_3 = DEFAULT_HYPERLINKS_STATUS; ! Otros objetos
+
 !! Estilos de texto de las palabras destacadas:
 Constant DEFAULT_HIGHLIGHT_ST_1 TEXT_STYLE_USER1;
 Constant DEFAULT_HIGHLIGHT_ST_2 TEXT_STYLE_STRESSED;
@@ -114,12 +120,6 @@ Constant DEFAULT_HIGHLIGHT_ST_3 TEXT_STYLE_UPRIGHT;
 Global _highlight_style_1 = DEFAULT_HIGHLIGHT_ST_1;	! Objetos destacados
 Global _highlight_style_2 = DEFAULT_HIGHLIGHT_ST_2;	! Direcciones y puertas
 Global _highlight_style_3 = DEFAULT_HIGHLIGHT_ST_3;	! Otros objetos
-
-!! Estado de los hipervínculos:
-Constant DEFAULT_HYPERLINKS_STATUS = 1;
-Global _hyperlinks_active_1 = DEFAULT_HYPERLINKS_STATUS; ! Objetos destacados
-Global _hyperlinks_active_2 = DEFAULT_HYPERLINKS_STATUS; ! Direcciones y puertas
-Global _hyperlinks_active_3 = DEFAULT_HYPERLINKS_STATUS; ! Otros objetos
 
 !!------------------------------------------------------------------------------
 !!	Definiciones de la librería Inform
@@ -189,7 +189,7 @@ Object	GUIConfig "(GUI Configuration)"
 		padding_G 0 0 8 20,		! (px)
 		threshold_G 1400,		! (px)
 ;
-#Endif; ! TARGET_GLULX;
+#Endif; ! TARGET_
 
 !!------------------------------------------------------------------------------
 !!	Configuración de la extensión 'hyperlinks'
@@ -228,13 +228,14 @@ Constant USR1_STYLE_BGC	$CFF5F8; ! #CFF5F8
 !! Color frontal del estilo de texto Usuario 2:
 Constant USR2_STYLE_FGC $808080; ! #808080
 
-Constant TEXT_STYLE_PARSER TEXT_STYLE_USER2;
-Constant TEXT_STYLE_PARSER_PREFIX "[";
-Constant TEXT_STYLE_PARSER_SUFIX "]";
-
 #Ifdef TARGET_ZCODE;
 Constant TEXT_STYLE_PARSER TEXT_STYLE_MONOSPACED;
+#Ifnot; ! TARGET_GLULX;
+Constant TEXT_STYLE_PARSER TEXT_STYLE_USER2;
 #Endif; ! TARGET_
+
+Constant TEXT_STYLE_PARSER_PREFIX "[";
+Constant TEXT_STYLE_PARSER_SUFIX "]";
 
 
 !!==============================================================================
@@ -1089,17 +1090,22 @@ Global _test = true; !! FIXME - eliminar
 ];
 
 !!------------------------------------------------------------------------------
-!! Espera una pulsación de tecla del usuario o, si se introduce un valor
-!! 'delay', espera a que pase esa cantidad de décimas de segundo antes de
-!! continuar con la ejecución normal del relato.
+!! Rutina para esperar una pulsación de tecla del usuario antes de continuar.
+!! Si se invoca con el primer parámetro opcional activado (verdadero), la
+!! ejecución continúa sin ningún tipo de espera. Si se utiliza el segundo
+!! parámetro opcional, la rutina espera a que pase esa cantidad de décimas de
+!! segundo antes de continuar con la ejecución normal.
 !!
-!!	@param {integer} [delay] - Si se introduce un entero, espera a que se
+!!	@param {boolean} [cancel=false] - Si es verdadero la rutina no espera a la
+!!		pulsación de tecla del usuario y la aplicación puede continuar la
+!!		ejecución normalmente
+!!	@param {integer} [delay=0] - Si se introduce un entero, espera a que se
 !!		cumpla la cantidad 'delay' de décimas de segundo antes de continuar.
 !!		En caso contrario, espera a una pulsación de tecla del usuario
 !!	@returns {char} Caracter introducido por el usuario
-!!	@version 1.1
+!!	@version 1.2
 !!------------------------------------------------------------------------------
-[ PressAnyKey delay
+[ PressAnyKey cancel delay
 	result;
 	#Ifdef TARGET_GLULX;
 	#Ifdef USE_DAMUSIX;
@@ -1107,7 +1113,7 @@ Global _test = true; !! FIXME - eliminar
 	#Endif; ! USE_DAMUSIX;
 	#Endif; ! TARGET_GLULX;
 	if (delay > 0) result = KeyDelay(delay);
-	else result = KeyCharPrimitive();
+	else if (~~cancel) result = KeyCharPrimitive();
 	return result;
 ];
 
@@ -1151,34 +1157,77 @@ Global _test = true; !! FIXME - eliminar
 !!	@version 1.0
 !!------------------------------------------------------------------------------
 [ ReadConfigFile fileName
-	file_ref str ch i;
+	file_ref str ch config_parameters i;
+	config_parameters = 6;
 	#Ifdef TARGET_GLULX;
 	file_ref = glk($0061, fileusage_Data + fileusage_BinaryMode,
 		ChangeAnyToCString(fileName), 0); ! glk_fileref_create_by_name
 	if (file_ref ~= 0) {
 		str = glk($0042, file_ref, filemode_Read, 0); ! glk_stream_open_file
 		glk($0063, file_ref); ! glk_fileref_destroy
-		for (i = 0 : i < 6 : i++) {
+		for (i = 1 : i <= config_parameters : i++) {
 			do ch = glk($0090, str); ! glk_get_char_stream
 			until ((ch == null) || (ch >= 48 && ch <= 57));
 			if (ch == null) break;
 			switch (i) {
-				0:	_hyperlinks_active_1 = (ch-48);
-				1:	_hyperlinks_active_2 = (ch-48);
-				2:	_hyperlinks_active_3 = (ch-48);
-				3:	_highlight_style_1 = (ch-48);
-				4:	_highlight_style_2 = (ch-48);
-				5:	_highlight_style_3 = (ch-48);
+				1:	_hyperlinks_active_1 = (ch-48);
+				2:	_hyperlinks_active_2 = (ch-48);
+				3:	_hyperlinks_active_3 = (ch-48);
+				4:	_highlight_style_1 = (ch-48);
+				5:	_highlight_style_2 = (ch-48);
+				6:	_highlight_style_3 = (ch-48);
 			}
+			do ch = glk($0090, str); ! glk_get_char_stream
+			until ((ch == null) || (ch == 10)); ! (hasta nueva línea)
 		}
 		!! Cierra el archivo:
 		glk($0044, str, 0); ! glk_stream_close
+		!! Transforma los códigos de estilo a los valores reales:
+		print "(", _highlight_style_1, ",";
+		switch (_highlight_style_1) {
+			1:	_highlight_style_1 = TEXT_STYLE_STRESSED;
+			2:	_highlight_style_1 = TEXT_STYLE_NOTE;
+			3:	_highlight_style_1 = TEXT_STYLE_IMPORTANT;
+			4:	_highlight_style_1 = TEXT_STYLE_HEADER;
+			5:	_highlight_style_1 = TEXT_STYLE_MONOSPACED;
+			6:	_highlight_style_1 = TEXT_STYLE_REVERSED;
+			7:	_highlight_style_1 = TEXT_STYLE_USER1;
+			default: _highlight_style_1 = TEXT_STYLE_UPRIGHT;
+		}
+		print _highlight_style_1, ") ";
+		print "(", _highlight_style_2, ",";
+		switch (_highlight_style_2) {
+			1:	_highlight_style_2 = TEXT_STYLE_STRESSED;
+			2:	_highlight_style_2 = TEXT_STYLE_NOTE;
+			3:	_highlight_style_2 = TEXT_STYLE_IMPORTANT;
+			4:	_highlight_style_2 = TEXT_STYLE_HEADER;
+			5:	_highlight_style_2 = TEXT_STYLE_MONOSPACED;
+			6:	_highlight_style_2 = TEXT_STYLE_REVERSED;
+			7:	_highlight_style_2 = TEXT_STYLE_USER1;
+			default: _highlight_style_2 = TEXT_STYLE_UPRIGHT;
+		}
+		print _highlight_style_2, ") ";
+		print "(", _highlight_style_3, ",";
+		switch (_highlight_style_3) {
+			1:	_highlight_style_3 = TEXT_STYLE_STRESSED;
+			2:	_highlight_style_3 = TEXT_STYLE_NOTE;
+			3:	_highlight_style_3 = TEXT_STYLE_IMPORTANT;
+			4:	_highlight_style_3 = TEXT_STYLE_HEADER;
+			5:	_highlight_style_3 = TEXT_STYLE_MONOSPACED;
+			6:	_highlight_style_3 = TEXT_STYLE_REVERSED;
+			7:	_highlight_style_3 = TEXT_STYLE_USER1;
+			default: _highlight_style_3 = TEXT_STYLE_UPRIGHT;
+		}
+		print _highlight_style_3, ")^";
 		!! Comprueba que los valores leídos sean correctos:
-		if (_hyperlinks_active_1 < 0 || _hyperlinks_active_1 > 1)
+		if (i < config_parameters || _hyperlinks_active_1 < 0
+			|| _hyperlinks_active_1 > 1)
 			_hyperlinks_active_1 = DEFAULT_HYPERLINKS_STATUS;
-		if (_hyperlinks_active_2 < 0 || _hyperlinks_active_2 > 1)
+		if (i < config_parameters || _hyperlinks_active_2 < 0
+			|| _hyperlinks_active_2 > 1)
 			_hyperlinks_active_2 = DEFAULT_HYPERLINKS_STATUS;
-		if (_hyperlinks_active_3 < 0 || _hyperlinks_active_3 > 1)
+		if (i < config_parameters || _hyperlinks_active_3 < 0
+			|| _hyperlinks_active_3 > 1)
 			_hyperlinks_active_3 = DEFAULT_HYPERLINKS_STATUS;
 		_highlight_style_1 = CheckHighlightStyles(
 			_highlight_style_1,
@@ -1189,11 +1238,11 @@ Global _test = true; !! FIXME - eliminar
 		_highlight_style_3 = CheckHighlightStyles(
 			_highlight_style_3,
 			_hyperlinks_active_3);
-		if (_highlight_style_1 < 0)
+		if (i < config_parameters || _highlight_style_1 < 0)
 			_highlight_style_1 = DEFAULT_HIGHLIGHT_ST_1;
-		if (_highlight_style_2 < 0)
+		if (i < config_parameters || _highlight_style_2 < 0)
 			_highlight_style_2 = DEFAULT_HIGHLIGHT_ST_2;
-		if (_highlight_style_3 < 0)
+		if (i < config_parameters || _highlight_style_3 < 0)
 			_highlight_style_3 = DEFAULT_HIGHLIGHT_ST_3;
 		return true;
 	}
@@ -1246,7 +1295,7 @@ Global _test = true; !! FIXME - eliminar
 !!	@version 1.0
 !!------------------------------------------------------------------------------
 [ WriteConfigFile fileName
-	file_ref str;
+	file_ref str i temp_txt temp_code;
 	#Ifdef TARGET_GLULX;
 	!! Crea el fichero externo y redirige el flujo de salida a él:
 	file_ref = glk($0061, fileusage_Data + fileusage_BinaryMode,
@@ -1256,23 +1305,41 @@ Global _test = true; !! FIXME - eliminar
 		glk($0063, file_ref); ! glk_fileref_destroy
 		glk($0047, str); ! glk_stream_set_current
 		!! Escritura en fichero de los parámetros de configuración:
-		print _hyperlinks_active_1;
-		print " # Estado de los hipervínculos (objetos destacados)^";
-		print _hyperlinks_active_2;
-		print " # Estado de los hipervinculos (direcciones)^";
-		print _hyperlinks_active_3;
-		print " # Estado de los hipervinculos (otros objetos)^";
-		print _highlight_style_1;
-		print " # Estilo de texto de hipervínculos (objetos destacados)^";
-		print _highlight_style_2;
-		print " # Estilo de texto de hipervínculos (direcciones)^";
-		print _highlight_style_3;
-		print " # Estilo de texto de hipervínculos (otros objetos)^";
+		print _hyperlinks_active_1, " # Hipervínculos asociados a objetos
+		destacados {0:desactivados, 1:activados}^";
+		print _hyperlinks_active_2, " # Hipervínculos asociados a direcciones
+		{0: desactivados, 1:activados}^";
+		print _hyperlinks_active_3, " # Hipervínculos asociados a otros objetos
+		{0:desactivados, 1:activados}^";
+		for (i = 0 : i < 3 : i++) {
+			switch (i) {
+				0:	temp_code = _highlight_style_1;
+					temp_txt = "objetos destacados";
+				1:	temp_code = _highlight_style_2;
+					temp_txt = "direcciones";
+				2:	temp_code = _highlight_style_3;
+					temp_txt = "otros objetos";
+			}
+			switch (temp_code) {
+				TEXT_STYLE_UPRIGHT:		temp_code = 0;
+				TEXT_STYLE_STRESSED:	temp_code = 1;
+				TEXT_STYLE_NOTE:		temp_code = 2;
+				TEXT_STYLE_IMPORTANT:	temp_code = 3;
+				TEXT_STYLE_HEADER:		temp_code = 4;
+				TEXT_STYLE_MONOSPACED:	temp_code = 5;
+				TEXT_STYLE_REVERSED:	temp_code = 6;
+				TEXT_STYLE_USER1:		temp_code = 7;
+			}
+			print temp_code, " # Estilo de texto de ", (string) temp_txt,
+			" [0-7]^";
+		}
 		!! Cierra el archivo y termina la operación:
 		glk($002F, gg_mainwin); ! glk_set_window
 		glk($0044, str, 0); ! glk_stream_close
 		return true;
 	}
+	#Ifnot; ! TARGET_
+	fileName = file_ref + str; ! (por evitar alertas del compilador)
 	#Endif; ! TARGET_GLULX;
 	return false;
 ];
