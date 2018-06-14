@@ -848,7 +848,7 @@ Global _test = true; !! FIXME - eliminar
 	#Ifdef TARGET_GLULX;
 	#Ifdef USE_GWINDOWS;
 	if (_test) {
-		switch (Shuffle(12, presentPictureFlags)) {
+		switch (Shuffle(10, presentPictureFlags)) {
 			1:	img = PIC_PRESENTE_01;
 			2:	img = PIC_PRESENTE_02;
 			3:	img = PIC_PRESENTE_03;
@@ -859,8 +859,6 @@ Global _test = true; !! FIXME - eliminar
 			8:	img = PIC_PRESENTE_08;
 			9:	img = PIC_PRESENTE_09;
 			10:	img = PIC_PRESENTE_10;
-			11:	img = PIC_PRESENTE_11;
-			12:	img = PIC_PRESENTE_12;
 		}
 	} else {
 		switch (Shuffle(10, pastPictureFlags)) {
