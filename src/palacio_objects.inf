@@ -76,6 +76,33 @@ Room	Limbo "En algún lugar"
 		clarification 0,
  has	male;
 
+Dinosaur -> Ankylosaurus "ankylosaurus"
+ with	name_m 'ankylosaurus' 'anquilosaurio' 'dinosaurio' 'juguete',
+ has	male;
+
+Dinosaur -> Dimetrodon "dimetrodon"
+ with	name_m 'dinosaurio' 'juguete' 'dimetrodon',
+		discovered true,
+ has	male;
+
+Dinosaur -> Parasaurolophus "parasaurolophus"
+ with	name_m	'dinosaurio' 'juguete' 'parasaurolophus' 'parasaurolopus',
+ has	male;
+
+Dinosaur -> Stegosaurus "stegosaurus"
+ with	name_m	'dinosaurio' 'estegosaurio' 'juguete' 'stegosaurus',
+		discovered true,
+ has	male;
+
+Dinosaur -> Triceratops "triceratops"
+ with	name_m	'dinosaurio' 'juguete' 'triceratops',
+ has	male;
+
+Dinosaur -> Tyrannosaurus "tyrannosaurus rex"
+ with	name_m	'dinosaurio' 'juguete' 'rex' 'tiranosaurio' 'trex'
+				'tyrannosaurus',
+ has	male;
+
 NPC		-> Silvia "Silvia"
  with	name_f	'personaje' 'protagonista' 'silvia',
 		gender	G_FEMENINO,

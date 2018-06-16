@@ -46,6 +46,7 @@
 !!	2)	Clases
 !!		-	Thing
 !!			+	Item
+!!				*	Dinosaur
 !!			+	Furniture
 !!			+	Atrezzo
 !!			+	Receptacle
@@ -152,6 +153,7 @@ Class	Thing
 			}
 			" nada especial en ", (the) self, ".";
 		],
+		reset [; return false; ],
 ;
 
 !!==============================================================================
@@ -214,6 +216,23 @@ Class	Item
 			" visto antes.";
 		],
 ;
+
+
+!!==============================================================================
+!!	*	Dinosaur
+!!------------------------------------------------------------------------------
+!!	Representa un objeto coleccionable.
+!!------------------------------------------------------------------------------
+
+Class	Dinosaur
+ class	Item
+ with	after [;
+			Examine, Take:
+				if (~~self.discovered) self.discovered = true;
+		],
+		discovered false,
+;
+
 
 !!==============================================================================
 !!	+	Furniture

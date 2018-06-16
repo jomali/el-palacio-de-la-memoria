@@ -109,17 +109,11 @@ Constant CONFIG_FILE_NAME "palacio.cconfig";
 
 !! Estado de los hipervínculos:
 Constant DEFAULT_HYPERLINKS_STATUS 1;
-Global _hyperlinks_active_1 = DEFAULT_HYPERLINKS_STATUS; ! Objetos destacados
-Global _hyperlinks_active_2 = DEFAULT_HYPERLINKS_STATUS; ! Direcciones y puertas
-Global _hyperlinks_active_3 = DEFAULT_HYPERLINKS_STATUS; ! Otros objetos
 
-!! Estilos de texto de las palabras destacadas:
+!! Estilos de texto por defecto para las palabras destacadas:
 Constant DEFAULT_HIGHLIGHT_ST_1 TEXT_STYLE_USER1;
 Constant DEFAULT_HIGHLIGHT_ST_2 TEXT_STYLE_STRESSED;
 Constant DEFAULT_HIGHLIGHT_ST_3 TEXT_STYLE_UPRIGHT;
-Global _highlight_style_1 = DEFAULT_HIGHLIGHT_ST_1;	! Objetos destacados
-Global _highlight_style_2 = DEFAULT_HIGHLIGHT_ST_2;	! Direcciones y puertas
-Global _highlight_style_3 = DEFAULT_HIGHLIGHT_ST_3;	! Otros objetos
 
 !!------------------------------------------------------------------------------
 !!	Definiciones de la librería Inform
@@ -589,7 +583,8 @@ Global _current_location = 0;
 !!		los créditos, que de otra manera se imprimirían inmediatamente después
 !!		de llamar a la rutina
 !!------------------------------------------------------------------------------
-[ Initialise;
+[ Initialise
+	initial_location;
 	EraseWindow();
 
 	!! Comprobaciones del intérprete -------------------------------------------
@@ -615,8 +610,6 @@ Global _current_location = 0;
 	#Ifdef USE_HYPERLINKS;
 	ListenHyperlinkEvents();
 	#Endif; ! USE_HYPERLINKS;
-	!! Establece la imagen inicial presente durante el menu:
-	DrawRandomImage();
 	!! Inicializa los canales de audio (10 reales + 10 virtuales):
 	!!	-	SONIDO: Recurso de sonido declarado en el fichero '.res'
 	!!	-	CANAL: Número del canal [0-9]
@@ -625,13 +618,23 @@ Global _current_location = 0;
 	#Ifdef USE_DAMUSIX;
 	Damusix.AsignarCanal(MUS_PRESENTE, 0, 100, -1);
 	#Endif; ! USE_DAMUSIX;
-	!! Inicia la reproducción de la música de fondo:
-	FadeInTrack(MUS_PRESENTE, -1, 0);
 	!! Lee el fichero de configuración:
-	ReadConfigFile(CONFIG_FILE_NAME);
+	DM.read_configuration_file(CONFIG_FILE_NAME);
 	#Endif; ! TARGET_
 
 	!! Inicializaciones de la obra ---------------------------------------------
+	!! Narrador en presente y tercera persona
+	DM.set_grammatical_inflection(THIRD_PERSON_PRESENT);
+	!! Se lanza el menú antes de establecer al Personaje Jugable (PJ) para
+	!! evitar que se imprima un nombre de localidad en la barra de estado:
+	initial_location = MainMenu();
+	!! Establece el PJ:
+	ChangePlayer(Silvia);
+	!! Establece la localidad inicial de la obra:
+	location = initial_location;
+	!! Lookmode largo:
+	lookmode = 2;
+
 	!! Texto introductorio:
 	new_line;
 	O__M(Silvia, 1);
@@ -639,26 +642,14 @@ Global _current_location = 0;
 	print (parser) "Pulsa una tecla para continuar";
 	PressAnyKey();
 	EraseWindow();
-	!! Créditos:
 	new_line;
 	O__M(Silvia, 2);
 	PressAnyKey();
 	EraseWindow();
 	new_line;
-	Banner();
-	PressAnyKey();
-	EraseWindow();
-	new_line;
 	HorizontalRule();
 	new_line;
-	!! Narrador en presente y tercera persona
-	SetGrammaticalInflection(THIRD_PERSON_PRESENT);
-	!! Establece el PC (player character)
-	ChangePlayer(Silvia);
-	!! Establece la localidad inicial del relato:
-	location = Recibidor;
-	!! Lookmode largo:
-	lookmode = 2;
+
 	!! Se evita la impresión inicial del banner
 	return 2;
 ];
@@ -735,7 +726,8 @@ Global _current_location = 0;
 !!	7)	Otras rutinas
 !!
 !!------------------------------------------------------------------------------
-!!	<>	CheckHighlightStyles()
+!!	<>	ConfigureHyperlinks()
+!!	<>	ConfigureHighlightStyle()
 !!	<>	DrawRandomImage()
 !!	<>	EraseWindow()
 !!	<>	FadeInTrack()
@@ -743,90 +735,168 @@ Global _current_location = 0;
 !!	<>	HorizontalRule()
 !!	<>	HyperlinkSetStyle()
 !!	<>	HyperlinkStatus()
+!!	<>	MainMenu()
 !!	<>	PlaySFX()
 !!	<>	PressAnyKey()
+!!	<>	PrintCollectibles()
 !!	<>	PSN__()
-!!	<>	ReadConfigFile()
 !!	<>	SpanishNominativePronoun()
 !!	<>	TopHolder()
-!!	<>	WriteConfigFile()
 !!------------------------------------------------------------------------------
 
 !!------------------------------------------------------------------------------
-!! La aplicación utiliza dos sistemas interconectados de palabras clave e
-!! hipervínculos asociados a tres clases de objetos: 1) objetos importantes en
-!! el desarrollo de la historia, 2) direcciones y objetos hacia los que el PJ
-!! puede desplazarse y 3) otros objetos interactivos. De manera que los estilos
-!! disponibles en un momento dado para el sistema de palabras clave dependen de
-!! el estado de los hipervínculos de esa clase (si están activados o no). Esta
-!! rutina comprueba si una determianda configuración pasada como parámetro de
-!! estilo de palabra clave y estado de los hipervínculos de una determinada
-!! clase de objetos es compatible, y retorna el estilo que debería utilizarse
-!! en caso de no ser así.
+!! Permite al usuario activar/desactivar los hipervínculos para cada uno de los
+!! diferentes conjuntos de objetos de la aplicación.
 !!
-!! Si se invoca con el parámetro opcional 'next' activado (==verdadero), el
-!! estilo que retorna es el siguiente en la rotación de estilos disponibles
-!! para la configuración de estilo y estado pasados como parámetros.
-!!
-!!	@param {integer} text_style - Código numérico de un estilo de texto
-!!		utilizado por una clase de objetos dada
-!!	@param {boolean} hyperlink_status - Estado de los hipervínculos para la
-!!		misma clase de objetos del primer parámetro 'text_style'
-!!	@param {boolean} [next=false] - Si es verdadero, la rutina hace la
-!!		comprobación para el siguiente estilo en la rotación de estilos
-!!		disponibles
-!!	@returns {integer} Código del estilo adecuado para la configuración
-!!		pasada como parámetro
+!!	@param {string} [txt = 0] - Cadena de texto que se imprime al final del
+!!		menú. Debe ser algo similar a: "Pulsa INTRO para aceptar."
+!!	@returns {boolean} Verdadero
 !!	@version 1.0
 !!------------------------------------------------------------------------------
-[ CheckHighlightStyles text_style hyperlink_status next
-	result;
-	if (next) {
-		switch (text_style) {
-			TEXT_STYLE_UPRIGHT:
-				text_style = TEXT_STYLE_STRESSED;
-			TEXT_STYLE_STRESSED:
-				text_style = TEXT_STYLE_NOTE;
-			TEXT_STYLE_NOTE:
-				text_style = TEXT_STYLE_IMPORTANT;
-			TEXT_STYLE_IMPORTANT:
-				text_style = TEXT_STYLE_HEADER;
-			TEXT_STYLE_HEADER:
-				text_style = TEXT_STYLE_MONOSPACED;
-			TEXT_STYLE_MONOSPACED:
-				text_style = TEXT_STYLE_REVERSED;
-			TEXT_STYLE_REVERSED:
-				text_style = TEXT_STYLE_USER1;
-			TEXT_STYLE_USER1:
-				text_style = TEXT_STYLE_UPRIGHT;
-			default:
-				text_style = -1;
+[ ConfigureHyperlinks txt
+	done previous_style i;
+	while (done == false) {
+		EraseWindow();
+		new_line;
+		previous_style = UseTextStyle(TEXT_STYLE_HEADER);
+		print (string) Story;
+		UseTextStyle(previous_style);
+		print " utiliza un sistema de hipervínculos para interactuar con los
+		objetos presentes en la obra a través del ratón. Hay tres clases de
+		hipervínculo: 1) asociado a objetos importantes en la historia, 2)
+		objetos o direcciones hacia los que te puedes desplazar, 3) otros
+		objetos interactivos. Puedes activar o desactivar cada tipo de
+		hipervínculo introduciendo el número de su clase:";
+		new_line;
+		new_line;
+		for (i = 1 : i <= 3 : i++) {
+			switch (i) {
+				1:	print "1) Objetos importantes: ";
+				2:	print "2) Direcciones: ";
+				3:	print "3) Otros objetos: ";
+			}
+			if (DM.get_hyperlinks_status(i)) print "@<<activados@>>";
+			else print (user2) "@<<desactivados@>>";
+			print ".";
+			new_line;
+		}
+		if (txt ~= 0) {
+			new_line;
+			previous_style = UseTextStyle(TEXT_STYLE_PARSER);
+			print (string) TEXT_STYLE_PARSER_PREFIX;
+			print (string) txt;
+			print (string) TEXT_STYLE_PARSER_SUFIX;
+			UseTextStyle(previous_style);
+			new_line;
+		}
+		switch (PressAnyKey()) {
+			32, -6: done = true; ! Código de INTRO/ESPACIO
+			'1': DM.set_hyperlinks_status(1, ~~DM.get_hyperlinks_status(1));
+			'2': DM.set_hyperlinks_status(2, ~~DM.get_hyperlinks_status(2));
+			'3': DM.get_hyperlinks_status(3, ~~DM.get_hyperlinks_status(3));
 		}
 	}
-	switch (text_style) {
-		TEXT_STYLE_UPRIGHT:
-			result = TEXT_STYLE_UPRIGHT;
-		TEXT_STYLE_STRESSED:
-			result = TEXT_STYLE_STRESSED;
-		TEXT_STYLE_NOTE:
-			if (hyperlink_status) result = TEXT_STYLE_IMPORTANT;
-			else result = TEXT_STYLE_NOTE;
-		TEXT_STYLE_IMPORTANT:
-			result = TEXT_STYLE_IMPORTANT;
-		TEXT_STYLE_HEADER:
-			if (hyperlink_status) result = TEXT_STYLE_MONOSPACED;
-			else result = TEXT_STYLE_HEADER;
-		TEXT_STYLE_MONOSPACED:
-			result = TEXT_STYLE_MONOSPACED;
-		TEXT_STYLE_REVERSED:
-			if (hyperlink_status) result = TEXT_STYLE_USER1;
-			else result = TEXT_STYLE_REVERSED;
-		TEXT_STYLE_USER1:
-			result = TEXT_STYLE_USER1;
-		default:
-			result = -1;
+	EraseWindow();
+	return true;
+];
+
+!!------------------------------------------------------------------------------
+!! Permite al usuario modificar el estilo con el que se imprimen las palabras
+!! clave para cada uno de los diferentes conjuntos de objetos de la aplicación.
+!!
+!!	@param {string} [txt = 0] - Cadena de texto que se imprime al final del
+!!		menú. Debe ser algo similar a: "Pulsa INTRO para aceptar."
+!!	@returns {boolean} Verdadero
+!!	@version 1.0
+!!------------------------------------------------------------------------------
+[ ConfigureHighlightStyle txt
+	done i highlight temp previous_style;
+	while (done == false) {
+		EraseWindow();
+		new_line;
+		print "Puedes, además, modificar el aspecto con el que se imprimen los
+		nombres de los objetos interactivos de la obra ---incluso aunque los
+		hipervínculos estén desactivados---. Introduce el número de la clase de
+		palabra destacada para rotar entre los distintos estilos de resaltado
+		disponibles y seleccionar aquel que se adecue mejor a tus preferencias
+		personales:";
+		new_line;
+		new_line;
+		for (i = 1 : i <= 3 : i++) {
+			switch (i) {
+				1:	print "1) Objetos importantes: ";
+				2:	print "2) Direcciones: ";
+				3:	print "3) Otros objetos: ";
+			}
+			highlight = DM.get_highlight_style(i);
+			temp = DM.get_hyperlinks_status(i);
+			switch (highlight) {
+				TEXT_STYLE_UPRIGHT:
+					Hyperlink("sin estilo", 0, highlight, temp);
+				TEXT_STYLE_STRESSED:
+					Hyperlink("enfatizado (a)", 0, highlight, temp);
+				TEXT_STYLE_NOTE:
+					Hyperlink("enfatizado (b)", 0, highlight, temp);
+				TEXT_STYLE_IMPORTANT:
+					Hyperlink("destacado (a)", 0, highlight, temp);
+				TEXT_STYLE_HEADER:
+					Hyperlink("destacado (b)", 0, highlight, temp);
+				TEXT_STYLE_MONOSPACED:
+					Hyperlink("monoespaciado", 0, highlight, temp);
+				TEXT_STYLE_REVERSED:
+					Hyperlink("invertido", 0, highlight, temp);
+				TEXT_STYLE_USER1:
+					Hyperlink("color de fondo", 0, highlight, temp);
+			}
+			print ".";
+			new_line;
+		}
+		new_line;
+		print "NOTA: Cuando los hipervínculos están desactivados hay menos
+		opciones de estilos disponibles.";
+		new_line;
+		if (txt ~= 0) {
+			new_line;
+			previous_style = UseTextStyle(TEXT_STYLE_PARSER);
+			print (string) TEXT_STYLE_PARSER_PREFIX;
+			print (string) txt;
+			print (string) TEXT_STYLE_PARSER_SUFIX;
+			UseTextStyle(previous_style);
+			new_line;
+		}
+		temp = 0;
+		switch (PressAnyKey()) {
+			32, -6: done = true; ! Código de INTRO/ESPACIO
+			'1': temp = 1;
+			'2': temp = 2;
+			'3': temp = 3;
+		}
+		if (temp > 0) {
+			switch (DM.get_highlight_style(temp)) {
+				TEXT_STYLE_UPRIGHT:
+					highlight = TEXT_STYLE_STRESSED;
+				TEXT_STYLE_STRESSED:
+					highlight = TEXT_STYLE_NOTE;
+				TEXT_STYLE_NOTE:
+					highlight = TEXT_STYLE_IMPORTANT;
+				TEXT_STYLE_IMPORTANT:
+					highlight = TEXT_STYLE_HEADER;
+				TEXT_STYLE_HEADER:
+					highlight = TEXT_STYLE_MONOSPACED;
+				TEXT_STYLE_MONOSPACED:
+					highlight = TEXT_STYLE_REVERSED;
+				TEXT_STYLE_REVERSED:
+					highlight = TEXT_STYLE_USER1;
+				TEXT_STYLE_USER1:
+					highlight = TEXT_STYLE_UPRIGHT;
+				default:
+					highlight = -1;
+			}
+			DM.set_highlight_style(temp, highlight);
+		}
 	}
-	return result;
+	EraseWindow();
+	return true;
 ];
 
 !!------------------------------------------------------------------------------
@@ -1005,7 +1075,7 @@ Global _test = true; !! FIXME - eliminar
 !!		selecciona automáticamente (con indiferencia del valor de 'style') en
 !!		función de sus características
 !!	@returns {integer} Código numérico del estilo utilizado con anterioridad
-!!	@version 1.1
+!!	@version 1.2
 !!------------------------------------------------------------------------------
 #Ifdef USE_HYPERLINKS;
 [ HyperlinkSetStyle item style
@@ -1013,14 +1083,14 @@ Global _test = true; !! FIXME - eliminar
 	if (metaclass(item) == Object) {
 		!! Objetos importantes en la obra:
 		if (item has remarkable) {
-			result = UseTextStyle(_highlight_style_1);
+			result = UseTextStyle(DM.get_highlight_style(1));
 		}
 		!! Objetos hacia los que el PC puede desplazarse:
 		else if ((item ofclass Room or CompassDirection) || (item has door)) {
-			result = UseTextStyle(_highlight_style_2);
+			result = UseTextStyle(DM.get_highlight_style(2));
 		!! Otros objetos:
 		} else {
-			result = UseTextStyle(_highlight_style_3);
+			result = UseTextStyle(DM.get_highlight_style(3));
 		}
 	} else {
 		if (style < 0) style = style * -1;
@@ -1032,7 +1102,8 @@ Global _test = true; !! FIXME - eliminar
 #Endif; ! USE_HYPERLINKS;
 
 !!------------------------------------------------------------------------------
-!! Determina si el próximo hipervínculo está o no activado.
+!! Determina si el próximo hipervínculo que se va a crear en la extensión
+!! 'hyperlinks' está o no activado.
 !!
 !!	@param {Object|String} item - Contiene al objeto o la cadena de caracteres
 !!		sobre la que se va a generar el hipervínculo
@@ -1041,6 +1112,7 @@ Global _test = true; !! FIXME - eliminar
 !!		desactivación del hipervínculo
 !!	@returns {boolean} Verdadero para indicar que el hipervínculo está
 !!		activado. Falso en caso contrario
+!!	@version 1.1
 !!------------------------------------------------------------------------------
 #Ifdef USE_HYPERLINKS;
 [ HyperlinkStatus item cancel
@@ -1049,14 +1121,14 @@ Global _test = true; !! FIXME - eliminar
 	if (metaclass(item) == Object) {
 		!! Objetos importantes en la obra:
 		if (item has remarkable) {
-			result = _hyperlinks_active_1;
+			result = DM.get_hyperlinks_status(1);
 		}
 		!! Objetos hacia los que el PC puede desplazarse:
 		else if ((item ofclass Room or CompassDirection) || (item has door)) {
-			result = _hyperlinks_active_2;
+			result = DM.get_hyperlinks_status(2);
 		!! Otros objetos:
 		} else {
-			result = _hyperlinks_active_3;
+			result = DM.get_hyperlinks_status(3);
 		}
 	} else {
 		if (cancel) result = false;
@@ -1065,6 +1137,103 @@ Global _test = true; !! FIXME - eliminar
 	return result;
 ];
 #Endif; ! USE_HYPERLINKS;
+
+!!------------------------------------------------------------------------------
+!! Menú principal de la aplicación.
+!!
+!!	@returns {Object} Localidad inicial de la aplicación
+!!	@version 1.0
+!!------------------------------------------------------------------------------
+[ MainMenu
+	result done width previous_style i j line op length;
+	!! Establece una imagen aleatoria para el menú:
+	DrawRandomImage();
+	!! Reproduce la pista de audio del menú:
+	FadeInTrack(MUS_PRESENTE, -1, 0);
+	while (done == false) {
+		EraseWindow();
+		new_line;
+		Banner();
+		new_line;
+		width = ScreenWidth();
+		previous_style = UseTextStyle(TEXT_STYLE_MONOSPACED);
+		!! Menú
+		for (i = 1 : i <= 5 : i++) {
+			switch (i) {
+				1:
+					line = "Empezar la historia";
+					op = "[ESPACIO]";
+					length = 32;
+				2:
+					line = "Configuración";
+					op = "C";
+					length = 18;
+				3:
+					line = "Ver coleccionables";
+					op = "D";
+					length = 23;
+				4:
+					line = "Recuperar partida guardada";
+					op = "R";
+					length = 31;
+				5:
+					line = "Salir de la aplicación";
+					op = "Q";
+					length = 27;
+			}
+			print (string) line;
+			if (width > 33) {
+				print "  ";
+				for (j = 0 : j < (width - length)+2 : j++) print ".";
+				print "  ";
+			} else {
+				print ":^";
+				print " ";
+				if (i == 1) length = 4;
+				else length = 8;
+				for (j = 0 : j < length : j++) print ".";
+				print " ";
+			}
+			print (string) op;
+			new_line;
+		}
+		new_line;
+		spaces (width - 11);
+		print "v";
+		PrintVersionNumber();
+		print " / ";
+		PrintSerialNumber();
+		UseTextStyle(previous_style);
+		switch (PressAnyKey()) {
+			32, -6:		! Empezar la historia
+				done = true;
+				result = Recibidor;
+			'C', 'c':	! Configuración
+				ConfigureHyperlinks("Pulsa @<<INTRO@>> para aceptar.");
+				ConfigureHighlightStyle("Pulsa @<<INTRO@>> para aceptar.");
+				DM.write_configuration_file(CONFIG_FILE_NAME);
+			'D', 'd':	! Ver coleccionables
+				PrintCollectibles("Pulsa una tecla para continuar.");
+			'R', 'r':	! Recuperar partida guardada
+				new_line;
+				EraseWindow();
+				new_line;
+				print (parser) "Cargando partida...";
+				new_line;
+				<Restore>;
+				PressAnyKey();
+			'Q', 'q':	! Salir de la aplicación
+				new_line;
+				EraseWindow();
+				new_line;
+				print (parser) "Pulsa una tecla para salir.";
+				new_line;
+				quit;
+		}
+	}
+	EraseWindow();
+	return result;
+];
 
 !!------------------------------------------------------------------------------
 !! Reproduce un efecto de audio por uno de los canales virtuales.
@@ -1116,6 +1285,62 @@ Global _test = true; !! FIXME - eliminar
 ];
 
 !!------------------------------------------------------------------------------
+!! Imprime una lista de coleccionables descubiertos por el usuario en una
+!! partida previa.
+!!
+!!	@param {string} [txt = 0] - Cadena de texto que se imprime al final del
+!!		menú. Debe ser algo similar a: "Pulsa INTRO para aceptar."
+!!	@returns {boolean} Verdadero
+!!	@version 1.0
+!!------------------------------------------------------------------------------
+[ PrintCollectibles txt
+	obj total num previous_style i;
+	EraseWindow();
+	objectloop(obj ofclass Dinosaur) {
+		total++;
+		if (obj.discovered) num++;
+	}
+	new_line;
+	print "Has descubierto ";
+	previous_style = UseTextStyle(TEXT_STYLE_HEADER);
+	print num, " de ", total;
+ 	UseTextStyle(previous_style);
+	print " figuras de dinosaurios:";
+	new_line;
+	new_line;
+	objectloop(obj ofclass Dinosaur) {
+		print "  --  ";
+		if (obj.discovered) {
+			previous_style = UseTextStyle(TEXT_STYLE_HEADER);
+			print (object) obj;
+			UseTextStyle(previous_style);
+			new_line;
+		} else {
+			previous_style = UseTextStyle(TEXT_STYLE_USER2);
+			PrintToBuffer(hidden_buffer, INPUT_BUFFER_LEN, obj);
+			for (i = WORDSIZE : i < (hidden_buffer-->0)+WORDSIZE : i++) {
+				if (random(20) < 17) print (char) '*';
+				else print (char) hidden_buffer->i;
+			}
+			UseTextStyle(previous_style);
+			new_line;
+		}
+	}
+	if (txt ~= 0) {
+		new_line;
+		previous_style = UseTextStyle(TEXT_STYLE_PARSER);
+		print (string) TEXT_STYLE_PARSER_PREFIX;
+		print (string) txt;
+		print (string) TEXT_STYLE_PARSER_SUFIX;
+		UseTextStyle(previous_style);
+		new_line;
+	}
+	PressAnyKey();
+	EraseWindow();
+	return true;
+];
+
+!!------------------------------------------------------------------------------
 !! Rutina para imprimir el nombre corto de un objeto. Si se incluye la
 !! extensión 'hyperlinks.h' se crea un hipervínculo relacionado con el objeto.
 !!
@@ -1144,108 +1369,6 @@ Global _test = true; !! FIXME - eliminar
 	#Ifnot;
     print (object) obj;
 	#Endif; ! USE_HYPERLINKS;
-];
-
-!!------------------------------------------------------------------------------
-!! Lee de un fichero de texto externo los parámetros de configuración
-!! establecidos en una partida previa.
-!!
-!!	@returns {boolean} Verdadero si lee el fichero con éxito. Falso en
-!!		caso contrario
-!!	@version 1.0
-!!------------------------------------------------------------------------------
-[ ReadConfigFile fileName
-	file_ref str ch config_parameters i;
-	config_parameters = 6;
-	#Ifdef TARGET_GLULX;
-	file_ref = glk($0061, fileusage_Data + fileusage_BinaryMode,
-		ChangeAnyToCString(fileName), 0); ! glk_fileref_create_by_name
-	if (file_ref ~= 0) {
-		str = glk($0042, file_ref, filemode_Read, 0); ! glk_stream_open_file
-		glk($0063, file_ref); ! glk_fileref_destroy
-		for (i = 1 : i <= config_parameters : i++) {
-			do ch = glk($0090, str); ! glk_get_char_stream
-			until ((ch == null) || (ch >= 48 && ch <= 57));
-			if (ch == null) break;
-			switch (i) {
-				1:	_hyperlinks_active_1 = (ch-48);
-				2:	_hyperlinks_active_2 = (ch-48);
-				3:	_hyperlinks_active_3 = (ch-48);
-				4:	_highlight_style_1 = (ch-48);
-				5:	_highlight_style_2 = (ch-48);
-				6:	_highlight_style_3 = (ch-48);
-			}
-			do ch = glk($0090, str); ! glk_get_char_stream
-			until ((ch == null) || (ch == 10)); ! (hasta nueva línea)
-		}
-		!! Cierra el archivo:
-		glk($0044, str, 0); ! glk_stream_close
-		!! Transforma los códigos de estilo a los valores reales:
-		print "(", _highlight_style_1, ",";
-		switch (_highlight_style_1) {
-			1:	_highlight_style_1 = TEXT_STYLE_STRESSED;
-			2:	_highlight_style_1 = TEXT_STYLE_NOTE;
-			3:	_highlight_style_1 = TEXT_STYLE_IMPORTANT;
-			4:	_highlight_style_1 = TEXT_STYLE_HEADER;
-			5:	_highlight_style_1 = TEXT_STYLE_MONOSPACED;
-			6:	_highlight_style_1 = TEXT_STYLE_REVERSED;
-			7:	_highlight_style_1 = TEXT_STYLE_USER1;
-			default: _highlight_style_1 = TEXT_STYLE_UPRIGHT;
-		}
-		print _highlight_style_1, ") ";
-		print "(", _highlight_style_2, ",";
-		switch (_highlight_style_2) {
-			1:	_highlight_style_2 = TEXT_STYLE_STRESSED;
-			2:	_highlight_style_2 = TEXT_STYLE_NOTE;
-			3:	_highlight_style_2 = TEXT_STYLE_IMPORTANT;
-			4:	_highlight_style_2 = TEXT_STYLE_HEADER;
-			5:	_highlight_style_2 = TEXT_STYLE_MONOSPACED;
-			6:	_highlight_style_2 = TEXT_STYLE_REVERSED;
-			7:	_highlight_style_2 = TEXT_STYLE_USER1;
-			default: _highlight_style_2 = TEXT_STYLE_UPRIGHT;
-		}
-		print _highlight_style_2, ") ";
-		print "(", _highlight_style_3, ",";
-		switch (_highlight_style_3) {
-			1:	_highlight_style_3 = TEXT_STYLE_STRESSED;
-			2:	_highlight_style_3 = TEXT_STYLE_NOTE;
-			3:	_highlight_style_3 = TEXT_STYLE_IMPORTANT;
-			4:	_highlight_style_3 = TEXT_STYLE_HEADER;
-			5:	_highlight_style_3 = TEXT_STYLE_MONOSPACED;
-			6:	_highlight_style_3 = TEXT_STYLE_REVERSED;
-			7:	_highlight_style_3 = TEXT_STYLE_USER1;
-			default: _highlight_style_3 = TEXT_STYLE_UPRIGHT;
-		}
-		print _highlight_style_3, ")^";
-		!! Comprueba que los valores leídos sean correctos:
-		if (i < config_parameters || _hyperlinks_active_1 < 0
-			|| _hyperlinks_active_1 > 1)
-			_hyperlinks_active_1 = DEFAULT_HYPERLINKS_STATUS;
-		if (i < config_parameters || _hyperlinks_active_2 < 0
-			|| _hyperlinks_active_2 > 1)
-			_hyperlinks_active_2 = DEFAULT_HYPERLINKS_STATUS;
-		if (i < config_parameters || _hyperlinks_active_3 < 0
-			|| _hyperlinks_active_3 > 1)
-			_hyperlinks_active_3 = DEFAULT_HYPERLINKS_STATUS;
-		_highlight_style_1 = CheckHighlightStyles(
-			_highlight_style_1,
-			_hyperlinks_active_1);
-		_highlight_style_2 = CheckHighlightStyles(
-			_highlight_style_2,
-			_hyperlinks_active_2);
-		_highlight_style_3 = CheckHighlightStyles(
-			_highlight_style_3,
-			_hyperlinks_active_3);
-		if (i < config_parameters || _highlight_style_1 < 0)
-			_highlight_style_1 = DEFAULT_HIGHLIGHT_ST_1;
-		if (i < config_parameters || _highlight_style_2 < 0)
-			_highlight_style_2 = DEFAULT_HIGHLIGHT_ST_2;
-		if (i < config_parameters || _highlight_style_3 < 0)
-			_highlight_style_3 = DEFAULT_HIGHLIGHT_ST_3;
-		return true;
-	}
-	#Endif; ! TARGET_GLULX;
-	return false;
 ];
 
 !!------------------------------------------------------------------------------
@@ -1284,64 +1407,6 @@ Global _test = true; !! FIXME - eliminar
 	return obj;
 ];
 
-!!------------------------------------------------------------------------------
-!! Guarda en un fichero externo un registro con los parámetros de configuración
-!! de la aplicación.
-!!
-!!	@returns {boolean} Verdadero si escribe el fichero con éxito. Falso en
-!!		caso contrario
-!!	@version 1.0
-!!------------------------------------------------------------------------------
-[ WriteConfigFile fileName
-	file_ref str i temp_txt temp_code;
-	#Ifdef TARGET_GLULX;
-	!! Crea el fichero externo y redirige el flujo de salida a él:
-	file_ref = glk($0061, fileusage_Data + fileusage_BinaryMode,
-		ChangeAnyToCString(fileName), 0); ! glk_fileref_create_by_name
-	if (file_ref ~= 0) {
-		str = glk($0042, file_ref, filemode_Write, 0); ! glk_stream_open_file
-		glk($0063, file_ref); ! glk_fileref_destroy
-		glk($0047, str); ! glk_stream_set_current
-		!! Escritura en fichero de los parámetros de configuración:
-		print _hyperlinks_active_1, " # Hipervínculos asociados a objetos
-		destacados {0:desactivados, 1:activados}^";
-		print _hyperlinks_active_2, " # Hipervínculos asociados a direcciones
-		{0: desactivados, 1:activados}^";
-		print _hyperlinks_active_3, " # Hipervínculos asociados a otros objetos
-		{0:desactivados, 1:activados}^";
-		for (i = 0 : i < 3 : i++) {
-			switch (i) {
-				0:	temp_code = _highlight_style_1;
-					temp_txt = "objetos destacados";
-				1:	temp_code = _highlight_style_2;
-					temp_txt = "direcciones";
-				2:	temp_code = _highlight_style_3;
-					temp_txt = "otros objetos";
-			}
-			switch (temp_code) {
-				TEXT_STYLE_UPRIGHT:		temp_code = 0;
-				TEXT_STYLE_STRESSED:	temp_code = 1;
-				TEXT_STYLE_NOTE:		temp_code = 2;
-				TEXT_STYLE_IMPORTANT:	temp_code = 3;
-				TEXT_STYLE_HEADER:		temp_code = 4;
-				TEXT_STYLE_MONOSPACED:	temp_code = 5;
-				TEXT_STYLE_REVERSED:	temp_code = 6;
-				TEXT_STYLE_USER1:		temp_code = 7;
-			}
-			print temp_code, " # Estilo de texto de ", (string) temp_txt,
-			" [0-7]^";
-		}
-		!! Cierra el archivo y termina la operación:
-		glk($002F, gg_mainwin); ! glk_set_window
-		glk($0044, str, 0); ! glk_stream_close
-		return true;
-	}
-	#Ifnot; ! TARGET_
-	fileName = file_ref + str; ! (por evitar alertas del compilador)
-	#Endif; ! TARGET_GLULX;
-	return false;
-];
-
 
 !!==============================================================================
 !!
@@ -1350,16 +1415,16 @@ Global _test = true; !! FIXME - eliminar
 !!------------------------------------------------------------------------------
 !!	IMPORTANTE: Los mensajes de algunas de las acciones que se añaden requieren
 !!	la extensión 'SpanishLM.h'. Acciones añadidas o modificadas:
-!!	-	##Audio / ##AudioOn / ##AudioOff
-!!	-	##Confguration
-!!	-	##DefaultAction
-!!	-	##Highlight
-!!	-	##LMode2
-!!	-	##NoSuchVerb --- Permite eliminar las acciones:
+!!	<>	##Audio / ##AudioOn / ##AudioOff
+!!	<>	##Confguration
+!!	<>	##DefaultAction
+!!	<>	##Highlight
+!!	<>	##LMode2
+!!	<>	##NoSuchVerb --- Permite eliminar las acciones:
 !!		-	##Sorry
-!!	-	##SwitchEngineOn
-!!	-	##TalkOn / ##TalkTo
-!!	-	##Teleport
+!!	<>	##SwitchEngineOn
+!!	<>	##TalkOn / ##TalkTo
+!!	<>	##Teleport
 !!------------------------------------------------------------------------------
 
 Include "SpanishG.h";			! Gramática española
@@ -1409,151 +1474,20 @@ VerboIrregular "establecer la reproducción de audio" with imperativo
 !! ##Configuration
 !!------------------------------------------------------------------------------
 
-Verb meta 'config' 'configuracion' 'enlace' 'enlaces' 'hipervinculo'
-	'hipervinculos' 'resaltado'
+Verb meta 'config' 'configuracion' 'enlace' 'enlaces' 'hiperenlace'
+	'hiperenlaces' 'hipervinculo' 'hipervinculos' 'resaltado' 'vinculo'
+	'vinculos'
 	*								-> Configuration
 ;
 
 VerboIrregular "establecer opciones de configuración" with imperativo
-	'config' 'configuracion' 'enlace' 'enlaces' 'hipervinculo'
-	'hipervinculos' 'resaltado';
+	'config' 'configuracion' 'enlace' 'enlaces' 'hiperenlace' 'hiperenlaces'
+	'hipervinculo' 'hipervinculos' 'resaltado' 'vinculo' 'vinculos';
 
-[ ConfigurationSub
-	flag previous_style a b i;
-	flag = false;
-	while (flag == false) {
-		EraseWindow();
-		previous_style = UseTextStyle(TEXT_STYLE_HEADER);
-		print (string) Story;
-		UseTextStyle(previous_style);
-		print " utiliza un sistema de hipervínculos para interactuar con los
-		objetos presentes en la obra a través del ratón. Hay tres clases de
-		hipervínculo: 1) asociado a objetos importantes en la historia, 2)
-		objetos o direcciones hacia los que te puedes desplazar, y 3) otros
-		objetos interactivos. Puedes activar o desactivar cada tipo de
-		hipervínculo introduciendo el número de su clase:";
-		new_line;
-		new_line;
-		for (i = 1 : i <= 3 : i++) {
-			switch (i) {
-				1:	print "1) Objetos importantes: ";
-					a = _hyperlinks_active_1;
-				2:	print "2) Direcciones ";
-					a = _hyperlinks_active_2;
-				3:	print "3) Otros objetos: ";
-					a = _hyperlinks_active_3;
-			}
-			if (a) print "@<<activados@>>";
-			else print (user2) "@<<desactivados@>>";
-			print ".";
-			new_line;
-		}
-		new_line;
-		print (parser) "Pulsa @<<INTRO@>> para aceptar.";
-		new_line;
-		switch (PressAnyKey()) {
-			32, -6:
-				flag = true;
-			'1':
-				if (_hyperlinks_active_1) _hyperlinks_active_1 = false;
-				else _hyperlinks_active_1 = true;
-				_highlight_style_1 = CheckHighlightStyles(
-					_highlight_style_1, _hyperlinks_active_1, false);
-				if (_highlight_style_1 < 0) {
-					_highlight_style_1 = DEFAULT_HIGHLIGHT_ST_1;
-				}
-			'2':
-				if (_hyperlinks_active_2) _hyperlinks_active_2 = false;
-				else _hyperlinks_active_2 = true;
-				_highlight_style_2 = CheckHighlightStyles(
-					_highlight_style_2, _hyperlinks_active_2, false);
-				if (_highlight_style_2 < 0) {
-					_highlight_style_2 = DEFAULT_HIGHLIGHT_ST_2;
-				}
-			'3':
-				if (_hyperlinks_active_3) _hyperlinks_active_3 = false;
-				else _hyperlinks_active_3 = true;
-				_highlight_style_3 = CheckHighlightStyles(
-					_highlight_style_3, _hyperlinks_active_3, false);
-				if (_highlight_style_3 < 0) {
-					_highlight_style_3 = DEFAULT_HIGHLIGHT_ST_3;
-				}
-		}
-	}
-	flag = false;
-	while (flag == false) {
-		EraseWindow();
-		print "Puedes, además, modificar el aspecto con el que se imprimen las
- 		palabras destacadas del relato ---incluso aunque hayas desactivado los
-		hipervínculos---. Introduce el número de la clase de palabra destacada
- 		para rotar entre los distintos estilos de resaltado disponibles y
-		seleccionar aquel que se adecue mejor a tus preferencias personales:";
-		new_line;
-		new_line;
-		for (i=1 : i <= 3 : i++) {
-			switch (i) {
-				1:	print "1) Objetos importantes: ";
-					a = _highlight_style_1;
-					b = ~~_hyperlinks_active_1;
-				2:	print "2) Direcciones: ";
-					a = _highlight_style_2;
-					b = ~~_hyperlinks_active_2;
-				3:	print "3) Otros objetos: ";
-					a = _highlight_style_3;
-					b = ~~_hyperlinks_active_3;
-			}
-			switch (a) {
-				TEXT_STYLE_UPRIGHT:
-					Hyperlink("sin estilo", 0, a, b);
-				TEXT_STYLE_STRESSED:
-					Hyperlink("enfatizado (a)", 0, a, b);
-				TEXT_STYLE_NOTE:
-					Hyperlink("enfatizado (b)", 0, a, b);
-				TEXT_STYLE_IMPORTANT:
-					Hyperlink("destacado (a)", 0, a, b);
-				TEXT_STYLE_HEADER:
-					Hyperlink("destacado (b)", 0, a, b);
-				TEXT_STYLE_MONOSPACED:
-					Hyperlink("monoespaciado", 0, a, b);
-				TEXT_STYLE_REVERSED:
-					Hyperlink("invertido", 0, a, b);
-				TEXT_STYLE_USER1:
-					Hyperlink("color de fondo", 0, a, b);
-			}
-			print ".";
-			new_line;
-		}
-		new_line;
-		print "NOTA: Cuando los hipervínculos están desactivados hay menos
-		opciones de estilos disponibles.";
-		new_line;
-		new_line;
-		print (parser) "Pulsa @<<INTRO@>> para aceptar y salir.";
-		new_line;
-		switch (PressAnyKey()) {
-			32, -6:	flag = true;
-			'1':
-				_highlight_style_1 = CheckHighlightStyles(
-					_highlight_style_1, _hyperlinks_active_1, true);
-				if (_highlight_style_1 < 0) {
-					_highlight_style_1 = DEFAULT_HIGHLIGHT_ST_1;
-				}
-			'2':
-				_highlight_style_2 = CheckHighlightStyles(
-					_highlight_style_2, _hyperlinks_active_2, true);
-				if (_highlight_style_2 < 0) {
-					_highlight_style_2 = DEFAULT_HIGHLIGHT_ST_2;
-				}
-			'3':
-				_highlight_style_3 = CheckHighlightStyles(
-					_highlight_style_3, _hyperlinks_active_3, true);
-				if (_highlight_style_3 < 0) {
-					_highlight_style_3 = DEFAULT_HIGHLIGHT_ST_3;
-				}
-		}
-	}
-	WriteConfigFile(CONFIG_FILE_NAME);
-	EraseWindow();
+[ ConfigurationSub;
+	ConfigureHyperlinks("Pulsa @<<INTRO@>> para aceptar.");
+	ConfigureHighlightStyle("Pulsa @<<INTRO@>> para aceptar.");
+	DM.write_configuration_file(CONFIG_FILE_NAME);
 	<<Look>>;
 ];
 
@@ -1780,6 +1714,16 @@ Verb 'test'
 	print_ret (parser) "Cambio de imágenes.";
 ];
 
+!! FIXME - eliminar
+Verb 'dinosaurios'
+	*							-> Dinosaurios
+;
+
+[ DinosauriosSub;
+	PrintCollectibles("Pulsa una tecla para continuar.");
+	<<Look>>;
+];
+
 
 !!==============================================================================
 !!
@@ -1787,5 +1731,6 @@ Verb 'test'
 !!
 !!------------------------------------------------------------------------------
 
+Include ">palacio_dm.inf";
 Include ">palacio_classes.inf";
 Include ">palacio_objects.inf";
