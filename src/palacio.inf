@@ -585,8 +585,6 @@ Global _current_location = 0;
 !!------------------------------------------------------------------------------
 [ Initialise
 	initial_location;
-	EraseWindow();
-
 	!! Comprobaciones del intérprete -------------------------------------------
 	#Ifdef TARGET_GLULX;
 	!! Comprobaciones de las capacidades multimedia:
@@ -616,7 +614,8 @@ Global _current_location = 0;
 	!!	-	PORCENTAJE DE VOLUMEN: [0-100]. -1 para usar el volumen global
 	!!	-	NÚM. DE REPETICIONES: (Opcional) 1 por defecto. -1 para infinitas
 	#Ifdef USE_DAMUSIX;
-	Damusix.AsignarCanal(MUS_PRESENTE, 0, 100, -1);
+	Damusix.AsignarCanal(SFX_MAR, 0, 100, -1);
+	Damusix.AsignarCanal(MUS_PRINCIPAL, 1, 100, -1);
 	#Endif; ! USE_DAMUSIX;
 	!! Lee el fichero de configuración:
 	DM.read_configuration_file(CONFIG_FILE_NAME);
@@ -628,14 +627,9 @@ Global _current_location = 0;
 	!! Se lanza el menú antes de establecer al Personaje Jugable (PJ) para
 	!! evitar que se imprima un nombre de localidad en la barra de estado:
 	initial_location = MainMenu();
-	!! Establece el PJ:
-	ChangePlayer(Silvia);
-	!! Establece la localidad inicial de la obra:
-	location = initial_location;
-	!! Lookmode largo:
-	lookmode = 2;
 
 	!! Texto introductorio:
+	FadeInTrack(SFX_MAR, 90, 100);
 	new_line;
 	O__M(Silvia, 1);
 	new_line;
@@ -649,6 +643,13 @@ Global _current_location = 0;
 	new_line;
 	HorizontalRule();
 	new_line;
+
+	!! Establece el PJ:
+	ChangePlayer(Silvia);
+	!! Establece la localidad inicial de la obra:
+	location = initial_location;
+	!! Lookmode largo:
+	lookmode = 2;
 
 	!! Se evita la impresión inicial del banner
 	return 2;
@@ -793,7 +794,7 @@ Global _current_location = 0;
 			32, -6: done = true; ! Código de INTRO/ESPACIO
 			'1': DM.set_hyperlinks_status(1, ~~DM.get_hyperlinks_status(1));
 			'2': DM.set_hyperlinks_status(2, ~~DM.get_hyperlinks_status(2));
-			'3': DM.get_hyperlinks_status(3, ~~DM.get_hyperlinks_status(3));
+			'3': DM.set_hyperlinks_status(3, ~~DM.get_hyperlinks_status(3));
 		}
 	}
 	EraseWindow();
@@ -829,7 +830,7 @@ Global _current_location = 0;
 				3:	print "3) Otros objetos: ";
 			}
 			highlight = DM.get_highlight_style(i);
-			temp = DM.get_hyperlinks_status(i);
+			temp = ~~DM.get_hyperlinks_status(i);
 			switch (highlight) {
 				TEXT_STYLE_UPRIGHT:
 					Hyperlink("sin estilo", 0, highlight, temp);
@@ -1012,32 +1013,45 @@ Global _test = true; !! FIXME - eliminar
 ];
 
 !!------------------------------------------------------------------------------
-!! Realiza un efecto de bajada de volumen gradual en tiempo real (sin detener
-!! la aplicación) de un recurso de audio. Si no se especifica el tiempo del
-!! efecto la bajada de volumen es inmediata. Permite especificar además un
-!! sonido a reproducir tras finalizar el efecto de bajada de volumen. (Sólo en
-!! GLULX.)
+!! Realiza un efecto de bajada gradual de volumen de un recurso de audio pasado
+!! como parámetro. Permite especificar, además, si el efecto de bajada gradual
+!! de volumen se realiza en tiempo real ---por defecto--- o deteniendo la
+!! aplicación mientras se produce, y si debe reproducirse un nuevo recurso de
+!! audio una vez finalizado el efecto.
 !!
 !!	@param {Sound} track - El recurso de audio sobre el que se lanza el efecto
 !!	@param {integer} [volume=0] - Volumen final en tanto por ciento con el que
 !!		finaliza el efecto. Si el volumen final es 0, la reproducción se
 !!		detiene automáticamente
 !!	@param {integer} [fade_time=0] - Milisegundos que dura el efecto de
-!!		'fade out' desde el volumen actual al especificado por 'volume'
+!!		'fade out' desde el volumen actual al especificado por 'volume'. Si es
+!!		0 ---por defecto---, la bajada de volumen es inmediata
+!!	@param {boolean} [simple_fade_out=false] - Por defecto el efecto se realiza
+!!		en tiempo real, pero si se invoca con este parámetro activado
+!!		(==verdadero), la aplicación se detiene mientras se lleva a cabo el
+!!		'fade out'
 !!	@param {Sound} [post_track=0] - Recurso de audio a reproducir tras lanzar
-!!		el efecto de 'fade out' sobre el 'track'
+!!		el efecto de 'fade out' sobre 'track'
 !!	@returns {boolean} Verdadero
-!!	@version 1.1
+!!	@version 2.0
 !!------------------------------------------------------------------------------
-[ FadeOutTrack track volume fade_time post_track;
+[ FadeOutTrack track volume fade_time simple_fade_out post_track;
 	#Ifdef TARGET_GLULX;
 	#Ifdef USE_DAMUSIX;
+	if (Damusix.QueVolumen(track) == 0) return false;
 	if (Damusix.EnFade()) Damusix.AbortarFade();
 	if (fade_time == 0) {
 		if (volume == 0) Damusix.Parar(track);
 		else Damusix.Volumen(track, volume);
 		if (post_track) Damusix.Tocar(post_track);
-	} else Damusix.FadeOut(track, fade_time, volume, post_track);
+	} else {
+		if (simple_fade_out) {
+			Damusix.SimpleFadeOut(track, fade_time, volume);
+			if (post_track) Damusix.Tocar(post_track);
+		} else {
+			Damusix.FadeOut(track, fade_time, volume, post_track);
+		}
+	}
 	#Endif; ! USE_DAMUSIX;
 	#Endif; ! TARGET_GLULX;
 	return true;
@@ -1149,7 +1163,6 @@ Global _test = true; !! FIXME - eliminar
 	!! Establece una imagen aleatoria para el menú:
 	DrawRandomImage();
 	!! Reproduce la pista de audio del menú:
-	FadeInTrack(MUS_PRESENTE, -1, 0);
 	while (done == false) {
 		EraseWindow();
 		new_line;
@@ -1231,6 +1244,7 @@ Global _test = true; !! FIXME - eliminar
 				quit;
 		}
 	}
+	!! Detiene la pista de audio del menú:
 	EraseWindow();
 	return result;
 ];

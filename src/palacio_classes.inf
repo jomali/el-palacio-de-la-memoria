@@ -228,7 +228,12 @@ Class	Dinosaur
  class	Item
  with	after [;
 			Examine, Take:
-				if (~~self.discovered) self.discovered = true;
+				if (~~self.discovered) {
+					self.discovered = true;
+					PlaySFX(SFX_COLECCIONABLE);
+					new_line;
+					"", (parser) "Nuevo dinosaurio descubierto.";
+				}
 		],
 		discovered false,
 ;
@@ -513,6 +518,17 @@ Class	Room
 		!! comportamiento de la acción ##Look en el archivo de mensajes de la
 		!! librería):
 		inhibit_object_list false,
+		!! Volumen del mar:
+		sea_volume 100,
+	    initial [;
+			#Ifdef USE_DAMUSIX;
+			if (Damusix.QueVolumen(SFX_MAR) < self.sea_volume) {
+				FadeInTrack(SFX_MAR, self.sea_volume, 2000);
+			} else {
+				FadeOutTrack(SFX_MAR, self.sea_volume, 2000);
+			}
+			#Endif; ! USE_DAMUSIX;
+		],
  has	light;
 
 !!==============================================================================
@@ -520,14 +536,18 @@ Class	Room
 !!------------------------------------------------------------------------------
 
 Class	Outdoors
- class	Room;
+ class	Room
+ with	sea_volume 90,
+;
 
 !!==============================================================================
 !!	+	Indoors
 !!------------------------------------------------------------------------------
 
 Class	Indoors
- class	Room;
+ class	Room
+ with	sea_volume 25,
+;
 
 !!==============================================================================
 !!	-	SmartEnterable

@@ -94,10 +94,6 @@ Dinosaur -> Stegosaurus "stegosaurus"
 		discovered true,
  has	male;
 
-Dinosaur -> Triceratops "triceratops"
- with	name_m	'dinosaurio' 'juguete' 'triceratops',
- has	male;
-
 Dinosaur -> Tyrannosaurus "tyrannosaurus rex"
  with	name_m	'dinosaurio' 'juguete' 'rex' 'tiranosaurio' 'trex'
 				'tyrannosaurus',
@@ -596,6 +592,7 @@ Outdoors	Patio "Patio delantero"
 		],
 		in_to	[; <<Enter self.in_destination>>; ],
 		in_destination PuertaDelantera,
+		sea_volume 50,
  has	male;
 
 Atrezzo	-> Casa "casa"
@@ -680,7 +677,7 @@ Item	-> Coche "coche"
 				}
 			SwitchOn:
 				if (player notin self) return false;
-				FadeOutTrack(MUS_PRESENTE, 0, 100);
+				FadeOutTrack(MUS_PRINCIPAL, 0, 100);
 				O__M(BotonArranque, 5); ! FIXME
 				new_line;
 				HorizontalRule();
@@ -826,7 +823,8 @@ Indoors	Recibidor "Recibidor"
 			if (self hasnt visited) {
 				O__M(Silvia, 3);
 				new_line;
-				return O__M(self, 1);
+				O__M(self, 1);
+				return true;
 			}
 			if (PuertaDelantera hasnt open) O__M(self, 2);
 			else O__M(self, 3);
@@ -974,6 +972,10 @@ Atrezzo	-> -> SalonFiguras "figuras"
 		gender	G_FEMENINO + G_PLURAL,
 		description [; return O__M(self, 1); ],
  has	female pluralname;
+
+Dinosaur -> -> Triceratops "triceratops"
+with	name_m	'dinosaurio' 'juguete' 'triceratops',
+has	male;
 
 Atrezzo	-> -> SalonLibros "libros"
  with	name_m	'libro',

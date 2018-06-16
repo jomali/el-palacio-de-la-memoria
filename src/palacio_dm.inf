@@ -41,15 +41,20 @@
 !!
 !!	OBJETO DIRECTOR DE PARTIDA
 !!
-!!	El objeto director de partida (Dungeon Master, siguiendo la tradición de
-!!	los juegos de rol Dungeon & Dragons) se encarga de registrar el estado de
-!!	la aplicación y ofrecer una interfaz para modificarlo, de forma que las
-!!	distintas variables dejan de estar disponibles en el alcance global y se
-!!	asegura así que no hay modificaciones que vulneren las reglas establecidas
-!!	por la aplicación. Sólo implementa funciones para modificar el estado de
-!!	las variables. El resto de funcionalidades de utilidad se implementan en
-!!	rutinas independientes en la sección 7) Otras rutinas, del fichero
-!!	principal.
+!!	El objeto director de partida se encarga de registrar parte del estado de
+!!	la aplicación y ofrecer una interfaz para modificarlo, de forma que un
+!!	cierto conjunto de variables dejan de estar disponibles en el alcance
+!!	global y asegura que al modificarlas no se vulneren nunca las reglas de la
+!!	aplicación.
+!!
+!!	Registra el estado de las siguientes variables:
+!!
+!!	<>	highlight_style_1: estilo de resaltado para objetos destacados
+!!	<>	highlight_style_2: estilo de resaltado para direcciones y puertas
+!!	<>	highlight_style_3: estilo de resaltado para otros objetos
+!!	<>	hyperlinks_status_1: estado de hipervínculos para objetos destacados
+!!	<>	hyperlinks_status_2: estado de hipervínculos para direcciones y puertas
+!!	<>	hyperlinks_status_3: estado de hipervínculos para otros objetos
 !!
 !!	Interfaz del objeto DM:
 !!
@@ -64,6 +69,10 @@
 !!	<>	set_hyperlinks_status(object_type:integer, status:boolean)
 !!	<>	set_text_style(style:integer) : integer
 !!	<>	write_configuration_file(file_name:string) : boolean
+!!
+!!	Un cierto número de variables globales, como aquellas definidas por la
+!!	librería Inform (player, location, keep_silent...), siguen disponibles
+!!	desde el alcance global y pueden ser modificacadas libremente.
 !!
 !!------------------------------------------------------------------------------
 
