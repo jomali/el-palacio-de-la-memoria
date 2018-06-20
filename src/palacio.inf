@@ -515,8 +515,9 @@ Include "gWindowsGUI.h";		! Interfaz gráfica adaptativa con GWindows
 #Endif; ! USE_GWINDOWS;
 
 Include ">palacio.bli";			! Recursos multimedia de la aplicación
-#Endif; ! TARGET_
+#Endif; ! TARGET_GLULX;
 
+Include "arrays.h";				! Operaciones con arrays
 Include "capacities.h";			! Extensión a las reglas de capacidad
 Include "choiceSet.h";			! Sistema de selección de acciones sobre lista
 Include "pPreprocessor.h";		! Preprocesador del parser
@@ -570,6 +571,7 @@ Global _current_location = 0;
 !!	@returns Nada
 !!------------------------------------------------------------------------------
 [ BeforeParsing;
+	!! ChoiceSetManager.run(); !! TODO
 	ParsingPreprocessor.run();
 ];
 
@@ -950,6 +952,7 @@ Global _test = true; !! FIXME - eliminar
 	#Endif; ! USE_GWINDOWS;
 	#Endif; ! TARGET_GLULX;
 	img++; ! (por evitar alertas del compilador)
+	return true;
 ];
 
 !!------------------------------------------------------------------------------
@@ -990,17 +993,17 @@ Global _test = true; !! FIXME - eliminar
 !!		'fade in' desde un volumen del 0% al especificado por 'volume'
 !!	@returns {boolean} Falso si el volumen pasado como parámetro es inferior al
 !!		volumen actual del sonido. Verdadero en caso contrario
-!!	@version 1.1
+!!	@version 1.2
 !!------------------------------------------------------------------------------
 [ FadeInTrack track volume fade_time;
 	#Ifdef TARGET_GLULX;
 	#Ifdef USE_DAMUSIX;
-	if (Damusix.EnFade()) Damusix.AbortarFade();
 	if (volume == 0) volume = -1;
 	if (fade_time == 0) {
 		Damusix.Volumen(track, volume);
 		if (~~Damusix.SonandoDeFondo(track)) Damusix.Tocar(track);
 	} else {
+		if (Damusix.EnFade()) Damusix.AbortarFade();
 		if (~~Damusix.SonandoDeFondo(track)) {
 			Damusix.Volumen(track, 0);
 			Damusix.Tocar(track);
@@ -1033,18 +1036,18 @@ Global _test = true; !! FIXME - eliminar
 !!	@param {Sound} [post_track=0] - Recurso de audio a reproducir tras lanzar
 !!		el efecto de 'fade out' sobre 'track'
 !!	@returns {boolean} Verdadero
-!!	@version 2.0
+!!	@version 2.1
 !!------------------------------------------------------------------------------
 [ FadeOutTrack track volume fade_time simple_fade_out post_track;
 	#Ifdef TARGET_GLULX;
 	#Ifdef USE_DAMUSIX;
 	if (Damusix.QueVolumen(track) == 0) return false;
-	if (Damusix.EnFade()) Damusix.AbortarFade();
 	if (fade_time == 0) {
 		if (volume == 0) Damusix.Parar(track);
 		else Damusix.Volumen(track, volume);
 		if (post_track) Damusix.Tocar(post_track);
 	} else {
+		if (Damusix.EnFade()) Damusix.AbortarFade();
 		if (simple_fade_out) {
 			Damusix.SimpleFadeOut(track, fade_time, volume);
 			if (post_track) Damusix.Tocar(post_track);
@@ -1170,7 +1173,6 @@ Global _test = true; !! FIXME - eliminar
 		new_line;
 		width = ScreenWidth();
 		previous_style = UseTextStyle(TEXT_STYLE_MONOSPACED);
-		!! Menú
 		for (i = 1 : i <= 5 : i++) {
 			switch (i) {
 				1:
@@ -1221,6 +1223,35 @@ Global _test = true; !! FIXME - eliminar
 			32, -6:		! Empezar la historia
 				done = true;
 				result = Recibidor;
+			#Ifdef DEBUG;
+			'1':
+				done = true;
+				result = Recibidor;
+			'2':
+				done = true;
+				result = Patio;
+			'3':
+				done = true;
+				result = Salon;
+			'4':
+				done = true;
+				result = Cocina;
+			'5':
+				done = true;
+				result = Terraza;
+			'6':
+				done = true;
+				result = Cala;
+			'7':
+				done = true;
+				result = Pasillo;
+			'8':
+				done = true;
+				result = HabitacionMultiusos;
+			'9':
+				done = true;
+				result = Dormitorio;
+			#Endif; ! DEBUG;
 			'C', 'c':	! Configuración
 				ConfigureHyperlinks("Pulsa @<<INTRO@>> para aceptar.");
 				ConfigureHighlightStyle("Pulsa @<<INTRO@>> para aceptar.");
@@ -1244,7 +1275,6 @@ Global _test = true; !! FIXME - eliminar
 				quit;
 		}
 	}
-	!! Detiene la pista de audio del menú:
 	EraseWindow();
 	return result;
 ];
@@ -1432,7 +1462,6 @@ Global _test = true; !! FIXME - eliminar
 !!	<>	##Audio / ##AudioOn / ##AudioOff
 !!	<>	##Confguration
 !!	<>	##DefaultAction
-!!	<>	##Highlight
 !!	<>	##LMode2
 !!	<>	##NoSuchVerb --- Permite eliminar las acciones:
 !!		-	##Sorry

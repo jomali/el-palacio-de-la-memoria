@@ -26,5 +26,5 @@ Picture PIC_PASADO_09		resources/pintura_09.png
 Picture PIC_PASADO_10		resources/pintura_10.png
 
 Sound	SFX_COLECCIONABLE	resources/beep.ogg
-Sound	SFX_MAR				resources/mar.ogg
+Sound	SFX_MAR				resources/mar_01.ogg
 Sound	MUS_PRINCIPAL		resources/kevin-macleod_organic-meditations-three.ogg

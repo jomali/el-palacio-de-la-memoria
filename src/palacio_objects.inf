@@ -59,7 +59,7 @@
 
 !!==============================================================================
 !!
-!!	1)	Limbo
+!!	1)	@Limbo
 !!
 !!------------------------------------------------------------------------------
 
@@ -161,7 +161,7 @@ Atrezzo Cielo "cielo"
 
 !!==============================================================================
 !!
-!!	2)	Baño
+!!	2)	@Banno
 !!
 !!------------------------------------------------------------------------------
 
@@ -169,12 +169,21 @@ Indoors	Banno "Baño"
  with	name_f	'estancia' 'habitacion',
 		name_m	'aseo' 'bano',
 		gender	G_FEMENINO,
+		description [; return O__M(self, 1); ],
+		s_to	Dormitorio,
+ has	female;
+
+Atrezzo	-> Alfombrilla "alfombrilla"
+ with	name_f	'alfombra' 'alfombrilla',
+		gender	G_FEMENINO,
+		adjectives 'marron',
+		description [; return O__M(self, 1); ],
  has	female;
 
 
 !!==============================================================================
 !!
-!!	3)	Cala de los cangrejos
+!!	3)	@Cala
 !!
 !!------------------------------------------------------------------------------
 
@@ -184,12 +193,58 @@ Outdoors	Cala "Cala de los cangrejos"
 		name_m	'ancon' 'grao' 'litoral',
 		gender	G_FEMENINO,
 		adjectives 'cangrejos',
+		description [; return O__M(self, 1);
+		],
+		s_to	Sendero,
+		u_to	[; return self.s_to(); ],
  has	female;
+
+Array marFlags -> 5; ! hasta 32 flags
+Atrezzo	-> Mar "mar"
+ with	name_m	'agua' 'atlantico' 'cantabrico' 'mar' 'oceano',
+		gender	G_MASCULINO,
+		description [
+			i previous_style;
+			i = Shuffle(20, marFlags) * 2;
+			!! O__M(self, (i-1));
+			!! new_line;
+			!! new_line;
+			previous_style = UseTextStyle(TEXT_STYLE_STRESSED);
+			O__M(self, i);
+			UseTextStyle(previous_style);
+			return true;
+		],
+ has	male;
+
+Item	Sendero "sendero"
+ with	found_in Cala Terraza,
+		name_m	'camino' 'sendero',
+		gender	G_MASCULINO,
+		description [;
+			if (location == Cala) return O__M(self, 1);
+ 			else return O__M(self, 2);
+		],
+		door_dir [;
+			if (location == Cala) return s_to;
+			else return n_to;
+		],
+		door_to [;
+			if (location == Cala) {
+				O__M(self, 3);
+				new_line;
+				return Terraza;
+			} else {
+				O__M(self, 4);
+				new_line;
+				return Cala;
+			}
+		],
+ has	door male open ~openable scenery;
 
 
 !!==============================================================================
 !!
-!!	4)	Cocina
+!!	4)	@Cocina
 !!
 !!------------------------------------------------------------------------------
 
@@ -212,7 +267,9 @@ Indoors	Cocina "cocina"
 				return O__M(self, 4);
 			}
 		],
+		n_to	Terraza,
 		e_to	Salon,
+		out_to	[; return self.n_to(); ],
  has	female;
 
 Atrezzo	-> Armario "armario"
@@ -345,6 +402,9 @@ Indoors	Dormitorio "Dormitorio principal"
 		name_m	'cuarto' 'dormitorio',
 		gender	G_MASCULINO,
 		adjectives 'principal',
+		description [; return O__M(self, 1); ],
+		n_to	Banno,
+		w_to	Pasillo,
  has	male;
 
 !!	-	'general' se activa para evitar las comprobaciones de 'react_before'
@@ -539,16 +599,18 @@ Atrezzo	-> -> Sabanas "sábanas"
 !!
 !!------------------------------------------------------------------------------
 
-Indoors	Habitacion "Habitación multiusos"
+Indoors	HabitacionMultiusos "Habitación multiusos"
  with	name_f	'estancia' 'habitacion',
 		name_m	'cuarto',
 		gender	G_FEMENINO,
+		description [; return O__M(self, 1); ],
+		s_to	Pasillo,
  has	female;
 
 
 !!==============================================================================
 !!
-!!	7)	Pasillo de la segunda planta
+!!	7)	@Pasillo
 !!
 !!------------------------------------------------------------------------------
 
@@ -556,6 +618,11 @@ Indoors	Pasillo "Pasillo de la segunda planta"
  with	name_f	'estancia' 'habitacion',
 		name_m	'corredor' 'pasillo',
 		gender	G_MASCULINO,
+		description [; return O__M(self, 1); ],
+		n_to	HabitacionMultiusos,
+		e_to	Dormitorio,
+		s_to	Recibidor,
+		d_to	[; return self.s_to(); ],
  has	male;
 
 Atrezzo	-> PasilloFotografias "fotografías"
@@ -567,7 +634,7 @@ Atrezzo	-> PasilloFotografias "fotografías"
 
 !!==============================================================================
 !!
-!!	8)	Patio delantero
+!!	8)	@Patio
 !!
 !!------------------------------------------------------------------------------
 
@@ -616,6 +683,35 @@ Atrezzo	-> CaminoGrava "camino de grava"
 		adjectives 'secundaria',
 		description [; <<Look>>; ],
  has	female;
+
+Atrezzo	-> Bosques "bosques"
+ with	name_m	'arbol' 'bosque' 'haya' 'hayedo' 'roble' 'robledal',
+		name_mp	'arboles' 'bosques' 'hayedos' 'robledales',
+		gender	G_MASCULINO + G_PLURAL,
+		description [; return O__M(self, 1); ],
+ has	male pluralname;
+
+Atrezzo	-> Construcciones "construcciones"
+ with	name_f	'construccion' 'cuadra',
+		name_fp	'casas' 'construcciones' 'cuadras',
+		gender	G_FEMENINO + G_PLURAL,
+		description [; return O__M(self, 1); ],
+ has	male pluralname;
+
+Atrezzo	-> Montannas "montañas"
+ with	name_f	'colina' 'cordillera' 'elevacion' 'montana',
+		name_fp	'colinas' 'elevaciones' 'montanas',
+		gender	G_FEMENINO + G_PLURAL,
+		description [; return O__M(self, 1); ],
+ has	male pluralname;
+
+Atrezzo	-> Prados "pastos"
+ with	name_m	'pasto' 'prado',
+		name_mp	'pastos' 'prados',
+		gender	G_MASCULINO + G_PLURAL,
+		adjectives 'verde' 'verdes',
+		description [; return O__M(self, 1); ],
+ has	male pluralname;
 
 Item	-> Coche "coche"
  class	SmartEnterable
@@ -808,7 +904,7 @@ Item	PuertaDelantera "puerta de entrada"
 
 !!==============================================================================
 !!
-!!	9)	Recibidor
+!!	9)	@Recibidor
 !!
 !!------------------------------------------------------------------------------
 
@@ -847,17 +943,18 @@ Indoors	Recibidor "Recibidor"
 			if (PuertaDelantera hasnt open) give PuertaDelantera open;
 			return PuertaDelantera;
 		],
+		e_to Pasillo,
 		out_to [; return self.s_to(); ],
+		u_to [; return self.e_to(); ],
 		get_random_color [;
-			switch (Shuffle(8, colorFlags)) {
-				1:	return "amarillos";
+			switch (Shuffle(7, colorFlags)) {
+				1:	return "rojos";
 				2:	return "naranjas";
-				3:	return "violetas";
+				3:	return "amarillos";
 				4:	return "verdes";
-				5:	return "rojos";
-				6:	return "dorados";
-				7:	return "turquesas";
-				8:	return "cobaltos";
+				5:	return "azules";
+				6:	return "añiles";
+				7:	return "violetas";
 			}
 		],
  has	male;
@@ -1026,7 +1123,7 @@ Indoors	Taller "Taller"
 
 !!==============================================================================
 !!
-!!	12)	Terraza trasera
+!!	12)	@Terraza
 !!
 !!------------------------------------------------------------------------------
 
@@ -1035,4 +1132,9 @@ Outdoors	Terraza "Terraza trasera"
 		name_m	'mirador' 'patio',
 		gender	G_FEMENINO,
 		adjectives 'trasera' 'trasero',
+		description [; return O__M(self, 1); ],
+		n_to	Sendero,
+		s_to	Cocina,
+		in_to	[; return self.s_to(); ],
+		d_to	[; return self.n_to(); ],
  has	female;
