@@ -23,16 +23,6 @@ new_line;
 return true;
 }
 
-Alfombrilla: switch (n) {
-1:	! ##Examine
-print "Una tupida alfombrilla de color marrón junto a la bañera, para evitar resbalones en el suelo de baldosa.";
-new_line;
-return true;
-2:	! describe
-print "Hay una alfombrilla en el suelo, para evitar posibles resbalones.";
-new_line;
-return true;
-}
 
 Armario: switch (n) {
 1:	! ##Examine
@@ -41,9 +31,28 @@ new_line;
 return true;
 }
 
-Banno: switch (n) {
+
+BancoAbdominales: switch (n) {
 1:	! ##Examine
-print "Pequeño pero luminoso, está revestido de azulejo blanco desde el suelo hasta media pared, con la otra mitad pintada en un suave color arena. Todo su mobiliario se reduce a un armario auxiliar bajo la pila del lavabo, el váter y la bañera al fondo. Conecta al sur con el domitorio.";
+print "Un extremo está elevado sobre el suelo mientras que el otro lo toca, de manera que la superficie queda inclinada. El aspecto es el de un triángulo rectángulo escaleno, como un gran cartabón de dibujo técnico, apoyado sobre su hipotenusa. En la parte elevada hay varios cilindros forrados de gomaespuma a los que uno puede sujetarse para hacer ejercicios.";
+new_line;
+return true;
+2:	! ##Enter
+print "No tiene gana alguna de ponerse a hacer ejercicio ahora.";
+new_line;
+return true;
+}
+
+BancoAbdominalesCilindros: switch (n) {
+1:	! ##Examine
+print "Apoyos forrados de gomaespuma blanda. Para facilitar los ejercicios sobre el aparato.";
+new_line;
+return true;
+}
+
+BiciletaEstatica: switch (n) {
+1:	! ##Examine
+print "Está justo frente a la ventana, de manera que puedas ver el mar mientras pedaleas. Prefiere una con ruedas, en cualquier caso, y más aquí que apenas hay tráfico y puedes pasear y disfrutar del sol ---cuando sale--- y la brisa tranquilamente.";
 new_line;
 return true;
 }
@@ -57,19 +66,13 @@ print " Dentro tiene ";
 WriteListFrom(child(bolso), ENGLISH_BIT);
 print ".";
 return true;
-3:	! ##Take (A - si está en un soporte)
-print "Coge ", (the) Bolso, " de encima ", (del) x1, ".";
-new_line;
-return true;
-4:	! ##Take (B - si está en un contenedor)
-print "Coge ", (the) Bolso, " de dentro ", (del) x1, ".";
-new_line;
-return true;
 }
 
 Bosques: switch (n) {
 1:	! ##Examine
-print "Debido a la deforestación, los robledales y hayedos han quedado reducidos a sólo algunos parches de bosque suelto entre las grandes extensiones de prado. Aparte de estas zonas de bosque, los pocos árboles lo suficientemente tozudos como para permanecer en pie se levantan sobretodo en las lindes entre parcelas o a lo largo de regatos y arroyos.";
+print "Debido a la deforestación, los robledales y hayedos han quedado reducidos a sólo algunos parches de bosque suelto entre las grandes extensiones de ";
+Hyperlink(Prados, "prado", 0);
+print ". Aparte de estas zonas de bosque, los pocos árboles lo suficientemente tozudos como para permanecer en pie se levantan sobretodo en las lindes entre parcelas o a lo largo de regatos y arroyos.";
 new_line;
 return true;
 }
@@ -94,7 +97,7 @@ print "Vuelve a contemplar la casa por encima por encima del hombro, sin arranca
 new_line;
 return true;
 5:	! ##Push (C)
-print "Silvia se inclina sobre el volante y nota el tacto del botón bajo los dedos. Se ha muerto. Ya no está. Presiona con suavidad, mirando a la casa una última vez a través del espejo retrovisor, al tiempo que el motor se pone en marcha. La vibración se transmite por todo el coche. No nos llevábamos mal. No teníamos mucho trato pero no nos llevábamos mal. Es triste, claro. Estoy triste. Así funciona el luto.
+print "Silvia se inclina sobre el volante y nota el tacto del botón bajo los dedos. Se ha muerto. Ya no está. Presiona con suavidad, mirando a la casa una última vez a través del espejo retrovisor, al tiempo que el motor se pone en marcha. No nos llevábamos mal, piensa mientras nota cómo la vibración se transmite por todo el coche. No teníamos mucho trato pero no nos llevábamos mal. Es triste, claro. Estoy triste. Así funciona el luto.
 ^^
 Se ha muerto, como mamá. Ellos están muertos y yo soy una huérfana y estoy sola y estoy triste porque así funciona y no voy a tener hijos nunca... Si algo no se recuerda es como si no hubiese existido nunca, ¿no es así? Mi padre no existe y ahora todos su recuerdos de mi madre no existen tampoco ya y es como si mamá no hubieses existido nunca casi. Ahora tiene once años solamente. Ni eso, porque yo no existo casi tampoco, porque ¿quién me recuerda? Estoy en el coche pero esto no hay quién lo recuerde. Yo sólo. Nadie. ¿El coche no existe tampoco entonces? Quizá no y papá tenía razón y es un camión.
 ^^
@@ -105,20 +108,24 @@ new_line;
 return true;
 }
 
-Cafetera: switch (n) {
+
+CajaPreservativos: switch (n) {
 1:	! ##Examine
-print "De diseño futurista hasta un punto casi ridículo para una cafetera. Parece sacada del plató de rodaje de ", (emph) "Minority Report", " o de un laboratorio de prototipos de ", (emph) "Apple", ". Tiene una ranura para meter las cápsulas de café y un botón de encendido iluminado por un led blanco.";
-new_line;
-return true;
-2:	! ##SwitchOn
-print "Necesitaría meterle primero una cápsula de café y, en cualquier caso, ahora no le apetece uno.";
-new_line;
-return true;
+return false;
+}
+
+CajaTabaco: switch (n) {
+1:	! ##Examine
+return false;
 }
 
 Cala: switch (n) {
 1:	! ##Examine
 print "Los cangrejos se han escondido. Está sola, frente ", (al) Mar, ". A su espalda, ", (the) Sendero, " asciende de vuelta hasta la casa.";
+new_line;
+return true;
+2:	! ##Go (n)
+print "En esa dirección sólo está ", (the) Mar, ".";
 new_line;
 return true;
 }
@@ -181,30 +188,38 @@ new_line;
 return true;
 }
 
+CasaCala: switch (n) {
+1:	! ##Examine
+return false;
+}
+
 Cielo: switch (n) {
 1:	! ##Examine
-print "No todos los días de noviembre llueve en Cantabria después de todo.";
+print "El sol brilla en un cielo despejado y luminoso de noviembre.";
 new_line;
 return true;
 }
 
 Coche: switch (n) {
 1:	! ##Examine (A - fuera del coche, primera vez)
-print "Lo mira con aprensión. Arrastraba alrededor de cien mil kilómetros ya cuando lo compró de segunda mano hace unos años y, aunque le ha funcionado muy bien hasta ahora, en el viaje desde Madrid ha empezado a hacer cosas extrañas: como si el motor se quedase sin potencia, incapaz de subir revoluciones aún con el acelerador pisado a fondo. Pasará por el taller esta semana sin falta, pero antes espera que sea capaz de llevarla de nuevo hasta casa...";
+print "Lo mira con aprensión. Arrastraba alrededor de cien mil kilómetros ya cuando lo compró de segunda mano hace unos años y, aunque le ha funcionado muy bien hasta ahora, en el viaje desde Madrid ha empezado a hacer cosas extrañas: como si el motor se quedase sin potencia, incapaz de subir revoluciones aún con el acelerador pisado a fondo... Pasará por el taller esta semana sin falta, pero espera que antes sea capaz de llevarla de vuelta casa y no la deje tirada a mitad de camino.";
 new_line;
 return true;
 2:	! ##Examine (B - fuera del coche, general)
-print "El granate descolorido de la carrocería arroja destellos brillantes bajo la luz del sol. Espera que sea capaz de llevarla hasta Madrid sin problemas y que no la deje tirada en mitad del camino.";
+print "El granate descolorido de la carrocería arroja destellos brillantes bajo la luz del ";
+Hyperlink(Cielo, "sol", 0);
+print ".";
 new_line;
 return true;
 3:	! describe
-print "Su coche deslumbra bajo el sol de la tarde, aparcado frente a la casa en mitad del camino.";
+print "Su ", (name) Coche, " deslumbra bajo el sol de la tarde, aparcado frente a ", (the) Casa, " en mitad del camino.";
 new_line;
 return true;
 4:	! ##Unlock (A - sin la llave, general)
 print "Tira de nuevo de la manilla pero es inútil, sigue cerrado con llave.";
 new_line;
 return true;
+
 5:	! ##Unlock (B - sin la llave, primera vez)
 print "Tira de la manilla pero la puerta no se abre.";
 new_line;
@@ -243,7 +258,7 @@ Cocina: switch (n) {
 1:	! ##Examine
 print "Espaciosa y bien iluminada. Su padre ha debido ir añadiendo muebles y electrodomésticos conforme los iba necesitando, atendiendo posiblemente antes a la funcionalidad que al aspecto del conjunto. El resultado es un ", (emph) "collage", "; aparatos de aspecto moderno y minimalista como ", (a) Frigorifico, " con acabado en acero brillante se combinan con una antigua ";
 Hyperlink(HornoLena, "cocina de leña", 0);
-print " o ", (a) Armario, " con feos motivos florales. Está comunicada con el salón al ", (name) e_obj, ".";
+print " o ", (a) Armario, " con feos motivos florales. Está comunicada con el salón y la terraza trasera, a ", (name) e_obj, " y ", (name) n_obj, " respectivamente.";
 new_line;
 return true;
 2:	! ##Examine
@@ -262,9 +277,104 @@ new_line;
 return true;
 }
 
+Comoda: switch (n) {
+1:	! ##Examine
+print "De madera oscura, alta hasta un poco por encima de la cintura.";
+return true;
+2:	! ##Examine
+print " Sobre ella hay ";
+WriteListFrom(child(Comoda), ENGLISH_BIT);
+print ".";
+return true;
+}
+
 Construcciones: switch (n) {
 1:	! ##Examine
 print "Casas sencillas, la mayoría de planta rectangular como la de sus padres, y algunas cuadras para el ganado.";
+new_line;
+return true;
+}
+
+ContestadorAutomatico: switch (n) {
+1:	! ##Examine
+print "Tal vez fuese tecnología puntera hace veinte o treinta años. Tiene un pantalla en la que se ve la indicación de que";
+return true;
+2:	! ##Examine
+print " no hay ningún mensaje nuevo";
+return true;
+3:	! ##Examine
+print " hay mensajes sin leer";
+return true;
+4:	! ##Examine
+print ", un botón etiquetado como ";
+Hyperlink(ContestadorAutomaticoPlay, "@<<PLAY@>>", 0);
+print " y un segundo como ";
+Hyperlink(ContestadorAutomaticoDelete, "@<<DELETE@>>", 0);
+print ".";
+new_line;
+return true;
+5:
+print "La ";
+Hyperlink(ContestadorAutomatico, "máquina", 0);
+print " no parece hacer nada.";
+new_line;
+return true;
+6:
+print "", (The) ContestadorAutomatico, " emite un pitido.";
+new_line;
+return true;
+7:
+print "Suena un zumbido desde el interior de la ";
+Hyperlink(ContestadorAutomatico, "máquina", 0);
+print " y de pronto oye la voz de su padre:
+^^
+---En estos momentos no estoy disponible. Si quieres, puedes dejarme un mensaje y te contestaré tan pronto como pueda.
+^^
+Apenas alcanza a escuchar el @<<biiip@>> de después por culpa del sonido de sus propios latidos del corazón retumbando en las sienes. Tras el pitido, sólo se escucha un susurro interrumpido de estática durante unos segundos, mientras ", (the) ContestadorAutomatico, " graba la decisión silenciosa de quien sea que ha llamado de no dejar ningún mensaje. Después se corta.
+^^
+Silvia permanece aún unos instantes clavada en el suelo tras el mensaje, de pie, a pesar del ligero temblor en las rodillas. La respiración entrecortada. Una sensación opresiva en el estómago.
+^^
+Era la voz de su padre.";
+new_line;
+return true;
+8:
+print "El ";
+Hyperlink(ContestadorAutomatico, "contestador", 0);
+print " se pone en marcha de nuevo y Silvia escucha una vez más la voz de su padre:
+^^
+---En estos momentos no estoy disponible. Si quieres, puedes dejarme un mensaje y te contestaré tan pronto como pueda.
+^^
+Tras el pitido, sólo se escucha un susurro interrumpido de estática durante unos segundos, mientras la ";
+Hyperlink(ContestadorAutomatico, "máquina", 0);
+print " graba la decisión silenciosa de quien sea que ha llamado de no dejar ningún mensaje. Después se corta.";
+new_line;
+return true;
+9:
+print "Suena un zumbido desde el interior de la ";
+Hyperlink(ContestadorAutomatico, "máquina", 0);
+print " y de pronto oye la voz de su padre:
+^^
+---En estos momentos no estoy disponible. Si quieres, puedes dejarme un mensaje y te contestaré tan pronto como pueda.
+^^
+Apenas alcanza a escuchar el @<<biiip@>> de después por culpa del sonido de sus propios latidos del corazón retumbando en las sienes.
+^^
+---Hola, soy yo ---la voz es de una mujer. ---Acabo de salir ahora del trabajo. Hemos entregado el proyecto al cliente ¡por fin! y han quedado contentos, parece. Así que podemos cenar luego, si te apetece. Para celebrarlo. Esta vez invito yo... Bueno, con lo que sea me dices, ¿vale? Un besín.
+^^
+Silvia permanece aún unos instantes clavada en el suelo tras el mensaje, de pie, a pesar del ligero temblor en las rodillas. La respiración entrecortada. Una sensación opresiva en el estómago.
+^^
+Era la voz de su padre. Y ¿quién es esa mujer?";
+new_line;
+return true;
+10:
+print "El ";
+Hyperlink(ContestadorAutomatico, "contestador", 0);
+print " se pone en marcha de nuevo y Silvia escucha una vez más la voz de su padre:
+^^
+---En estos momentos no estoy disponible. Si quieres, puedes dejarme un mensaje y te contestaré tan pronto como pueda.
+^^
+---Hola, soy yo ---la voz es de una mujer. ---Acabo de salir ahora del trabajo. Hemos entregado el proyecto al cliente ¡por fin! y han quedado contentos, parece. Así que podemos cenar luego, si te apetece. Para celebrarlo. Esta vez invito yo... Bueno, con lo que sea me dices, ¿vale? Un besín.
+^^
+La grabación finaliza. ¿Quién es esa mujer?";
 new_line;
 return true;
 }
@@ -292,17 +402,13 @@ return true;
 
 Dormitorio: switch (n) {
 1:	! ##Examine
-print "Su padre se ha marchado dejando las sábanas desechas y una camisa tirada en el suelo. Hay una mesita de noche junto a la cama. Un pequeño baño, al norte. Una puerta de vuelta al pasillo, al oeste.";
+print "Su padre se dejó las sábanas desechas y una camisa tirada en el suelo, y un ligero olor a sudor en el dormitorio. Hay una mesita de noche junto a la cama y una puerta de vuelta al pasillo, ", (al) w_obj, ".";
 new_line;
 return true;
 2:	! ##Examine
 print "Las sábanas están hechas un rebujo sobre la cama. Una camisa tirada en el suelo. Algo que se rompe. Por primera vez desde la llamada telefónica de ayer aparecen las lágrimas y en un gesto involuntario se lleva la mano a la cara, avergonzada.
 ^^
 Hay un pequeño baño al norte, y una puerta a su espalda lleva de vuelta al pasillo.";
-new_line;
-return true;
-3:	!
-print "Duda unos segundos antes de entrar en el dormitorio.";
 new_line;
 return true;
 }
@@ -319,6 +425,52 @@ print "";
 return true;
 }
 
+Escalera: switch (n) {
+1:	! ##Examine
+print "Suben hasta la primera planta.";
+new_line;
+return true;
+2:	! ##Examine
+print "Descienden hasta la planta baja.";
+new_line;
+return true;
+}
+
+Estanterias: switch (n) {
+1:	! ##Examine
+print "Una gran colección de ", (name) Libros, " da peso a las estanterías. Tienen además un puñado de figuritas y adornos sin mucho valor";
+return true;
+2:	! ##Examine
+print "; entre los que le llama la atención ";
+return true;
+}
+
+Esterillas: switch (n) {
+1:	! ##Examine
+print "Un par de esterillas enrrolladas.";
+new_line;
+return true;
+}
+
+Espejo: switch (n) {
+1:	! ##Examine
+return false;
+}
+
+Fotografias: switch (n) {
+1:	! ##Examine
+return false;
+}
+
+FrascoSales: switch (n) {
+1:	! ##Examine
+return false;
+}
+FrascosTinte: switch (n) {
+1:	! ##Examine
+return false;
+}
+
 Frigorifico: switch (n) {
 1:	! ##Examine
 print "Un frigorífico en acero brillante. Impoluto. Parece nuevo.";
@@ -328,7 +480,7 @@ return true;
 
 HabitacionMultiusos: switch (n) {
 1:	! ##Examine
-print "Un pequeño gimnasio casero ha ocupado el lugar de su viejo dormitorio; en el lugar de su cama ahora hay una bicicleta estática, un banco de abdominales donde antes estaba el escritorio, un par de esterillas enrrolladas en el suelo, mancuernas y una gran pelota de yoga. La puerta a su espalda lleva de regreso al pasillo.";
+print "Su antiguo dormitorio. No tiene exactamente el mismo aspecto que recuerda de cuando aún vivía allí, pero aún hay cosas que es capaz de reconocer; su cama, colocada contra una de las paredes, y el escritorio, en la pared opuesta, justo al lado del armario. Incluso algunas cajas de zapatos amontonadas en una esquina, dentro de las que guardaba sus juguetes. La puerta a su espalda lleva de regreso al pasillo.";
 new_line;
 return true;
 }
@@ -339,6 +491,19 @@ print "Un antigo horno de leña en hierro forjado negro.";
 return true;
 2:	! ##Examine (B - la primera vez)
 print " ", (emph) "El mejor sitio del mundo para asar castañas.", "";
+return true;
+}
+
+Libros: switch (n) {
+1:	! ##Examine (A - general)
+print "Una gran colección escrupulosamente ordenada. Muchos de ellos tienen el color de los lomos quemado y las páginas amarillentas. Es difícil mantener una biblioteca en buen estado con esta humedad.";
+new_line;
+return true;
+2:	! ##Examine (B - la primera vez)
+print "De un vistazo rápido reconoce unos cuantos de los que leyó cuando iba al instituto y aún vivía allí: ", (emph) "El arte de amar", ", de Erich Fromm; ", (emph) "Rebeldes", ", de Susan E. Hinton; ", (emph) "Ébano", " de Kapuscinski; la colección de ", (emph) "Historias de Terramar", " de LeGuin; ", (emph) "Cages", " de Dave McKean... de repente explota en una carcajada involuntaria ---No puede ser---. Y, sin dejar de sonreir, comprueba al azar algunos títulos en la otra estantería...
+^^
+---¡Están ordenados alfabéticamente! El muy pejiguero.";
+new_line;
 return true;
 }
 
@@ -363,32 +528,23 @@ new_line;
 return true;
 }
 
-Mar: switch (n) {
-1:
-print "Rafael Alberti. El mar. La mar";
-return true;
-2:
-print "@<<El mar. La mar.^
-El mar. ¡Sólo la mar!^^
+Macetas: switch (n) {
+1:	! ##Examine
+return false;
+}
 
-¿Por qué me trajiste, padre,^
-a la ciudad?^^
-
-¿Por qué me desenterraste^
-del mar?^^
-
-En sueños la marejada^
-me tira del corazón;^
-se lo quisiera llevar.^^
-
-Padre, ¿por qué me trajiste^
-acá?@>>";
+Mancuernas: switch (n) {
+1:	! ##Examine
+print "Varias pesas de pequeño tamaño.";
 new_line;
 return true;
-3:
-print "Julia de Burgos. ¡Oh lentitud del mar!";
+}
+
+Mar: switch (n) {
+1:
+print "--- Julia de Burgos. ¡Oh lentitud del mar!";
 return true;
-4:
+2:
 print "@<<He tenido que dar, multiplicarme,^
 despedazarme en órbitas complejas...^
 Aquí en la intimidad, conmigo misma,^
@@ -415,32 +571,9 @@ con que la muerte avanza a mi ala muerta!^
 ¿Qué me queda del mundo? ¿Qué me queda...?@>>";
 new_line;
 return true;
-5:
-print "Jorge Luis Borges. El mar";
-return true;
-6:
-print "@<<Antes que el sueño (o el terror) tejiera^
-mitologías y cosmogonías,^
-antes que el tiempo se acuñara en días,^
-el mar, el siempre mar, ya estaba y era.^^
-
-¿Quién es el mar? ¿Quién es aquel violento^
-y antiguo ser que roe los pilares^
-de la tierra y es uno y muchos mares^
-y abismo y resplandor y azar y viento?^^
-
-Quien lo mira lo ve por vez primera,^
-siempre. Con el asombro que las cosas^
-elementales dejan, las hermosas^^
-
-tardes, la luna, el fuego de una hoguera.^
-¿Quién es el mar, quién soy? Lo sabré el día^
-ulterior que sucede a la agonía.@>>";
-new_line;
-return true;
-7:
-print "Rosalía de Castro. Del mar azul las transparentes olas";
-8:
+3:
+print "--- Rosalía de Castro. Del mar azul las transparentes olas";
+4:
 print "@<<Del mar azul las transparentes olas^
 mientras blandas murmuran^
 sobre la arena, hasta mis pies rodando,^
@@ -461,25 +594,10 @@ como en las tristes playas de la vida^
 me abandonó inconstante la fortuna.@>>";
 new_line;
 return true;
-9:
-print "Gabriel Celaya. Hablo con el mar";
+5:
+print "--- Ernestina de Champourcín. Tiempo de mar";
 return true;
-10:
-print "Sentado en estas rocas, mar, te escucha.^
-No entiendo tus palabras pero adivino a ciegas^
-que algo  quieres decirme mas no puedes^
-A donde yo quisiera, ¡oh inmensidad sin centro!^^
-
-No te entiendo, madre-muerta madre amante, madre-amor,^
-¿O eres tú la que no entiende mi modo humano de hablar?^
-¿Hasta cuándo tengo que seguir esperando^
-mi retorno a tu origen, madre natal?";
-new_line;
-return true;
-11:
-print "Ernestina de Champourcín. Tiempo de mar";
-return true;
-12:
+6:
 print "@<<El mar me pertenece^
 lo hago pasar entero^
 entre mis manos ávidas.^
@@ -515,10 +633,229 @@ es un lebrel que lame^
 mis plantas mansamente.@>>";
 new_line;
 return true;
+7:
+print "--- Carmen Conde. Los poemas de Mar Menor. Pacto";
+return true;
+8:
+print "@<<Pactemos, mi mar.^
+Corrobórame íntegro el pacto.^^
+
+Cuando me vaya a la selva de casas^
+y de acuciantes urgencias anónimas,^
+has de acudir, tal y como te veo,^
+apenas mi corazón desmaye,^
+levantándome ante mí, arcangélico azul inmenso,^
+bañándome el duro mundo de mi contorno humano.^^
+
+Y por las noches de ti, apenas callen^
+sus extensos rumores pinar y viento,^
+has de evocarme tú, has de escucharme,^
+diciéndote:^
+¡quisiera yo ser eterna, sólo por verte!@>>";
+new_line;
+return true;
+9:
+print "--- Juana de Ibarbarou. Atlántico";
+return true;
+10:
+print "@<<Océano que te abres lo mismo que una mano^
+a todos los viajeros y a todos los marinos:^
+tan sólo para mí eres puño cerrado,^
+para mí solamente tú no tienes caminos.^^
+
+Jamás balanceará tu lomo milenario^
+la nave que me lleve desde esta tierra mía,^
+ondulada y menuda, a las tierras que sueña^
+mi juventud inmóvil y mi melancolía.^^
+
+¡Ah! océano Atlántico multicolor y ancho^
+cual un ciel caído entre el hueco de un mar:^
+te miro como un fruto que no he de morder nunca^
+o como un campo rico que nunca he de espigar.^^
+
+¡Ah! océano Atlántico, fiel leopardo que lames^
+mis dos pies que encadenan el amor y la vida:^
+haz que un día se sacien sobre tu flanco elástico^
+esta ansiedad constante y este afán de partida.@>>";
+new_line;
+return true;
+11:
+print "--- Alfonsina Storni. Dolor";
+return true;
+12:
+print "@<<Quisiera esta tarde divina de octubre^
+pasear por la orilla lejana del mar;^
+que la arena de oro, y las aguas verdes,^
+y los cielos puros me vieran pasar.^^
+
+Ser alta, soberbia, perfecta, quisiera,^
+como una romana, para concordar^
+con las grandes olas, y las rocas muertas^
+y las anchas playas que ciñen el mar.^^
+
+Con el paso lento, y los ojos fríos^
+y la boca muda, dejarme llevar;^
+ver cómo se rompen las olas azules^
+contra los granitos y no parpadear;^
+ver cómo las aves rapaces se comen^
+los peces pequeños y no despertar;^
+pensar que pudieran las frágiles barcas^
+hundirse en las aguas y no suspirar;^
+ver que se adelanta, la garganta al aire,^
+el hombre más bello, no desear amar...^^
+
+Perder la mirada, distraídamente,^
+perderla y que nunca la vuelva a encontrar:^
+y, figura erguida, entre cielo y playa,^
+sentirme el olvido perenne del mar.@>>";
+new_line;
+return true;
 13:
-print "Federico García Lorca. Mar";
+print "--- Alfonsina Storni. Frente al mar";
 return true;
 14:
+print "@<<Oh mar, enorme mar, corazón fiero^
+de ritmo desigual, corazón malo,^
+yo soy más blanda que ese pobre palo^
+que se pudre en tus ondas prisionero.^^
+
+Oh mar, dame tu cólera tremenda,^
+yo me pasé la vida perdonando,^
+porque entendía, mar, yo me fui dando:^
+~piedad, piedad para el que más ofenda~.^^
+
+Vulgaridad, vulgaridad me acosa.^
+Ah, me han comprado la ciudad y el hombre.^
+Hazme tener tu cólera sin nombre:^
+ya me fatiga esta misión de rosa.^^
+
+¿Ves al vulgar? Ese vulgar me apena,^
+me falta el aire y donde falta quedo,^
+quisiera no entender, pero no puedo:^
+es la vulgaridad que me envenena.^^
+
+Me empobrecí porque entender abruma,^
+me empobrecí porque entender sofoca,^
+¡bendecida la fuerza de la roca!^
+yo tengo el corazón como la espuma.^^
+
+Mar, yo soñaba ser como tú eres,^
+allá en las tardes que la vida mía^
+najo las horas cálidas se abría...^
+ah, yo soñaba ser como tú eres.^^
+
+Mírame aquí, pequeña, miserable,^
+todo dolor me vence, todo sueño;^
+mar, dame, dame el inefable empeño^
+de tornarme soberbia, inalcanzable.^^
+
+Dame tu sal, tu yodo, tu fiereza.^
+¡Aire de mar!... ¡Oh, tempestad! ¡Oh enojo!^
+Desdichada de mí, soy un abrojo,^
+y muero, mar, sucumbo en mi pobreza.^^
+
+Y el alma mía es como el mar, es eso,^
+ah, la ciudad la pudre y la equivoca;^
+pequeña vida que dolor provoca,^
+¡que pueda libertarme de su peso!^^
+
+Vuele mi empeño, mi esperanza vuele...^
+la vida mía debió ser horrible,^
+debió ser una arteria incontenible^
+y apenas es cicatriz que siempre duele.@>>";
+new_line;
+return true;
+15:
+print "--- Idea Vilariño. El mar";
+return true;
+16:
+print "@<<Tan arduamente el mar,^
+tan arduamente,^
+el lento mar inmenso,^
+tan largamente en sí, cansadamente,^
+el hondo mar eterno.^^
+
+Lento mar, hondo mar,^
+profundo mar inmenso...^^
+
+Tan lenta y honda y largamente y tanto^
+insistente y cansado ser cayendo^
+como un llanto, sin fin,^
+pesadamente,^
+tenazmente muriendo...^^
+
+Va creciendo sereno desde el fondo,^
+sabiamente creciendo,^
+lentamente, hondamente, largamente,^
+pausadamente,^
+mar,^
+arduo, cansado mar,^
+Padre de mi silencio.@>>";
+new_line;
+return true;
+17:
+print "--- Rafael Alberti. El mar. La mar";
+return true;
+18:
+print "@<<El mar. La mar.^
+El mar. ¡Sólo la mar!^^
+
+¿Por qué me trajiste, padre,^
+a la ciudad?^^
+
+¿Por qué me desenterraste^
+del mar?^^
+
+En sueños la marejada^
+me tira del corazón;^
+se lo quisiera llevar.^^
+
+Padre, ¿por qué me trajiste^
+acá?@>>";
+new_line;
+return true;
+19:
+print "--- Jorge Luis Borges. El mar";
+return true;
+20:
+print "@<<Antes que el sueño (o el terror) tejiera^
+mitologías y cosmogonías,^
+antes que el tiempo se acuñara en días,^
+el mar, el siempre mar, ya estaba y era.^^
+
+¿Quién es el mar? ¿Quién es aquel violento^
+y antiguo ser que roe los pilares^
+de la tierra y es uno y muchos mares^
+y abismo y resplandor y azar y viento?^^
+
+Quien lo mira lo ve por vez primera,^
+siempre. Con el asombro que las cosas^
+elementales dejan, las hermosas^^
+
+tardes, la luna, el fuego de una hoguera.^
+¿Quién es el mar, quién soy? Lo sabré el día^
+ulterior que sucede a la agonía.@>>";
+new_line;
+return true;
+21:
+print "--- Gabriel Celaya. Hablo con el mar";
+return true;
+22:
+print "Sentado en estas rocas, mar, te escucha.^
+No entiendo tus palabras pero adivino a ciegas^
+que algo  quieres decirme mas no puedes^
+A donde yo quisiera, ¡oh inmensidad sin centro!^^
+
+No te entiendo, madre-muerta madre amante, madre-amor,^
+¿O eres tú la que no entiende mi modo humano de hablar?^
+¿Hasta cuándo tengo que seguir esperando^
+mi retorno a tu origen, madre natal?";
+new_line;
+return true;
+23:
+print "--- Federico García Lorca. Mar";
+return true;
+24:
 print "@<<El mar es^
 el Lucifer del azul.^
 El cielo caído^
@@ -545,10 +882,10 @@ Cristo anduvo por ti,^
 mas también lo hizo Pan.@>>";
 new_line;
 return true;
-15:
-print "Federico García Lorca. La balada del agua del mar";
+25:
+print "--- Federico García Lorca. La balada del agua del mar";
 return true;
-16:
+26:
 print "@<<El mar^
 sonríe a lo lejos.^
 Dientes de espuma,^
@@ -584,10 +921,10 @@ Dientes de espuma,^
 labios de cielo.@>>";
 new_line;
 return true;
-17:
-print "Miguel Hernández. El mar también elige";
+27:
+print "--- Miguel Hernández. El mar también elige";
 return true;
-18:
+28:
 print "@<<El mar también elige^
 puertos donde reír^
 como los marineros.^^
@@ -601,10 +938,10 @@ Como los marineros.^^
 El mar de los que fueron.@>>";
 new_line;
 return true;
-19:
-print "José Hierro. Despedida del mar";
+29:
+print "--- José Hierro. Despedida del mar";
 return true;
-20:
+30:
 print "@<<Por más que intente al despedirme^
 guardarte entero en mi recinto^
 de soledad, por más que quiera^
@@ -653,10 +990,10 @@ Nunca jamás volveré a verte^
 con estos ojos que hoy te miro.@>>";
 new_line;
 return true;
-21:
-print "José Hierro. Llegada al mar";
+31:
+print "--- José Hierro. Llegada al mar";
 return true;
-22:
+32:
 print "@<<Cuando salí de ti, a mí mismo^
 me prometí que volvería.^
 Y he vuelto. Quiebro con mis piernas^
@@ -698,35 +1035,10 @@ toda mi sangre, que quería...^^
 cuando no pueda con mi vida.)@>>";
 new_line;
 return true;
-23:
-print "Juana de Ibarbarou. Atlántico";
+33:
+print "--- Octavio Paz. Frente al mar";
 return true;
-24:
-print "@<<Océano que te abres lo mismo que una mano^
-A todos los viajeros y a todos los marinos:^
-Tan sólo para mí eres puño cerrado,^
-Para mí solamente tú no tienes caminos.^^
-
-Jamás balanceará tu lomo milenario^
-La nave que me lleve desde esta tierra mía,^
-Ondulada y menuda, a las tierras que sueña^
-Mi juventud inmóvil y mi melancolía.^^
-
-Ah! océano Atlántico multicolor y ancho^
-Cual un ciel caído entre el hueco de un mar:^
-Te miro como un fruto que no he de morder nunca^
-O como un campo rico que nunca he de espigar.^^
-
-Ah! océano Atlántico, fiel leopardo que lames^
-Mis dos pies que encadenan el amor y la vida:^
-Haz que un día se sacien sobre tu flanco elástico^
-Esta ansiedad constante y este afán de partida.@>>";
-new_line;
-return true;
-25:
-print "Octavio Paz. Frente al mar";
-return true;
-26:
+34:
 print "@<<¿La ola no tiene forma?^
 En un instante se esculpe^
 y en otro se desmorona^
@@ -744,10 +1056,10 @@ en su lecho de rocas.^
 Muere de sed de aire.@>>";
 new_line;
 return true;
-27:
-print "Octavio Paz. Mar por la tarde";
+35:
+print "--- Octavio Paz. Mar por la tarde";
 return true;
-28:
+36:
 print "@<<Altos muros del agua, torres altas,^
 aguas de pronto negras contra nada,^
 impenetrables, verdes, grises aguas,^
@@ -794,124 +1106,10 @@ madre furiosa, inmensa res hendida,^
 mar que te comes vivas las entrañas.@>>";
 new_line;
 return true;
-29:
-print "Alfonsina Storni. Dolor";
+37:
+print "--- Hilarión Cabrisas. Mar sin orillas";
 return true;
-30:
-print "@<<Quisiera esta tarde divina de octubre^
-pasear por la orilla lejana del mar;^
-que la arena de oro, y las aguas verdes,^
-y los cielos puros me vieran pasar.^^
-
-Ser alta, soberbia, perfecta, quisiera,^
-como una romana, para concordar^
-con las grandes olas, y las rocas muertas^
-y las anchas playas que ciñen el mar.^^
-
-Con el paso lento, y los ojos fríos^
-y la boca muda, dejarme llevar;^
-ver cómo se rompen las olas azules^
-contra los granitos y no parpadear;^
-ver cómo las aves rapaces se comen^
-los peces pequeños y no despertar;^
-pensar que pudieran las frágiles barcas^
-hundirse en las aguas y no suspirar;^
-ver que se adelanta, la garganta al aire,^
-el hombre más bello, no desear amar...^^
-
-Perder la mirada, distraídamente,^
-perderla y que nunca la vuelva a encontrar:^
-y, figura erguida, entre cielo y playa,^
-sentirme el olvido perenne del mar.@>>";
-new_line;
-return true;
-31:
-print "Alfonsina Storni. Frente al mar";
-return true;
-32:
-print "@<<Oh mar, enorme mar, corazón fiero^
-De ritmo desigual, corazón malo,^
-Yo soy más blanda que ese pobre palo^
-Que se pudre en tus ondas prisionero.^^
-
-Oh mar, dame tu cólera tremenda,^
-Yo me pasé la vida perdonando,^
-Porque entendía, mar, yo me fui dando:^
-~Piedad, piedad para el que más ofenda~.^^
-
-Vulgaridad, vulgaridad me acosa.^
-Ah, me han comprado la ciudad y el hombre.^
-Hazme tener tu cólera sin nombre:^
-Ya me fatiga esta misión de rosa.^^
-
-¿Ves al vulgar? Ese vulgar me apena,^
-Me falta el aire y donde falta quedo,^
-Quisiera no entender, pero no puedo:^
-Es la vulgaridad que me envenena.^^
-
-Me empobrecí porque entender abruma,^
-Me empobrecí porque entender sofoca,^
-¡Bendecida la fuerza de la roca!^
-Yo tengo el corazón como la espuma.^^
-
-Mar, yo soñaba ser como tú eres,^
-Allá en las tardes que la vida mía^
-Bajo las horas cálidas se abría...^
-Ah, yo soñaba ser como tú eres.^
-
-Mírame aquí, pequeña, miserable,^
-Todo dolor me vence, todo sueño;^
-Mar, dame, dame el inefable empeño^
-De tornarme soberbia, inalcanzable.^^
-
-Dame tu sal, tu yodo, tu fiereza.^
-¡Aire de mar!... ¡Oh, tempestad! ¡Oh enojo!^
-Desdichada de mí, soy un abrojo,^
-Y muero, mar, sucumbo en mi pobreza.^^
-
-Y el alma mía es como el mar, es eso,^
-Ah, la ciudad la pudre y la equivoca;^
-Pequeña vida que dolor provoca,^
-¡Que pueda libertarme de su peso!^^
-
-Vuele mi empeño, mi esperanza vuele...^
-La vida mía debió ser horrible,^
-Debió ser una arteria incontenible^
-Y apenas es cicatriz que siempre duele.@>>";
-new_line;
-return true;
-33:
-print "Idea Vilariño. El mar";
-return true;
-34:
-print "@<<Tan arduamente el mar,^
-tan arduamente,^
-el lento mar inmenso,^
-tan largamente en sí, cansadamente,^
-el hondo mar eterno.^^
-
-Lento mar, hondo mar,^
-profundo mar inmenso...^^
-
-Tan lenta y honda y largamente y tanto^
-insistente y cansado ser cayendo^
-como un llanto, sin fin,^
-pesadamente,^
-tenazmente muriendo...^^
-
-Va creciendo sereno desde el fondo,^
-sabiamente creciendo,^
-lentamente, hondamente, largamente,^
-pausadamente,^
-mar,^
-arduo, cansado mar,^
-Padre de mi silencio.@>>";
-new_line;
-return true;
-35:
-print "Hilarión Cabrisas. Mar sin orillas";
-return true;
-36:
+38:
 print "@<<Un dolor se me va y otro me arredra;^
 ola que se marchó y ola que viene^
 a batirme, y apenas se detiene^
@@ -931,10 +1129,10 @@ rudo y fiero combate en este inmenso^
 mar sin orillas de la vida mía...@>>";
 new_line;
 return true;
-37:
-print "Jorge Guillén. El mar es un olvido...";
+39:
+print "--- Jorge Guillén. El mar es un olvido...";
 return true;
-38:
+40:
 print "@<<El mar es un olvido,^
 una canción, un labio;^
 el mar es un amante,^
@@ -954,10 +1152,10 @@ Sobre espaldas oscuras^
 las olas van gozando.@>>";
 new_line;
 return true;
-39:
-print "Pedro Salinas. El contemplado";
+41:
+print "--- Pedro Salinas. El contemplado";
 return true;
-40:
+42:
 print "@<<De mirarte tanto y tanto,^
 de horizonte a la arena,^
 despacio,^
@@ -985,6 +1183,20 @@ new_line;
 return true;
 }
 
+MarPatio: switch (n) {
+1:	! ##Examine
+print "Aunque no se ve desde aquí, el rumor del oleaje se escucha con claridad.";
+new_line;
+return true;
+}
+
+MarTerraza: switch (n) {
+
+
+1:	! ##Examine
+return false;
+}
+
 MesaCocina: switch (n) {
 1:	! ##Examine
 print "Ocupa el centro de la cocina. Está rodeada por un conjunto dispar de ";
@@ -992,9 +1204,9 @@ Hyperlink(MesaCocina, "sillas", 0);
 print " con diseños diferentes.";
 return true;
 2:	! ##Examine
-print " Sobre ella hay ";
+print " Puede ver ";
 WriteListFrom(child(MesaCocina), ENGLISH_BIT);
-print ".";
+print " encima.";
 return true;
 3:
 print "Sobre ", (the) MesaCocina, " puede ver ";
@@ -1008,46 +1220,38 @@ print " en ", (the) MesaCocina, ".";
 return true;
 }
 
+MesitaNoche: switch (n) {
+1:	! ##Examine
+print "Una sencilla mesita de noche. Tiene un cajón cerrado.";
+new_line;
+return true;
+2:	! ##Examine
+print "Dentro hay una caja de preservativos abierta, varios frascos de tinte de pelo, una cajetilla de tabaco, un Ankylosaurus de juguete.";
+new_line;
+return true;
+}
+
 Montannas: switch (n) {
 1:	! ##Examine
-print "Apenas debe haber veinte o quizá treinta kilómetros entre la línea de costa y las primeras elevaciones montañosas. Los picos más lejanos están ya cubiertos de nieve.";
+print "Apenas debe haber veinte o quizá treinta kilómetros entre la línea de costa y las primeras elevaciones montañosas. Como resultado el paisaje resulta precioso.";
 new_line;
 return true;
 }
 
-Oscuridad: switch (n) {
-1:	! ##Dance
-print "Decide que no es muy buena idea ponerse a bailar a oscuras.";
-new_line;
-return true;
-2:	! ##Jump, ##JumpOver
-print "Posiblemente sería una mala idea andar saltando por ahí en la oscuridad.";
-new_line;
-return true;
-
-
-1:	! cannot_see_object (A):
-print "No puede ver nada en la oscuridad.";
-new_line;
-return true;
-
-1:	! cannot_find_object (A)
-print "No acierta a dar con ", (the) x1, " en la oscuridad.";
-new_line;
-return true;
-2:	! cannot_find_object (B)
-print "En la oscuridad de la habitación no es capaz de dar con ", (the) x1, ".";
-new_line;
-return true;
-3:	! cannot_find_object (C)
-print "No es capaz de dar con ", (the) x1, " a oscuras.";
-new_line;
-return true;
-}
 
 Pasillo: switch (n) {
 1:	! ##Examine
-print "Adornado con algunas viejas fotografías en las paredes, el pasillo comunica su antiguo dormitorio al norte, el dormitorio de sus padres... de su padre... al este, y las escaleras de madera que descienden en curva hasta la planta baja, al sur.";
+print "Adornado con algunas viejas fotografías en las paredes, el pasillo comunica su antiguo dormitorio ", (al) n_obj, ", el dormitorio principal ", (al) e_obj, ", y las escaleras de madera que descienden en curva hasta la planta baja, ", (al) s_obj, ".";
+new_line;
+return true;
+2:	! ##Go (Dormitorio)
+print "Es la puerta del antiguo dormitorio de sus padres. Se corrige de inmediato; el dormitorio de su padre... La puerta a un dormitorio que no es de nadie ya...
+^^
+Duda, sin llegar a entrar.";
+new_line;
+return true;
+3:	! ##Go (Dormitorio)
+print "Inspira hondo antes de atravesar el umbral.";
 new_line;
 return true;
 }
@@ -1057,7 +1261,11 @@ Patio: switch (n) {
 print "Un acceso de grava de unos diez metros de longitud comunica ", (the) PuertaDelantera, " con una carretera secundaria sin apenas tráfico.";
 return true;
 2:	! ##Examine (B - fuera del coche)
-print " Desde esta parte, en la fachada sur, no se puede ver el mar y el panorama en cambio es el de los pastos verdes salpicados de algunos árboles y construcciones solitarias y el de las imponentes montañas que se elevan cerca.";
+print " Desde esta parte, en la fachada sur, no se puede ver ", (the) MarPatio, " y el panorama en cambio es el de los ";
+Hyperlink(Prados, "pastos", 0);
+print " verdes salpicados de algunos ";
+Hyperlink(Bosques, "árboles", 0);
+print " y ", (name) Construcciones, " solitarias y el de las imponentes ", (name) Montannas, " que se elevan cerca.";
 new_line;
 return true;
 3:	! ##Examine (C - dentro del coche)
@@ -1066,10 +1274,74 @@ new_line;
 return true;
 }
 
+PelotaYoga: switch (n) {
+1:	! ##Examine
+print "Nunca ha sabido muy bien para qué sirven. Hace años, durante un viaje con amigos de la facultad, se alojaron en un albergue en el que había varias pelotas de estas. A alguien se le ocurrió que podían colocarse por parejas, frente a frente, sosteniendo una cada uno a modo de airbag, y echar a correr hasta hacerlas chocar. Y todos pensaron que era una idea fantástica, por supuesto. Silvia acabó volando de forma bastante literal y con un ojo morado.";
+new_line;
+return true;
+2:	! ##Examine
+print "Nunca ha sabido muy bien para qué sirven aquellas pelotas enormes.";
+new_line;
+return true;
+}
+
+Perchero: switch (n) {
+1:	! ##Examine (A - general)
+print "Un perchero alto";
+return true;
+2:	! ##Examine (B - si tiene una cosa colgada)
+print " del que cuelga ";
+WriteListFrom(child(Perchero), ENGLISH_BIT);
+print ".";
+new_line;
+return true;
+3:	! ##Examine (C - si tiene varias cosas colgadas)
+print " del que cuelgan ";
+WriteListFrom(child(Perchero), ENGLISH_BIT);
+print ".";
+new_line;
+return true;
+4:	! describe (A - Sólo tiene colgado el bolso)
+print "Su ", (name) abrigo, " cuelga de un perchero alto, en una esquina.";
+new_line;
+return true;
+5:	! describe (B - si tiene una cosa colgada)
+print "En ", (the) Perchero, " de la esquina cuelga ";
+WriteListFrom(child(Perchero), ENGLISH_BIT);
+print ".";
+new_line;
+return true;
+6:	! describe (C - si tiene varias cosas colgadas)
+print "En ", (the) Perchero, " de la esquina cuelgan ";
+WriteListFrom(child(Perchero), ENGLISH_BIT);
+print ".";
+new_line;
+return true;
+7:	! ##Pull, ##Push, ##PushDir, ##Take, ##Turn
+print "No es necesario andar moviéndol", (o) obj, ".";
+new_line;
+return true;
+8:	! ##Receive (A - si no es el Abrigo o el Bolso)
+print "No puede colgar eso en el ";
+Hyperlink(Perchero, "perchero", 0);
+print ".";
+new_line;
+return true;
+9:	! ##Receive (B - tras colgar el Abrigo o el Bolso)
+print "Cuelga ", (the) x1, " en el ";
+Hyperlink(Perchero, "perchero", 0);
+print ".";
+new_line;
+return true;
+}
+
 Prados: switch (n) {
 1:	! ##Examine
 print "El paisaje está dominado por una amplia extensión de pastos verdes para la ganadería. Explotados en forma de pequeños minifundios, unos muros bajos de piedra y vallas de pastor eléctrico delimitan cada parcela, creando una suerte de mapa político a escala local.";
 new_line;
+return true;
+2:	! ##Examien
+print "---con sus guerras, conspiraciones y otras rencillas entre vecinos incluídas---";
 return true;
 }
 
@@ -1096,7 +1368,7 @@ new_line;
 return true;
 5:	! door_to (C - si recoge el abrigo del perchero antes)
 print "Coge ", (the) abrigo, " del ";
-Hyperlink(RecibidorPerchero, "perchero", 0);
+Hyperlink(Perchero, "perchero", 0);
 print " y sale al patio delantero.";
 new_line;
 return true;
@@ -1118,126 +1390,69 @@ new_line;
 return true;
 }
 
-Radiocasete: switch (n) {
-1:	! ##Examine
-print "Tiene al menos treinta años. Cuesta creer que pueda seguir funcionando.";
-new_line;
-return true;
-2:	! ##SwitchOn
-print "Es una reliquia. Ni siquiera sabe cómo funciona.";
-new_line;
-return true;
-}
 
 Recibidor:
 switch (n) {
 1:	! ##Examine (A - primera vez)
 print "Los rayos de sol del exterior se cuelan por ", (a) Cristalera, " que hay junto a la ";
 Hyperlink(PuertaDelantera, "puerta principal", 0);
-print ", bañando el pequeño recibidor en una mezcla de ", (string) Recibidor.get_random_color(), ", ", (string) Recibidor.get_random_color(), ", ", (string) Recibidor.get_random_color(), " y ", (string) Recibidor.get_random_color(), ". Por un momento permanece en pie en silencio, abstraída una vez más en las refracciones de la luz. Todo ha terminado. No tiene nada más que hacer aquí. Ha llegado la hora de regresar a su propia casa y continuar con su vida normal. Ya ha tenido vidrieras suficientes por hoy.";
+print ", bañando el pequeño recibidor en una mezcla de ";
+Recibidor.print_random_colors(4);
+print ". Por un momento permanece en pie en silencio, abstraída de nuevo en las refracciones de la luz. Todo ha terminado. Ahora que ya no tiene nada más que hacer aquí puede regresar a su propia casa y continuar con su vida normal. Han sido vidrieras más que suficientes por un día.";
 new_line;
 return true;
 2:	! ##Examine (A - Parte 1/3, con la puerta cerrada)
 print "La luz del exterior se cuela por ", (a) Cristalera, " que hay junto a la ";
 Hyperlink(PuertaDelantera, "puerta principal", 0);
-print ", bañando el pequeño recibidor en una mezcla de ", (string) Recibidor.get_random_color(), ", ", (string) Recibidor.get_random_color(), ", ", (string) Recibidor.get_random_color(), " y ", (string) Recibidor.get_random_color(), ", como el vitral de una iglesia.";
+print ", bañando el pequeño recibidor en una mezcla de ";
+Recibidor.print_random_colors(4);
+print ", como el vitral de una iglesia.";
 return true;
 3:	! ##Examine (B - Parte 1/3, con la puerta abierta)
 print "La brillante luz del exterior se cuela por la ";
 Hyperlink(PuertaDelantera, "puerta", 0);
-print " abierta y por ", (a) Cristalera, " que hay junto a ella, bañando el pequeño recibidor a un tiempo de los blancos directos del sol y de los ", (string) Recibidor.get_random_color(), ", ", (string) Recibidor.get_random_color(), ", ", (string) Recibidor.get_random_color(), " y ", (string) Recibidor.get_random_color(), " que penetran por el filtro del cristal tintado.";
+print " abierta y por ", (a) Cristalera, " que hay junto a ella, bañando el pequeño recibidor a un tiempo de los blancos directos del sol y de los ";
+Recibidor.print_random_colors(4);
+print " que penetran por el filtro del cristal tintado.";
 return true;
 4:	! ##Examine (C - Parte 2/3)
-print "Frente a la puerta, al ", (name) n_obj, ", un corto pasillo conduce hasta el salón, mientras que las desgastadas escaleras de madera, al ", (name) e_obj, ", suben hasta el segundo piso. Hay ", (a) RecibidorComoda, " apoyada contra la pared";
+print "Frente a la ";
+Hyperlink(PuertaDelantera, "puerta", 0);
+print ", al ", (name) n_obj, ", un corto pasillo conduce hasta el salón, mientras que las desgastadas ";
+Hyperlink(Escalera, "escaleras", 0);
+print " de madera, al ", (name) e_obj, ", suben hasta el segundo piso. Hay ", (a) Comoda, " apoyada contra la pared";
 return true;
 5:	! ##Examine (D - Parte 3/3, si no hay objetos en el perchero)
-print " y ", (a) RecibidorPerchero, " en una esquina";
-return true;
-}
-
-RecibidorComoda: switch (n) {
-1:	! ##Examine (A)
-print "De madera oscura, alta hasta un poco por encima de la cintura. Tiene un único cajón que en estos momentos está cerrado.";
-new_line;
-return true;
-}
-
-RecibidorPerchero: switch (n) {
-1:	! ##Examine (A - general)
-print "Un perchero alto";
-return true;
-2:	! ##Examine (B - si tiene una cosa colgada)
-print " del que cuelga ";
-WriteListFrom(child(RecibidorPerchero), ENGLISH_BIT);
-print ".";
-new_line;
-return true;
-3:	! ##Examine (C - si tiene varias cosas colgadas)
-print " del que cuelgan ";
-WriteListFrom(child(RecibidorPerchero), ENGLISH_BIT);
-print ".";
-new_line;
-return true;
-4:	! describe (A - Sólo tiene colgado el bolso)
-print "Su ", (name) abrigo, " cuelga de un perchero alto, en una esquina.";
-new_line;
-return true;
-5:	! describe (B - si tiene una cosa colgada)
-print "En ", (the) RecibidorPerchero, " de la esquina cuelga ";
-WriteListFrom(child(RecibidorPerchero), ENGLISH_BIT);
-print ".";
-new_line;
-return true;
-6:	! describe (C - si tiene varias cosas colgadas)
-print "En ", (the) RecibidorPerchero, " de la esquina cuelgan ";
-WriteListFrom(child(RecibidorPerchero), ENGLISH_BIT);
-print ".";
-new_line;
-return true;
-7:	! ##Pull, ##Push, ##PushDir, ##Take, ##Turn
-print "No es necesario andar moviéndol", (o) obj, ".";
-new_line;
-return true;
-8:	! ##Receive (A - si no es el Abrigo o el Bolso)
-print "No puede colgar eso en el ";
-Hyperlink(RecibidorPerchero, "perchero", 0);
-print ".";
-new_line;
-return true;
-9:	! ##Receive (B - tras colgar el Abrigo o el Bolso)
-print "Cuelga ", (the) x1, " en el ";
-Hyperlink(RecibidorPerchero, "perchero", 0);
-print ".";
-new_line;
+print " y ", (a) Perchero, " en una esquina";
 return true;
 }
 
 Ropa: switch (n) {
-1:	! ##Examine (A - en el suelo)
-print "", (The) Ropa, " está hecha un rebujo en el suelo.";
+1:	! ##Examine
+print "Ha colgado ", (the) Ropa, " en ", (the) x1, ".";
 new_line;
 return true;
-2:	! ##Examine (B - en un contenedor)
+2:	! ##Examine
 print "Tiene ", (the) Ropa, " tirada dentro ", (del) x1, ".";
 new_line;
 return true;
-3:	! ##Examine (C - por defecto)
+3:	! ##Examine
+print "Tiene ", (the) Ropa, " tirada sobre ", (the) x1, ".";
+new_line;
+return true;
+4:	! ##Examine
+print "", (The) Ropa, " está hecha un rebujo en el suelo.";
+new_line;
+return true;
+5:	! ##Examine
 print "Tiene ", (the) Ropa, " tirada en ", (the) x1, ".";
 new_line;
 return true;
-4:	! ##Examine (D - en el perchero)
-print "Ha colgado ", (the) Ropa, " en ", (the) RecibidorPerchero, ".";
-new_line;
-return true;
-5:	! ##Disrobe / ##Wear (A - si tiene alguna otra prenda puesta))
-print "Tiene que quitarse ", (the) x1, " primero.";
-new_line;
-return true;
-6:	! ##Disrobe (B - se desnuda y deja la ropa en el suelo)
+6:	! ##Disrobe
 print "Se desnuda por completo y deja ", (the) Ropa, " en el suelo.";
 new_line;
 return true;
-7:	! ##Disrobe (C - se desnuda y deja la ropa en un soporte/contenedor)
+7:	! ##Disrobe
 print "Se desnuda por completo y deja ", (the) Ropa, " en ", (the) x1, ".";
 new_line;
 return true;
@@ -1252,70 +1467,7 @@ return true;
 
 Salon: switch (n) {
 1:	! ##Examine
-print "Como virtualmente en cualquier otra casa, un amplio sofá hace de centro de gravedad de todo el salón; colocado de manera que se puede contemplar con la misma facilidad tanto el mar tras los ventanales como el televisor. Varias estanterías atestadas de libros y un mueble bar completan este paréntesis entre el recibidor, al ", (name) s_obj, ", y las puertas de doble hoja que conducen al ", (name) w_obj, " hasta la cocina.";
-new_line;
-return true;
-2:
-print "Se detiene un instante en el umbral contemplando el paisaje tras las ventanas. El mar casi parece colarse en el salón con el romper de las olas. Casi resulta increíble que su padre pudiese disfrutar de una vistas así a diario... Ella misma lo hizo durante años, y nunca llegó a darse cuenta del lujo que suponía algo así.";
-new_line;
-return true;
-}
-
-SalonEstanterias: switch (n) {
-1:	! ##Examine
-print "";
-Hyperlink(SalonLibros, "Libros", 0);
-print " y algunas ";
-Hyperlink(SalonFiguras, "figuritas", 0);
-print " dan peso a las estanterías.";
-new_line;
-return true;
-}
-
-SalonFiguras: switch (n) {
-1:	! ##Examine (A)
-print "Un puñado de figuritas sin gran valor entre las que hay ";
-new_line;
-return true;
-2:	! ##Examine
-print " y ";
-return true;
-3:	! ##Examine (B)
-print "una réplica de unos vente centímetros de Tizona, la espada del Cid";
-return true;
-4:	! ##Examine (C)
-print "dos payasos tristes de cerámica tocando instrumentos musicales";
-return true;
-5:	! ##Examine (D)
-print "un Spinosaurus de juguete";
-return true;
-6:	! Examine (B - la primera vez)
-print "No recuerda si ese dinosaurio era alguno de sus viejos juguetes o si se trata simplemente de algo que su padre había sacado de quién sabe dónde, pero curiosamente ella tiene en Madrid otro juguete parecido: un Tyrannosaurus Rex bebé, dentro de una maceta en el salón. Su T-Rex es de la marca Papo, y no de Schleich, como el de su padre. Los dinosaurios de Papo son más bonitos.";
-new_line;
-return true;
-}
-
-SalonLibros: switch (n) {
-1:	! ##Examine
-print "Muchos de esos libros son viejos. Silvia recuerda haber leído unos cuantos cuando iba al instituto y aún vivía allí.";
-new_line;
-return true;
-}
-
-SalonSofa: switch (n) {
-1:	! ##Examine
-print "Un sofá muy trotado desde el que se puede contemplar el mar tras los ventanales y el televisor en un mismo golpe de vista.";
-new_line;
-return true;
-2:	! ##Examine (B)
-print "Había crecido con la imagen de su padre en ese sofá, siempre sentado en el mismo rincón, leyendo en silencio, a veces con un vaso de whisky del pequeño mueble bar al lado. Todo aquello se ha quedado atrás en el tiempo salvo el silencio. Pero ni siquiera el silencio es el mismo ya.";
-new_line;
-return true;
-}
-
-SalonTelevisor: switch (n) {
-1:	! ##Examine
-print "Comedido y funcional, tiene enchufado un reproductor de DVD. Si deslizase el dedo por el lateral del reproductor notaría dos botones: el de encendido y el de expulsar disco.";
+print "Como virtualmente en cualquier otra casa, un amplio sofá hace centro de gravedad de todo el salón; colocado de manera que se puede contemplar con la misma facilidad tanto el mar tras los ventanales como el televisor. Un par de ", (name) Estanterias, " atestadas de ", (name) Libros, " completan este paréntesis entre el recibidor, ", (al) s_obj, ", y las puertas de doble hoja que conducen ", (al) w_obj, " hasta la cocina.";
 new_line;
 return true;
 }
@@ -1326,15 +1478,24 @@ print "Apenas visible, asciende entre las rocas ", (del) s_obj, " hasta la casa.
 new_line;
 return true;
 2:	! ##Examine (B - desde la terraza)
-print "Un estrecho sendero desciende ", (al) n_obj, " hasta una cala.";
+print "Un estrecho sendero desciende entre las rocas ", (al) n_obj, ", hasta la cala de más ", (name) d_obj, ".";
 new_line;
 return true;
-3:	! ##Go (A - asciende)
+3:	! ##Go
+print "No va a intentar ";
+if (x1) Hyperlink(u_obj, "subir");
+else Hyperlink(d_obj, "bajar");
+print " por entre las rocas llevando puestos unos ";
+Hyperlink(zapatos, "zapatos de tacón", 0);
+print ".";
+new_line;
+return true;
+4:	! ##Go (A - asciende)
 print "Escala de nuevo las rocas con mucho cuidado.";
 new_line;
 return true;
-4:	! ##Go (B - desciende)
-print "Ayudándose de las manos, desciende cuidadosamente por entre las rocas hasta la cala que hay al pie del promontorio en el que se levanta la casa.";
+5:	! ##Go (B - desciende)
+print "Ayudándose de las manos, desciende cuidadosamente por entre las rocas hasta la cala que hay al pie del promontorio.";
 new_line;
 return true;
 }
@@ -1363,47 +1524,143 @@ return true;
 3:	! (introducción)
 print "Ha cumplido con sus obligaciones por la mañana. Se ha encontrado con gente a la que no veía desde hacía años y a la que recordaba solo a medias, y con muchos otros a los que directamente o bien no conocía o no recordaba en absoluto. Todos han aparentado alegrarse de volver a verla y la han saludado con afecto.
 ^^
-Durante la ceremonia, incapaz de prestar atención al sermón, se ha concentrado en los policromados de las vidrieras y ha permanecido ensimismada en los juegos caprichosos de la luz y en las expresiones rígidas de las figuras ---un puñado de santos a los que no ha sabido identificar---. Al acabar ha tenido que repetir un nuvo trámite de abrazos y besos en las mejillas, de apretones de mano y palabras amables. Ella ha agradecido los gestos con sinceridad, se ha desecho educadamente de aquellos que insistían en acompañarla, y ha recorrido a solas las viejas carreteras sacudidas por aquel viento cargado de olores viejos, hasta llegar a la vieja casa de sus padres.";
+Durante la ceremonia, incapaz de prestar atención al sermón, se ha concentrado en los policromados de las vidrieras y ha permanecido ensimismada en los juegos caprichosos de la luz y en las expresiones rígidas de las figuras ---un puñado de santos a los que no ha sabido identificar---. Al acabar ha tenido que repetir un nuevo trámite de abrazos y besos en las mejillas, de apretones de mano y palabras amables. Ella ha agradecido los gestos con sinceridad, se ha desecho educadamente de aquellos que insistían en acompañarla, y ha recorrido a solas las viejas carreteras sacudidas por aquel viento cargado de olores viejos, hasta llegar a la vieja casa de sus padres.";
 new_line;
 return true;
 4:	! ##Examine / ##Inv
-print "Está completamente desnuda";
-return true;
-5:	! ##Examine / ##Inv
-print ". La piel de gallina por culpa de la brisa marítima";
-return true;
-6:	! ##Examine / ##Inv
 print ".";
 new_line;
 return true;
+5:	! ##Examine / ##Inv
+print "Está completamente desnuda";
+return true;
+6:	! ##Examine / ##Inv
+print "Debajo ", (del) Abrigo, " está completamente desnuda";
+return true;
 7:	! ##Examine / ##Inv
-print "Debajo del abrigo está completamente desnuda";
+print ", salvo por ", (the) Zapatos, "";
 return true;
 8:	! ##Examine / ##Inv
-print "Lleva ";
+print ". La piel de gallina por culpa de la brisa marítima";
 return true;
 9:	! ##Examine / ##Inv
-print "puesto su vestido negro, con una falda negra que le alcanza hasta debajo de las rodillas, medias negras traslúcidas y zapatos negros con tacón, bien cepillados y brillantes";
+print "Lleva";
 return true;
 10:	! ##Examine / ##Inv
-print "; una ropa que normalmente le haría sentir incómoda, como si estuviese vistiendo un disfraz ridículo. Hoy, en cambio, llevar puesto ese disfraz le ha garantizado algo de seguridad. Era el uniforme adecuado para un día difícil";
+print "Debajo ", (del) Abrigo, " lleva";
 return true;
 11:	! ##Examine / ##Inv
-print "Debajo del abrigo lleva ";
+print " puesto su vestido negro, con una falda negra que le alcanza hasta debajo de las rodillas";
 return true;
 12:	! ##Examine / ##Inv
-print "Tiene ";
-return true;
+print " y unas medias negras traslúcidas nuevas";
 13:	! ##Examine / ##Inv
-print " en las manos";
+print ", medias negras traslúcidas y ";
+Hyperlink(Zapatos, "zapatos negros", 0);
+print " con tacón, bien cepillados y brillantes";
 return true;
 14:	! ##Examine / ##Inv
-print "", (the) Bolso, " colgado al hombro";
+print "; una ropa que normalmente le haría sentir incómoda, como si estuviese vistiendo un disfraz ridículo. Hoy, en cambio, llevar puesto ese disfraz le ha garantizado algo de seguridad. Era el uniforme adecuado para un día difícil";
 return true;
 15:	! ##Examine / ##Inv
+print "Tiene ";
+return true;
+16:	! ##Examine / ##Inv
+print "", (the) Bolso, " colgado al hombro";
+return true;
+17:	! ##Examine / ##Inv
 print " y ";
 return true;
+18:	! ##Examine / ##Inv
+print " en las manos";
+return true;
 
+}
+
+Sofa: switch (n) {
+1:	! ##Examine
+print "Un sofá muy trotado desde el que se puede contemplar el mar tras los ventanales y el televisor en un mismo golpe de vista.";
+new_line;
+return true;
+2:	! ##Examine (B)
+new_line;
+print "Había crecido con la imagen de su padre en ese sofá, siempre sentado en el mismo rincón, leyendo en silencio. A veces con un vaso de whisky al lado. Todo aquello ha quedado atrás, perdido en el tiempo. Salvo el silencio.
+^^
+Pero ni siquiera el silencio es el mismo ya.";
+new_line;
+return true;
+}
+
+Telefono: switch (n) {
+1:	! ##Examine
+print "Un teléfono con un aspecto algo anticuado.";
+new_line;
+return true;
+2:	! ##Call
+print "Pone la mano sobre el auricular. Podría llamarla, tal vez. ¿Debería hacerlo?... Pero, ¿qué iba a decirla?
+^^
+Quizá fuese mejor hablar las cosas cara a cara...";
+new_line;
+return true;
+3:	! ##Call
+print "Debería hablar con Carmen, pero no por teléfono.";
+new_line;
+return true;
+}
+
+Televisor: switch (n) {
+1:	! ##Examine
+print "Comedido y funcional, tiene enchufado un reproductor de DVD. Si deslizase el dedo por el lateral del reproductor notaría dos botones: el de encendido y el de expulsar disco.";
+new_line;
+return true;
+}
+
+Terraza: switch (n) {
+1:	! ##Examine
+print "Un palco privado al espectáculo impresionante que ofrece el mar. Apenas quince metros de pendiente rocosa son todo cuanto separa la cumbre del promontorio sobre el que se erige la casa y la pequeña cala en la que rompen las olas, más ", (name) d_obj, ". Aparte de la propia ladera por la que se puede descender sin mucha dificultad, el único acceso a la terraza es la puerta de la cocina, al ", (name) s_obj, ".";
+new_line;
+return true;
+}
+
+Triceratops: switch (n) {
+1:	! ##Examine
+print "Un triceratops de juguete.";
+return true;
+2:	! Examine (B - la primera vez)
+print " No recuerda si ese dinosaurio era alguno de sus viejos juguetes o si se trata simplemente de algo que su padre había sacado de quién sabe dónde...";
+return true;
+}
+
+Ventanales: switch (n) {
+1:	! ##Examine
+return false;
+}
+
+Zapatos: switch (n) {
+1:	! ##Examine
+print "Son los únicos zapatos con tacón que tiene.";
+return true;
+2:	! ##Examine
+print " Unas relucientes máquinas de tortura de color negro.";
+return true;
+3:	! ##Examine
+print " Están tirados en el suelo.";
+return true;
+4:	! ##Examine (B - en un contenedor)
+print " Están dentro ", (del) x1, ".";
+new_line;
+return true;
+5:	! ##Examine
+print " Están sobre ", (the) x1, ".";
+return true;
+6:	! ##Examine
+print " Están en ", (the) x1, ".";
+new_line;
+return true;
+7:	! ##Wear
+print "Se pone ", (the) Zapatos, ". Los tacones se clavan en la arena.";
+new_line;
+return true;
 }
 
 	}

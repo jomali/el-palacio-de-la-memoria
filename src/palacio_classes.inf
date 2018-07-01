@@ -774,50 +774,63 @@ Class	SmartEnterable
 
 Class	Clothes
  with	before [
-			obj;
+			obj i temp layer_a layer_b;
 			Disrobe, Wear:
+				!! Calcula la capa de referencia del objeto:
+				for (i = 0 : i < (self.#layers)/WORDSIZE : i++) {
+					temp = self.&layers-->i;
+					if (temp > layer_a) layer_a = temp;
+				}
+				!! Comprueba las capas del resto de elementos vestidos por PJ:
 				objectloop(obj in player && obj ofclass Clothes
-					&& obj has worn && obj.level > self.level) {
-					switch (_grammatical_inflection) {
-						FIRST_PERSON_PAST:
-							if (IsPluralNoun(player))
-								print "Teníamos que quitarnos";
-							else print "Tenías que quitarme";
-						SECOND_PERSON_PAST:
-							if (IsPluralNoun(player))
-								print "Teníais que quitaros";
-							else print "Tenías que quitarte";
-						THIRD_PERSON_PAST:
-							if (IsPluralNoun(player))
-								print "Tenían que quitarse";
-							else print "Tenía que quitarse";
-						FIRST_PERSON_PRESENT:
-							if (IsPluralNoun(player))
-								print "Tenemos que quitarnos";
-							else print "Tengo que quitarme";
-						SECOND_PERSON_PRESENT:
-							if (IsPluralNoun(player))
-								print "Tenéis que quitaros";
-							else print "Tienes que quitarte";
-						THIRD_PERSON_PRESENT:
-							if (IsPluralNoun(player))
-								print "Tienen que quitarse";
-							else print "Tiene que quitarse";
-						FIRST_PERSON_FUTURE:
-							if (IsPluralNoun(player))
-								print "Tendremos que quitarnos";
-							else print "Tendré que quitarme";
-						SECOND_PERSON_FUTURE:
-							if (IsPluralNoun(player))
-								print "Tendréis que quitaros";
-							else print "Tendrás que quitarte";
-						THIRD_PERSON_FUTURE:
-							if (IsPluralNoun(player))
-								print "Tendrán que quitarse";
-							else print "Tendrá que quitarse";
+					&& obj has worn && obj ~= self) {
+					for (i = 0 : i < (obj.#layers)/WORDSIZE : i++) {
+						temp = obj.&layers-->i;
+						if (i == 0) layer_b = temp;
+						else if (temp < layer_b) layer_b = temp;
 					}
-					" ", (the) noun, " primero.";
+					if (layer_a < layer_b) {
+						switch (_grammatical_inflection) {
+							FIRST_PERSON_PAST:
+								if (IsPluralNoun(player))
+									print "Teníamos que quitarnos";
+								else print "Tenías que quitarme";
+							SECOND_PERSON_PAST:
+								if (IsPluralNoun(player))
+									print "Teníais que quitaros";
+								else print "Tenías que quitarte";
+							THIRD_PERSON_PAST:
+								if (IsPluralNoun(player))
+									print "Tenían que quitarse";
+								else print "Tenía que quitarse";
+							FIRST_PERSON_PRESENT:
+								if (IsPluralNoun(player))
+									print "Tenemos que quitarnos";
+								else print "Tengo que quitarme";
+							SECOND_PERSON_PRESENT:
+								if (IsPluralNoun(player))
+									print "Tenéis que quitaros";
+								else print "Tienes que quitarte";
+							THIRD_PERSON_PRESENT:
+								if (IsPluralNoun(player))
+									print "Tienen que quitarse";
+								else print "Tiene que quitarse";
+							FIRST_PERSON_FUTURE:
+								if (IsPluralNoun(player))
+									print "Tendremos que quitarnos";
+								else print "Tendré que quitarme";
+							SECOND_PERSON_FUTURE:
+								if (IsPluralNoun(player))
+									print "Tendréis que quitaros";
+								else print "Tendrás que quitarte";
+							THIRD_PERSON_FUTURE:
+								if (IsPluralNoun(player))
+									print "Tendrán que quitarse";
+								else print "Tendrá que quitarse";
+						}
+						" ", (the) obj, " primero.";
+					}
 				}
 		],
-		level 0,
+		layers 0,
  has	clothing;

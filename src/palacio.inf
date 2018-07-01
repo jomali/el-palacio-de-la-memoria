@@ -626,12 +626,17 @@ Global _current_location = 0;
 	!! Inicializaciones de la obra ---------------------------------------------
 	!! Narrador en presente y tercera persona
 	DM.set_grammatical_inflection(THIRD_PERSON_PRESENT);
+	!! Reproduce la pista de audio del menú:
+	FadeInTrack(MUS_PRINCIPAL, -1, 500);
 	!! Se lanza el menú antes de establecer al Personaje Jugable (PJ) para
 	!! evitar que se imprima un nombre de localidad en la barra de estado:
 	initial_location = MainMenu();
+	!! Detiene la pista de audio del menú:
+	FadeOutTrack(MUS_PRINCIPAL, 0, 6000, false);
+	!! Reproduce la pista de audio ambiente:
+	FadeInTrack(SFX_MAR, -1, 0);
 
 	!! Texto introductorio:
-	FadeInTrack(SFX_MAR, 90, 100);
 	new_line;
 	O__M(Silvia, 1);
 	new_line;
@@ -639,12 +644,12 @@ Global _current_location = 0;
 	PressAnyKey();
 	EraseWindow();
 	new_line;
-	O__M(Silvia, 2);
-	PressAnyKey();
-	EraseWindow();
-	new_line;
-	HorizontalRule();
-	new_line;
+	!! O__M(Silvia, 2);
+	!! PressAnyKey();
+	!! EraseWindow();
+	!! new_line;
+	!! HorizontalRule();
+	!! new_line;
 
 	!! Establece el PJ:
 	ChangePlayer(Silvia);
@@ -1165,7 +1170,6 @@ Global _test = true; !! FIXME - eliminar
 	result done width previous_style i j line op length;
 	!! Establece una imagen aleatoria para el menú:
 	DrawRandomImage();
-	!! Reproduce la pista de audio del menú:
 	while (done == false) {
 		EraseWindow();
 		new_line;
@@ -1173,25 +1177,29 @@ Global _test = true; !! FIXME - eliminar
 		new_line;
 		width = ScreenWidth();
 		previous_style = UseTextStyle(TEXT_STYLE_MONOSPACED);
-		for (i = 1 : i <= 5 : i++) {
+		for (i = 1 : i <= 6 : i++) {
 			switch (i) {
 				1:
 					line = "Empezar la historia";
 					op = "[ESPACIO]";
 					length = 32;
 				2:
-					line = "Configuración";
+					line = "Créditos";
 					op = "C";
-					length = 18;
+					length = 13;
 				3:
+					line = "Configuración";
+					op = "X";
+					length = 18;
+				4:
 					line = "Ver coleccionables";
 					op = "D";
 					length = 23;
-				4:
+				5:
 					line = "Recuperar partida guardada";
 					op = "R";
 					length = 31;
-				5:
+				6:
 					line = "Salir de la aplicación";
 					op = "Q";
 					length = 27;
@@ -1252,11 +1260,19 @@ Global _test = true; !! FIXME - eliminar
 				done = true;
 				result = Dormitorio;
 			#Endif; ! DEBUG;
-			'C', 'c':	! Configuración
+			'C', 'c':	! Créditos
+				EraseWindow();
+				VersionSub();
+				new_line;
+				print (parser) "Pulsa una tecla para continuar.";
+				PressAnyKey();
+			'X', 'x':	! Configuración
 				ConfigureHyperlinks("Pulsa @<<INTRO@>> para aceptar.");
 				ConfigureHighlightStyle("Pulsa @<<INTRO@>> para aceptar.");
 				DM.write_configuration_file(CONFIG_FILE_NAME);
 			'D', 'd':	! Ver coleccionables
+				EraseWindow();
+				new_line;
 				PrintCollectibles("Pulsa una tecla para continuar.");
 			'R', 'r':	! Recuperar partida guardada
 				new_line;
@@ -1275,6 +1291,7 @@ Global _test = true; !! FIXME - eliminar
 				quit;
 		}
 	}
+	!! Limpia la pantalla y retorna:
 	EraseWindow();
 	return result;
 ];
@@ -1339,17 +1356,19 @@ Global _test = true; !! FIXME - eliminar
 !!------------------------------------------------------------------------------
 [ PrintCollectibles txt
 	obj total num previous_style i;
-	EraseWindow();
 	objectloop(obj ofclass Dinosaur) {
 		total++;
 		if (obj.discovered) num++;
 	}
-	new_line;
+	previous_style = UseTextStyle(TEXT_STYLE_PARSER);
+	print (string) TEXT_STYLE_PARSER_PREFIX;
 	print "Has descubierto ";
-	previous_style = UseTextStyle(TEXT_STYLE_HEADER);
+	UseTextStyle(TEXT_STYLE_HEADER);
 	print num, " de ", total;
- 	UseTextStyle(previous_style);
+	UseTextStyle(TEXT_STYLE_PARSER);
 	print " figuras de dinosaurios:";
+	print(string) TEXT_STYLE_PARSER_SUFIX;
+	UseTextStyle(previous_style);
 	new_line;
 	new_line;
 	objectloop(obj ofclass Dinosaur) {
@@ -1378,9 +1397,8 @@ Global _test = true; !! FIXME - eliminar
 		print (string) TEXT_STYLE_PARSER_SUFIX;
 		UseTextStyle(previous_style);
 		new_line;
+		PressAnyKey();
 	}
-	PressAnyKey();
-	EraseWindow();
 	return true;
 ];
 
@@ -1512,6 +1530,43 @@ VerboIrregular "establecer la reproducción de audio" with imperativo
 ];
 #Endif; ! USE_DAMUSIX;
 #Endif; ! TARGET_GLULX;
+
+!!------------------------------------------------------------------------------
+!! ##Call
+!!------------------------------------------------------------------------------
+
+Extend	'llama'
+	* noun							-> Call
+	* 'por' noun					-> Call
+	* 'desde' noun					-> Call
+	* 'a//' 'traves' 'de' noun		-> Call
+;
+
+[ CallSub;
+	switch (DM.get_grammatical_inflection()) {
+		FIRST_PERSON_PRESENT,
+		SECOND_PERSON_PRESENT,
+		THIRD_PERSON_PRESENT:
+			print "No se puede llamar a nadie con ", (the) noun, ". No ";
+			if (IsPluralNoun(noun)) print "son";
+			else print "es";
+			" un teléfono.";
+		FIRST_PERSON_PAST,
+		SECOND_PERSON_PAST,
+		THIRD_PERSON_PAST:
+			print "No se podía llamar a nadie con ", (the) noun, ". No ";
+			if (IsPluralNoun(noun)) print "eran";
+			else print "era";
+			" un teléfono.";
+		FIRST_PERSON_FUTURE,
+		SECOND_PERSON_FUTURE,
+		THIRD_PERSON_FUTURE:
+			print "No se podrá llamar a nadie con ", (the) noun, ". No ";
+			if (IsPluralNoun(noun)) print "serán";
+			else print "será";
+			" un teléfono.";
+	}
+];
 
 !!------------------------------------------------------------------------------
 !! ##Configuration
@@ -1745,6 +1800,9 @@ Verb 'teleport.verb'
 	PlayerTo(noun, 2);
 ];
 
+
+
+
 !! FIXME - eliminar
 Verb 'test'
 	*							-> Test
@@ -1763,8 +1821,7 @@ Verb 'dinosaurios'
 ;
 
 [ DinosauriosSub;
-	PrintCollectibles("Pulsa una tecla para continuar.");
-	<<Look>>;
+	PrintCollectibles();
 ];
 
 
@@ -1777,3 +1834,4 @@ Verb 'dinosaurios'
 Include ">palacio_dm.inf";
 Include ">palacio_classes.inf";
 Include ">palacio_objects.inf";
+Include ">palacio_memory_a.inf";

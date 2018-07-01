@@ -427,66 +427,69 @@ Attribute described; ! Indica si un objeto ha sido descrito al jugador
 		}
 	}
 
-	!! Se pretende conseguir que la rutina para listar el inventario del PC
+	!! Se pretende conseguir que la rutina para listar el inventario del PJ
 	!! muestre un mensaje más trabajado estéticamente que el mensaje por
 	!! defecto de la librería, y también no hacer compleja en exceso la lógica
 	!! de la rutina, que de otro modo es más propensa a errores y difícil de
-	!! mantener. Por ello se ha tomado la decisión de diseño de incluir
-	!! únicamente tres objetos que el PC puede vestir, y en lugar de hacer una
- 	!! rutina general para tomar inventario se utilizan directamente las
-	!! referencias de estos objetos
+	!! mantener. Por ello se ha tomado la decisión de diseño de personalizar la
+	!! rutina para tomar inventario con las referencias del conjunto de objetos
+	!! que el PJ puede vestir, en lugar de hacer una rutina para tomar
+	!! inventario general.
+	!!
+	!! A continuación se detallan los diferentes mensajes de inventario, tal y
+	!! como se definen en 'palacio_objects.txt':
+	!!
+	!! [5:Está completamente desnuda / 6:Debajo del abrigo está completamente
+	!! desnuda][7:, salvo por los zapatos][8:. La piel de gallina por culpa de
+	!! la brisa marina][4:.]
+	!!
+	!! [9:Lleva / 10:Debajo del abrigo lleva][11: puesto su vestido negro, con
+	!! una falda negra que le alcanza hasta debajo de las rodillas][12: y unas
+	!! medias negras traslúcidas nuevas, las únicas que tiene sin una sola
+	!! carrera / 13:, medias negras traslúcidas y zapatos negros con tacón,
+	!! bien cepillados y brillantes][14:; una ropa que normalmente le haría
+	!! sentir incómoda, como si estuviese vistiendo un disfraz rídículo. Hoy,
+	!! en cambio, llevar puesto ese disfraz le ha garantizado algo de
+	!! seguridad. Era el uniforme adecuado para un día difícil][4:.]
+	!!
+	!! [15:Tiene][16: su bolso colgado al hombro][17: y][18: <lista> en las
+	!! manos][4:.]
 
 	if ((Ropa hasnt worn) && (Abrigo hasnt worn)) {
-		!! "Está completamente desnuda"
+		O__M(Silvia, 5);
+		if (Zapatos has worn) O__M(Silvia, 7);
+		if (location ofclass Outdoors) O__M(Silvia, 8);
 		O__M(Silvia, 4);
-		!! ". La piel de gallina [...]"
-		if (location ofclass Outdoors) O__M(Silvia, 5);
-		!! "."
-		O__M(Silvia, 6);
 	} else if ((Ropa hasnt worn) && (Abrigo has worn)) {
-		!! "Debajo del abrigo está completamente desnuda"
-		O__M(Silvia, 7);
-		!! "."
 		O__M(Silvia, 6);
-	} else if ((Ropa has worn) && (Abrigo hasnt worn)) {
-		!! "Lleva "
-		O__M(Silvia, 8);
-		!! "puesto su vestido negro [...]"
-		O__M(Silvia, 9);
-		if (Silvia.inventory_flag == false) {
-			Silvia.inventory_flag = true;
-			!! "; una ropa que normalmente le haría [...]"
-			O__M(Silvia, 10);
-		}
-		O__M(Silvia, 6); !! "."
-	} else if ((Ropa has worn) && (Abrigo has worn)) {
-		!! "Debajo del abrigo lleva "
+		if (Zapatos has worn) O__M(Silvia, 7);
+		O__M(Silvia, 4);
+	} else if (Ropa has worn) {
+		if (Abrigo hasnt worn) O__M(Silvia, 9);
+		else O__M(Silvia, 10);
 		O__M(Silvia, 11);
-		!! "puesto su vestido negro [...]"
-		O__M(Silvia, 9);
+		if (Zapatos hasnt worn) O__M(Silvia, 12);
+		else O__M(Silvia, 13);
 		if (Silvia.inventory_flag == false) {
 			Silvia.inventory_flag = true;
-			!! "; una ropa que normalmente le haría [...]"
-			O__M(Silvia, 10);
+			O__M(Silvia, 14);
 		}
-		O__M(Silvia, 6); !! "."
+		O__M(Silvia, 4);
 	}
 
 	if ((Bolso has worn) || (held_items > 0)) {
 		new_line;
-		!! "Tiene "
-		O__M(Silvia, 12);
-		!! " el bolso colgado [...]"
-		if (Bolso has worn) O__M(Silvia, 14);
-		!! " y "
-		if ((Bolso has worn) && (held_items > 0)) O__M(Silvia, 15);
+		O__M(Silvia, 15);
+		if (Bolso has worn) {
+			O__M(Silvia, 16);
+			if (held_items > 0) O__M(Silvia, 17);
+		}
 		if (held_items > 0) {
 			WriteListFrom(child(player),
 				ENGLISH_BIT + FULLINV_BIT + WORKFLAG_BIT);
-			!! " en las manos"
-			O__M(Silvia, 13);
+			O__M(Silvia, 18);
 		}
-		O__M(Silvia, 6); !! "."
+		O__M(Silvia, 4);
 	}
 
 	#Ifndef MANUAL_PRONOUNS;
@@ -835,9 +838,10 @@ CompassDirection d_obj "abajo" compass
 !! Créditos detallados de la aplicación.
 !!
 !!	@override verblibm.h
-!!	@version 1.0
+!!	@version 2.0
 !!------------------------------------------------------------------------------
-[ VersionSub ix;
+[ VersionSub
+	ix;
 	new_line;
 	Banner();
 	print "Versión de la librería Inform ", (string) LibRelease;
@@ -874,4 +878,34 @@ CompassDirection d_obj "abajo" compass
 	print "VM ", ix / $10000, ".", (ix & $FF00) / $100, ".", ix & $FF;
 	#Endif; ! TARGET_;
 	new_line;
+
+	new_line;
+	print "Relación de poemas utilizados en la obra:^";
+	new_line;
+	print "-- Julia de Burgos. ",
+		(stressed) "@<<¡Oh lentitud del mar!@>>.^";
+	print "-- Rosalía de Castro. ",
+		(stressed) "@<<Del mar azul las transparentes olas@>>.^";
+	print "-- Ernestina de Champourcín. ",
+		(stressed) "@<<Tiempo de mar@>>.^";
+	print "-- Carmen Conde. ",
+		(stressed) "@<<Pacto@>>, ", " de Los poemas del Mar Menor.^";
+	print "-- Juana de Ibarbarou. ",
+		(stressed) "@<<Atlántico@>>.^";
+	print "-- Alfonsina Storni. ",
+		(stressed) "@<<Dolor@>>.^";
+	print "-- Alfonsina Storni. ",
+		(stressed) "@<<Frente al mar@>>.^";
+	print "-- Idea Vilariño. ",
+		(stressed) "@<<El mar@>>.^";
+	new_line;
+	print "Este pequeño conjunto de poemas son obra de algunas autoras en
+	lengua castellana que, luchando contra los convencionalismos sociales y en
+	una exhibición admirable de tesón y esfuerzo, han conseguido hacerse un
+	hueco en un espacio literario y cultural dominado mayoritariamente por
+	hombres y en el que las voces femeninas han sido históricamente
+	silenciadas ---en muchas ocasiones siguen siéndolo todavía---, cuando no
+	completamente vedadas. Se incluyen estos ejemplos de su obra a modo de
+ 	sencillo reconocimiento y homenaje, y con la esperanza de contribuir
+	modestamente a la difusión del trabajo de estas mujeres valientes.^";
 ];
