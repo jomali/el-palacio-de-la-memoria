@@ -402,13 +402,7 @@ return true;
 
 Dormitorio: switch (n) {
 1:	! ##Examine
-print "Su padre se dejó las sábanas desechas y una camisa tirada en el suelo, y un ligero olor a sudor en el dormitorio. Hay una mesita de noche junto a la cama y una puerta de vuelta al pasillo, ", (al) w_obj, ".";
-new_line;
-return true;
-2:	! ##Examine
-print "Las sábanas están hechas un rebujo sobre la cama. Una camisa tirada en el suelo. Algo que se rompe. Por primera vez desde la llamada telefónica de ayer aparecen las lágrimas y en un gesto involuntario se lleva la mano a la cara, avergonzada.
-^^
-Hay un pequeño baño al norte, y una puerta a su espalda lleva de vuelta al pasillo.";
+print "Su padre se ha marchado dejando las sábanas desechas, una camisa tirada en el suelo, y un ligero hedor a sudor flotando en la habitación. Parco en muebles y decoración, las paredes están desnudas excepto por ", (a) Espejo, " redondo. Hay ", (a) MesitaNoche, " junto a ", (the) Cama, ". Un armario. Y la puerta, ", (al) w_obj, ", de vuelta al pasillo. Eso es todo.";
 new_line;
 return true;
 }
@@ -427,11 +421,19 @@ return true;
 
 Escalera: switch (n) {
 1:	! ##Examine
-print "Suben hasta la primera planta.";
+print "Desciende", (n) Escalera, " en curva hasta la planta baja.";
 new_line;
 return true;
 2:	! ##Examine
-print "Descienden hasta la planta baja.";
+print "Asciende", (n) Escalera, " en curva hasta la primera planta.";
+new_line;
+return true;
+3:	! ##Go (abajo)
+print "Baja por ", (the) Escalera, ".";
+new_line;
+return true;
+4:	! ##Go (arriba)
+print "Sube por ", (the) Escalera, " hasta la primera planta.";
 new_line;
 return true;
 }
@@ -454,7 +456,15 @@ return true;
 
 Espejo: switch (n) {
 1:	! ##Examine
-return false;
+print "Se detiene un instante frente ", (al) Espejo, ". Busca";
+return true;
+2:	! ##Examine
+print "Mira de nuevo ", (al) Espejo, ", buscando";
+return true;
+3:	! ##Examine
+print " en la cara del otro lado restos de él. Tal vez en la nariz chata. Ese pelo oscuro y abundante. Los ojos marrones. La mirada taciturna.";
+new_line;
+return true;
 }
 
 Fotografias: switch (n) {
@@ -1222,12 +1232,18 @@ return true;
 
 MesitaNoche: switch (n) {
 1:	! ##Examine
-print "Una sencilla mesita de noche. Tiene un cajón cerrado.";
-new_line;
+print "La mesita tiene un único cajón que en estos momentos está ";
+if (x1) print "abierto";
+else print "cerrado";
+print ".";
 return true;
 2:	! ##Examine
-print "Dentro hay una caja de preservativos abierta, varios frascos de tinte de pelo, una cajetilla de tabaco, un Ankylosaurus de juguete.";
-new_line;
+print " Dentro no hay nada.";
+return true;
+3:	! ##Examine
+print " Dentro hay ";
+WriteListFrom(child(MesitaNoche), ENGLISH_BIT);
+print ".";
 return true;
 }
 
@@ -1241,11 +1257,15 @@ return true;
 
 Pasillo: switch (n) {
 1:	! ##Examine
-print "Adornado con algunas viejas fotografías en las paredes, el pasillo comunica su antiguo dormitorio ", (al) n_obj, ", el dormitorio principal ", (al) e_obj, ", y las escaleras de madera que descienden en curva hasta la planta baja, ", (al) s_obj, ".";
+print "El pasillo comunica su antiguo dormitorio ", (al) n_obj, ", el dormitorio ", (al) e_obj, ", y las ";
+Hyperlink(Escalera, "escaleras", 0);
+print " de madera que descienden en curva hasta la planta baja, ", (al) s_obj, ".";
 new_line;
 return true;
 2:	! ##Go (Dormitorio)
-print "Es la puerta del antiguo dormitorio de sus padres. Se corrige de inmediato; el dormitorio de su padre... La puerta a un dormitorio que no es de nadie ya...
+print "Es la puerta del antiguo dormitorio de sus padres. Se corrige de inmediato; el dormitorio de su padre...
+^^
+...la puerta a un dormitorio que no es de nadie ya.
 ^^
 Duda, sin llegar a entrar.";
 new_line;

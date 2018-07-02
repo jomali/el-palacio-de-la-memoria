@@ -242,9 +242,11 @@ Object	DM "(Dungeon Master)"
 			obj;
 			objectloop(obj ofclass Thing) {
 				give obj ~described;
+				give obj ~general;
 				obj.reset();
 			}
 			objectloop(obj ofclass Room) {
+				give obj ~general;
 				give obj ~visited;
 			}
 		],

@@ -215,6 +215,8 @@ Outdoors	Cala "Cala de los cangrejos"
 		u_to	[; return self.s_to(); ],
  has	female;
 
+!!------------------------------------------------------------------------------
+
 Array marFlags -> 5; ! hasta 32 flags
 Atrezzo	-> Mar "mar"
  with	name_f	'espuma' 'ola',
@@ -628,7 +630,7 @@ Furniture	-> Cama "cama"
 		],
  private
 		wrinkled_sheets 0, ! 0 - deshecho; 1 - arrugadas; 2 - estiradas
- has	enterable female supporter transparent;
+ has	concealed enterable female supporter transparent;
 
 Atrezzo	-> -> Sabanas "sábanas"
  with	name_f	'almohada' 'cubierta' 'manta' 'sabana',
@@ -655,7 +657,13 @@ Furniture	-> MesitaNoche "mesita de noche"
 		gender	G_FEMENINO,
 		adjectives 'de' 'noche',
 		description [;
-			return O__M(self, 1);
+			O__M(self, 1, (self has open));
+			if (self has open) {
+				if (child(self)) O__M(self, 3);
+				else O__M(self, 2);
+			}
+			new_line;
+			return true;
 		],
  has	concealed container female openable ~open;
 
@@ -663,7 +671,7 @@ Dinosaur	-> -> Ankylosaurus "ankylosaurus"
  with	name_m 'ankylosaurus' 'anquilosaurio' 'dinosaurio' 'juguete',
  has	male;
 
-Atrezzo	-> -> CajaPreservativos "caja de preservativos"
+Item	-> -> CajaPreservativos "caja de preservativos"
  with	name_f	'caja' 'cajetilla',
 		name_m	'condon' 'preservativo' 'profiláctico',
 		name_mp	'condones' 'preservativos' 'profilácticos',
@@ -671,7 +679,7 @@ Atrezzo	-> -> CajaPreservativos "caja de preservativos"
 		description [; return O__M(self, 1); ],
  has	female;
 
-Atrezzo	-> -> CajaTabaco "cajetilla de tabaco"
+Item	-> -> CajaTabaco "cajetilla de tabaco"
  with	name_f	'caja' 'cajetilla',
 		name_m	'cigarrillo' 'cigarro' 'tabaco',
 		name_mp	'cigarrillos' 'cigarros',
@@ -679,7 +687,7 @@ Atrezzo	-> -> CajaTabaco "cajetilla de tabaco"
 		description [; return O__M(self, 1); ],
  has	female;
 
-Atrezzo	-> -> FrascosTinte "frascos de tinte"
+Item	-> -> FrascosTinte "frascos de tinte"
  with	name_m	'frasco' 'tinte',
 		name_mp	'frascos' 'tintes',
 		gender	G_MASCULINO + G_PLURAL,
@@ -689,13 +697,17 @@ Atrezzo	-> -> FrascosTinte "frascos de tinte"
 Furniture	-> Espejo "espejo"
  with	name_m	'cristal' 'espejo' 'reflejo',
 		gender	G_MASCULINO,
-		description [; return O__M(self, 1); ],
+		description [;
+			if (self hasnt described) O__M(self, 1);
+			else O__M(self, 2);
+			return O__M(self, 3);
+		],
 		react_before [;
 			Examine:
 				if (noun == player)
 					<<Examine self>>;
 		],
- has	male;
+ has	concealed male;
 
 
 !!==============================================================================
@@ -783,7 +795,7 @@ Indoors	Pasillo "Pasillo de la segunda planta"
 				return Dormitorio;
 			}
 		],
-		s_to	Recibidor,
+		s_to	Escalera,
 		d_to	[; return self.s_to(); ],
 		reset [;
 			self.temp = 0;
@@ -801,15 +813,47 @@ Atrezzo	-> Fotografias "fotografías"
 		description [; return O__M(self, 1); ],
  has	female pluralname;
 
-Atrezzo	Escalera "escalera"
+!!------------------------------------------------------------------------------
+
+Item	Escalera "escalera"
  with	found_in Pasillo Recibidor,
 		name_f	'escalera' 'escalinata',
 		name_fp	'escaleras',
 		name_m	'escalon' 'peldano',
 		name_mp	'escalones' 'pendanos',
 		gender	G_FEMENINO,
-		description [; return O__M(self, 1); ],
- has	female;
+		adjectives 'madera',
+		description [;
+			if (location == Pasillo) return O__M(self, 1);
+			else return O__M(self, 2);
+		],
+		before [;
+			DefaultAction:
+				if (location == Pasillo) print (parser) "baja por la escalera";
+				else print (parser) "sube por la escalera";
+				new_line;
+				<<Enter self>>;
+		],
+		after [;
+			if (Recibidor hasnt general) give Recibidor general;
+
+		],
+		door_dir [;
+			if (location == Pasillo) return s_to;
+			else return e_to;
+		],
+		door_to [;
+			if (location == Pasillo) {
+				O__M(self, 3);
+				new_line;
+				return Recibidor;
+			} else {
+				O__M(self, 4);
+				new_line;
+				return Pasillo;
+			}
+		],
+ has	door female open ~openable scenery;
 
 
 !!==============================================================================
@@ -1147,14 +1191,6 @@ Indoors	Recibidor "Recibidor"
 				if (self hasnt general)
 					give self general;
 		],
-		n_to Salon,
-		s_to [;
-			if (PuertaDelantera hasnt open) give PuertaDelantera open;
-			return PuertaDelantera;
-		],
-		e_to Pasillo,
-		out_to [; return self.s_to(); ],
-		u_to [; return self.e_to(); ],
 		print_random_colors [ num
 			i;
 			if (num < 1) num = 1;
@@ -1169,6 +1205,14 @@ Indoors	Recibidor "Recibidor"
 			!! colores empiece desde cero:
 			for (i = 0 : i < (7-num) : i++) self.get_random_color();
 		],
+		n_to Salon,
+		s_to [;
+			if (PuertaDelantera hasnt open) give PuertaDelantera open;
+			return PuertaDelantera;
+		],
+		e_to Escalera,
+		out_to [; return self.s_to(); ],
+		u_to [; return self.e_to(); ],
  private
 		get_random_color [;
 			switch (Shuffle(7, colorFlags)) {
@@ -1182,6 +1226,8 @@ Indoors	Recibidor "Recibidor"
 			}
 		],
  has	male;
+
+!!------------------------------------------------------------------------------
 
 Item	-> Perchero "perchero alto"
  with	name_f	'percha',
@@ -1488,6 +1534,8 @@ Outdoors	Terraza "Terraza trasera"
 		in_to	[; return self.s_to(); ],
 		d_to	[; return self.n_to(); ],
  has	female;
+
+!!------------------------------------------------------------------------------
 
 Atrezzo	-> MarTerraza "mar"
  with	name_f	'espuma' 'ola',
