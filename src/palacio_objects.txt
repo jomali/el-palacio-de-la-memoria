@@ -83,6 +83,10 @@ Abrigo: switch (n) {
 print "[Un Abrigo] largo de color gris. Sencillo, como la mayor parte de sus cosas.";
 new_line;
 return true;
+2:	! ##Iron
+print "Sacude un poco [el Abrigo] con la mano.";
+new_line;
+return true;
 }
 
 !!------------------------------------------------------------------------------
@@ -98,9 +102,21 @@ return true;
 !! }
 
 !!------------------------------------------------------------------------------
-Armario: switch (n) {
+ArmarioCocina: switch (n) {
 1:	! ##Examine
 print "De madera, con unas tallas de motivos florales horteras.";
+new_line;
+return true;
+}
+
+!!------------------------------------------------------------------------------
+ArmarioDormitorio: switch (n) {
+1:	! ##Examine
+print "Un gran armario en madera oscura.";
+new_line;
+return true;
+2:	! ##Open
+print "Dentro sólo hay ropa de su padre. Nada importante.";
 new_line;
 return true;
 }
@@ -232,53 +248,64 @@ return true;
 
 !!------------------------------------------------------------------------------
 Cama: switch (n) {
-!! TODO - Cambiar descripciones
-1:	! ##Examine (A - si está deshecha)
-print "Está desecha, con las sábanas completamente arrugadas.";
+1:	! ##Examine
+print "[La Cama] está desecha. Las sábanas completamente arrugadas.";
+return true;
+2:	! ##Examine
+print "[La Cama] ahora tiene las sábanas perfectamente estiradas.";
+return true;
+3:	! ##Examine
+print "[La Cama] sigue estando hecha, aunque las sábanas se han quedado algo arrugadas.";
+return true;
+4:	! ##Examine
+print " Sobre ella puede ver [lista de objetos sobre Cama].";
+return true;
+5:	! describe
+print "Sobre [la Cama] puede ver [lista de objetos sobre Cama <CONCEAL_BIT + ENGLISH_BIT + PARTINV_BIT>].";
 new_line;
 return true;
-2:	! ##Examine (B - si está hecha)
-print "Ahora está hecha, con las sábanas perfectamente estiradas.";
-new_line;
-return true;
-3:	! ##Examine (C - si está hecha, pero arrugada)
-print "Ahora está hecha, pero las sábanas están algo arrugadas.";
-new_line;
-return true;
-4:	! ##Iron (A - desecha)
-print "Se toma un momento en estirar bien las sábanas.";
-new_line;
-return true;
-5:	! ##Iron (B - ya está hecha)
-print "Las sábanas ya están perfectamente estiradas.";
-new_line;
-return true;
-6:	! ##Jump / ##JumpOver
-print "Su padre le castigó más de una vez por saltar en las camas en el pasado. Si pudiese castigarla ahora saltaría una vez más.";
-new_line;
-return true;
-7:	! ##LookUnder
-print "Bajo [la Cama] sólo hay polvo y sombras.";
-new_line;
-return true;
-8:	! ##Enter
-print "Ya estaba sentada en [la Cama].";
-new_line;
-return true;
-9:	! ##Enter (after)
+6:	! ##Enter:after
 print "Se sienta en [la Cama].";
 new_line;
 return true;
-10:	! ##Exit (after)
-print "Se levanta [del Cama].";
+7:	! ##Exit:after
+print "Se levanta [de la Cama].";
 new_line;
 return true;
-11:	! ##Sleep
-print "No podría aunque quisiera. Ahora tiene la cabeza llena de demasiadas cosas...";
+8:	! ##Iron
+print "Se toma un momento para estirar bien las sábanas.";
 new_line;
 return true;
-12:	! ##Smell
-print "Aún se puede sentir un ligero olor a sudor entre las sábanas. Resulta extraño oler el sudor de una persona muerta.";
+9:	! ##Iron
+print "Las sábanas ya estaban perfectamente estiradas.";
+new_line;
+return true;
+10:	! ##JumpOver
+print "Su padre le castigó más de una vez por saltar en las camas cuando era pequeña. Si pudiese castigarla ahora saltaría una vez más.";
+new_line;
+return true;
+11:	! ##LookUnder
+print "Bajo [la Cama] sólo hay polvo y sombras.";
+new_line;
+return true;
+12:	! ##Sleep
+print "No podría aunque quisiera. Ahora tiene demasiado ruido en la cabeza...";
+new_line;
+return true;
+13:	! ##Smell
+print "Aún se puede sentir un ligero olor de sudor entre las sábanas. Últimas huellas de una persona que ya no está.";
+new_line;
+return true;
+}
+
+!!------------------------------------------------------------------------------
+Camisa: switch (n) {
+1:	! ##Examine
+print "Una de las camisas de su padre. Está hecha un rebujo en el suelo.";
+new_line;
+return true;
+2:	! ##Take
+print "Recoje la camisa del suelo con suma delicadeza, y la guarda en [el ArmarioDormitorio].";
 new_line;
 return true;
 }
@@ -324,7 +351,6 @@ return true;
 print "Tira de nuevo de la manilla pero es inútil, sigue cerrado con llave.";
 new_line;
 return true;
-
 5:	! ##Unlock (B - sin la llave, primera vez)
 print "Tira de la manilla pero la puerta no se abre.";
 new_line;
@@ -362,7 +388,7 @@ return true;
 !!------------------------------------------------------------------------------
 Cocina: switch (n) {
 1:	! ##Examine
-print "Espaciosa y bien iluminada. Su padre ha debido ir añadiendo muebles y electrodomésticos conforme los iba necesitando, atendiendo posiblemente antes a la funcionalidad que al aspecto del conjunto. El resultado es un *collage*; aparatos de aspecto moderno y minimalista como [un Frigorifico] con acabado en acero brillante se combinan con una antigua [HornoLena](cocina de leña) o [un Armario] con feos motivos florales. Está comunicada con el salón y la terraza trasera, a [e_obj] y [n_obj] respectivamente.";
+print "Espaciosa y bien iluminada. Su padre ha debido ir añadiendo muebles y electrodomésticos conforme los iba necesitando, atendiendo posiblemente antes a la funcionalidad que al aspecto del conjunto. El resultado es un *collage*; aparatos de aspecto moderno y minimalista como [un Frigorifico] con acabado en acero brillante se combinan con una antigua [HornoLena](cocina de leña) o [un ArmarioCocina] con feos motivos florales. Está comunicada con el salón y la terraza trasera, a [e_obj] y [n_obj] respectivamente.";
 new_line;
 return true;
 2:	! ##Examine
@@ -486,12 +512,34 @@ return true;
 !!------------------------------------------------------------------------------
 Dormitorio: switch (n) {
 1:	! ##Examine
-print "Su padre se ha marchado dejando las sábanas desechas, una camisa tirada en el suelo, y un ligero hedor a sudor flotando en la habitación. Parco en muebles y decoración, las paredes están desnudas excepto por [un Espejo] redondo. Hay [una MesitaNoche] junto a [la Cama]. Un armario. Y la puerta, [al w_obj], de vuelta al pasillo. Eso es todo.";
+print "Su padre se ha marchado dejando";
+return true;
+2:	! ##Examine
+print " [las Sabanas] desechas";
+return true;
+3:	! ##Examine
+print " [una Camisa] tirada en el suelo";
+return true;
+4:	! ##Examine
+print " un ligero hedor a sudor flotando en la habitación. Parco en muebles y decoración, las paredes están desnudas excepto por [un Espejo] redondo. Hay [una MesitaNoche] junto a [la Cama]. [Un ArmarioDormitorio]. Y la puerta, [al w_obj], de vuelta al pasillo. Eso es todo.";
+new_line;
+return true;
+5:	! ##Examine
+print ",";
+return true;
+6:	! ##Examine
+print " y";
+return true;
+7:
+print "No puede evitar echar otro vistazo general a la habitación antes de salir. Ni tampoco un estremecimiento. Es terrible tener que enfrentarse a las pertenencias de un hombre muerto. Aquellos objetos sólo tienen utilidad mientras hay una vida para la que son útiles. Cuando esa vida termina, los objetos parecen no cambiar, pero en realidad lo hacen a un nivel esencial y profundo. Están y no están allí. Son como los restos de una civilización antigua, inútiles ya, pero testimonio aún de una conciencia. Registros corpóreos de la soledad con la que una persona ha tomado decisiones sobre su propia vida: usar una camisa u otra, teñirse el pelo, vivir o morir.
+^^
+Y sólo ahora, por primera vez en todo el día, está cerca de las lágrimas.";
+new_line;
+return true;
+
 !! print "Las sábanas están hechas un rebujo sobre la cama. Una camisa tirada en el suelo. Algo que se rompe. Por primera vez desde la llamada telefónica de ayer aparecen las lágrimas y en un gesto involuntario se lleva la mano a la cara, avergonzada.
 !! ^^
 !! Hay un pequeño baño al norte, y una puerta a su espalda lleva de vuelta al pasillo.";
-new_line;
-return true;
 }
 
 !!------------------------------------------------------------------------------
@@ -546,13 +594,17 @@ return true;
 !!------------------------------------------------------------------------------
 Espejo: switch (n) {
 1:	! ##Examine
-print "Se detiene un instante frente [al Espejo]. Busca";
+print "Se detiene frente [al Espejo]. Busca";
 return true;
 2:	! ##Examine
 print "Mira de nuevo [al Espejo], buscando";
 return true;
 3:	! ##Examine
-print " en la cara del otro lado restos de él. Tal vez en la nariz chata. Ese pelo oscuro y abundante. Los ojos marrones. La mirada taciturna.";
+print " pistas de él en el rostro del otro lado. Tal vez la nariz chata. Ese pelo oscuro y abundante. Los ojos marrones. La mirada perdida en otro sitio.";
+new_line;
+return true;
+4:	! ##Kiss
+print "Nunca le ha gustado la persona que había al otro lado lo suficiente.";
 new_line;
 return true;
 }
@@ -1351,6 +1403,16 @@ return true;
 3:	! ##Examine
 print " Dentro hay [lista de objetos en MesitaNoche].";
 return true;
+4:	! After::##Open
+print "Abre el cajón de la [MesitaNoche](mesita), descubriendo [lista de objetos en MesitaNoche].";
+new_line;
+return true;
+5:	! After::##Open (primera vez)
+print "Abre el cajón de la [MesitaNoche](mesita), descubriendo [lista de objetos en MesitaNoche].
+^^
+Revolver entre las cosas de su padre resulta conmovedor de algún modo, pero al mismo tiempo es horrible. Tanto que su estómago se revela de pronto contra ella y a punto está de hacerla expulsar el sándwich de la comida. ¿Qué derecho tiene a invadir su intimidad de aquella forma? ¿A hurguar por entre los rincones secretos de la mente de otra persona? Tiene la sensación de que su padre irrumpirá en el dormitorio en cualquier momento, la mirará con incredulidad y la preguntará qué demonios está haciendo. Y no tendrá ninguna respuesta convincente.";
+new_line;
+return true;
 }
 
 !!------------------------------------------------------------------------------
@@ -1395,15 +1457,13 @@ return true;
 !!------------------------------------------------------------------------------
 Pasillo: switch (n) {
 1:	! ##Examine
-print "El pasillo comunica su antiguo dormitorio [al n_obj], el dormitorio [al e_obj], y las [Escalera](escaleras) de madera que descienden en curva hasta la planta baja, [al s_obj].";
+print "El pasillo comunica su antiguo dormitorio [al n_obj], el dormitorio principal [al e_obj], y las [Escalera](escaleras) de madera que descienden en curva hasta la planta baja, [al s_obj].";
 !! TODO
 !! "Adornado con algunas viejas fotografías en las paredes, el pasillo comunica su antiguo dormitorio [al n_obj], el dormitorio principal [al e_obj], y las escaleras de madera que descienden en curva hasta la planta baja, [al s_obj].";
 new_line;
 return true;
 2:	! ##Go (Dormitorio)
-print "Es la puerta del antiguo dormitorio de sus padres. Se corrige de inmediato; el dormitorio de su padre...
-^^
-...la puerta a un dormitorio que no es de nadie ya.
+print "Es la puerta del antiguo dormitorio de sus padres. Se corrige de inmediato: el dormitorio de su... la puerta a un dormitorio que no es de nadie ya.
 ^^
 Duda, sin llegar a entrar.";
 new_line;
@@ -1600,6 +1660,18 @@ return true;
 print "Se desnuda por completo y deja [la Ropa] en [el x1].";
 new_line;
 return true;
+8:	!
+print "No va a salir desnuda.";
+new_line;
+return true;
+9:
+print "No va a desnudarse en la calle.";
+new_line;
+return true;
+10:	! ##Iron
+print "Intenta estirarse un poco [la Ropa] con las manos.";
+new_line;
+return true;
 }
 
 !!------------------------------------------------------------------------------
@@ -1666,7 +1738,11 @@ return true;
 2:	! (introducción)
 print (stressed) "@<<Y entro en los campos y anchos palacios de la memoria, donde están los tesoros de innumerables imágenes de toda clase de cosas acarreadas por los sentidos.@>>", "
 ^^
---- San Agustín. Confesiones, libro décimo, capítulo VIII.";
+--- San Agustín. Confesiones, libro décimo, capítulo VIII.
+^^
+", (stressed) "@<<La memoria como un lugar, como un edificio, como una serie de columnas, cornisas, pórticos. El cuerpo dentro de la mente, como si nos moviéramos allí dentro, caminando de un sitio a otro, y el sonido de nuestras pisadas mientras caminamos de un sitio a otro.@>>", "
+^^
+--- Paul Auster. La invención de la soledad";
 new_line;
 return true;
 3:	! (introducción)

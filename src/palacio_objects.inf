@@ -111,6 +111,8 @@ Item	-> -> Ropa "ropa"
 		],
 		before [;
 			if (self.Clothes::before()) return true;
+			Iron:
+				return O__M(self, 10);
 			Take:
 				!! Se registra el contenedor previo antes de coger la ropa para
 				!! que, en caso de no poder vestirla, devolverla al sitio en el
@@ -325,7 +327,7 @@ Indoors	Cocina "cocina"
 		out_to	[; return self.n_to(); ],
  has	female;
 
-Atrezzo	-> Armario "armario"
+Atrezzo	-> ArmarioCocina "armario"
  with	name_m	'armario' 'mobiliario' 'mueble',
 		name_mp	'muebles',
 		gender	G_MASCULINO,
@@ -460,8 +462,30 @@ Indoors	Dormitorio "Dormitorio principal"
 		name_m	'cuarto' 'dormitorio',
 		gender	G_MASCULINO,
 		adjectives 'principal',
-		description [; return O__M(self, 1); ],
-		w_to	Pasillo,
+		description [
+			i;
+			if (Cama.state == 0) i++;
+			if (Camisa hasnt moved) i++;
+			O__M(self, 1);
+			if (Cama.state == 0) {
+				O__M(self, 2);
+				if (i == 1) O__M(self, 6);
+				if (i == 2) O__M(self, 5);
+			}
+			if (Camisa hasnt moved) {
+				O__M(self, 3);
+				if (i > 0) O__M(self, 6);
+			}
+			return O__M(self, 4);
+		],
+		w_to [;
+			if (self has general) {
+				give self ~general;
+				O__M(self, 7);
+				new_line;
+			}
+			return Pasillo;
+		],
 		out_to	[; return self.w_to(); ],
  has	male;
 
@@ -547,90 +571,100 @@ Indoors	Dormitorio "Dormitorio principal"
 !! 		],
 !!  has	female;
 
-!! Atrezzo	-> Cortinas "cortinas"
-!!  with	name_f	'colgadura' 'cortina' 'persiana' 'ventana',
-!! 		name_fp	'colgaduras' 'cortinas' 'persianas',
-!! 		name_m	'cortinaje' 'ventanal' 'visillo',
-!! 		name_mp	'cortinajes' 'visillos',
-!! 		gender	G_FEMENINO + G_PLURAL,
-!! 		adjectives
-!! 			'abierta' 'abiertas' 'abierto' 'abiertos' 'cerrada' 'cerradas'
-!! 			'cerrado' 'cerrados' 'tela',
-!! 		description [;
-!! 			if (self has open) return O__M(self, 2);
-!! 			else return O__M(self, 1);
-!! 		],
-!! 		after [;
-!! 			Close:
-!! 				O__M(self, 3);
-!! 				<<Look>>;
-!! 			Open:
-!! 				O__M(self, 4);
-!! 				<<Look>>;
-!! 		],
-!!  has	female openable pluralname;
-
 Furniture	-> Cama "cama"
  class	SmartEnterable
  with	name_f	'cama' 'piltra',
 		name_m	'camastro' 'catre' 'colchon' 'jergon' 'lecho' 'mobiliario'
-				'mueble' 'somier',
+			'moblaje' 'mueble' 'somier',
 		name_mp	'muebles',
 		gender	G_FEMENINO,
-		!! 'clarification' define el mensaje personalizado que se imprime junto
-		!! al título de la localidad cuando el PJ se encuentra en un objeto
-		clarification "sentada en la cama",
-		description [;
-			switch (self.wrinkled_sheets) {
-				0:	return O__M(self, 1);
-				1:	return O__M(self, 3);
-				2:	return O__M(self, 2);
+		adjectives 'desecha' 'desecho' 'hacer' 'sin',
+		describe [
+			obj i;
+			if (child(self) == nothing)
+				return true;
+			objectloop(obj in self && obj ~= player
+				&& obj hasnt scenery or concealed) i++;
+			if (i == 0)
+				return false;
+			new_line;
+			return O__M(self, 5);
+		],
+		description [
+			obj i;
+			objectloop(obj in self && obj ~= player
+				&& obj hasnt scenery or concealed) i++;
+			switch (self.state) {
+				0:	O__M(self, 1);
+				1:	O__M(self, 2);
+				2:	O__M(self, 3);
 			}
+			if (i > 0) O__M(self, 4);
+			new_line;
+			return true;
 		],
 		react_before [;
 			if (self.SmartEnterable::react_before()) return true;
+			Jump, Swing:
+				if (noun == nothing && IndirectlyContains(self, player))
+					<<JumpOver self>>;
+			Sit:
+				if (noun == nothing)
+					<<Sit self>>;
 			Sleep:
-				if (noun == nothing) <<Sleep self>>;
-			StandUp:
-				if (noun == nothing && player in self) <<Exit self>>;
-			Swing:
-				if (noun == nothing && player in self) <<JumpOver self>>;
+				if (noun == nothing)
+					<<Sleep self>>;
 		],
 		before [;
 			Climb:
 				<<Enter self>>;
-			Enter:
-				if (player in self) return O__M(self, 8);
-				return false;
-			!! Iron:
-			!! 	if (self.wrinkled_sheets == 2) return O__M(self, 4);
-			!! 	else {
-			!! 		self.wrinkled_sheets = 2;
-			!! 		return O__M(self, 5);
-			!! 	}
-			Jump, JumpOver:
-				return O__M(self, 6);
-			LookUnder:
-				return O__M(self, 7);
-			Sit:
-				<<Enter self>>;
-			Sleep:
-				return O__M(self, 11);
-			Smell:
-				return O__M(self, 12);
-			StandUp:
-				if (player in self) <<Exit self>>;
-		],
-		after [;
-			Enter:
-				if (self.wrinkled_sheets == 2) self.wrinkled_sheets = 1;
-				return O__M(self, 9);
-			Exit:
+			Iron:
+				if (self.state == 1) return O__M(self, 9);
+				else {
+					self.state = 1;
+					return O__M(self, 8);
+				}
+			JumpOver:
 				return O__M(self, 10);
+			LookUnder:
+				return O__M(self, 11);
+			Sit:
+				if (~~IndirectlyContains(self, player))
+					<<Enter self>>;
+			Sleep:
+				return O__M(self, 12);
+			Smell:
+				return O__M(self, 13);
+			StandUp:
+				if (IndirectlyContains(self, player))
+					<<Exit self>>;
+			Swing:
+				<<JumpOver self>>;
 		],
- private
-		wrinkled_sheets 0, ! 0 - deshecho; 1 - arrugadas; 2 - estiradas
- has	concealed enterable female supporter transparent;
+		after [
+			obj i;
+			Enter:
+				if (self.state == 1) self.state = 2;
+				return O__M(self, 6);
+			Exit:
+				return O__M(self, 7);
+			!! Tras coger o colocar objetos en la cama se comprueba si encima
+			!! suyo queda aún alguno no oculto (sin el atributo 'scenery' o
+			!! 'concealed'). Si no los hay, se oculta la cama y sólo se
+			!! referencia desde la descripción de la localidad. Si los hay, se
+			!! desoculta (elimina el atributo 'concealed') para que la librería
+			!! imprima el mensaje de 'describe':
+			LetGo, Receive:
+				objectloop(obj in self && obj ~= player
+					&& obj hasnt scenery or concealed) i++;
+				if (i == 0) give self concealed;
+				else give self ~concealed;
+		],
+		reset [;
+			self.state = 0;
+		],
+		state 0, !! 0:desecha; 1:hecha; 2:hecha, pero arrugada
+ has	concealed female supporter;
 
 Atrezzo	-> -> Sabanas "sábanas"
  with	name_f	'almohada' 'cubierta' 'manta' 'sabana',
@@ -665,6 +699,17 @@ Furniture	-> MesitaNoche "mesita de noche"
 			new_line;
 			return true;
 		],
+		after [;
+			Open:
+				if (self.opened == false) {
+					give Dormitorio general;
+					self.opened = true;
+					return O__M(self, 5);
+				}
+				return O__M(self, 4);
+		],
+ private
+		opened false,
  has	concealed container female openable ~open;
 
 Dinosaur	-> -> Ankylosaurus "ankylosaurus"
@@ -694,8 +739,9 @@ Item	-> -> FrascosTinte "frascos de tinte"
 		description [; return O__M(self, 1); ],
  has	male pluralname;
 
-Furniture	-> Espejo "espejo"
- with	name_m	'cristal' 'espejo' 'reflejo',
+Item	-> Espejo "espejo"
+ with	name_f	'cara',
+		name_m	'cristal' 'espejo' 'reflejo' 'rostro',
 		gender	G_MASCULINO,
 		description [;
 			if (self hasnt described) O__M(self, 1);
@@ -707,7 +753,38 @@ Furniture	-> Espejo "espejo"
 				if (noun == player)
 					<<Examine self>>;
 		],
- has	concealed male;
+		before [;
+			Consult:
+				<<Examine self>>;
+			Kiss:
+				return O__M(self, 4);
+		],
+ has	concealed male static;
+
+Item	-> Camisa "camisa"
+ with	name_f	'camisa',
+		gender G_FEMENINO,
+		description [; return O__M(self, 1); ],
+		after [;
+			Take:
+				give self moved;
+				move self to ArmarioDormitorio;
+				return O__M(self, 2);
+		],
+		reset [;
+			move self to Dormitorio;
+		],
+ has	concealed female;
+
+Furniture	-> ArmarioDormitorio "armario"
+ with	name_m	'armario',
+		gender	G_MASCULINO,
+		description [; return O__M(self, 1); ],
+		before [;
+			Open:
+				return O__M(self, 2);
+		],
+ has	concealed container male ~open openable;
 
 
 !!==============================================================================
@@ -1279,11 +1356,14 @@ Item	-> Perchero "perchero alto"
 
 Item	-> -> Abrigo "abrigo"
  class	Clothes,
- with	name_m	'abrigo',
+ with	name_f	'pelliza',
+		name_m	'abrigo' 'gaban' 'sobretodo',
 		gender	G_MASCULINO,
 		description [; return O__M(self, 1); ],
 		before [;
 			if (self.Clothes::before()) return true;
+			Iron:
+				return O__M(self, 2);
 		],
 		layers 2,
  has	clothing male;

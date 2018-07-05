@@ -644,12 +644,12 @@ Global _current_location = 0;
 	PressAnyKey();
 	EraseWindow();
 	new_line;
-	!! O__M(Silvia, 2);
-	!! PressAnyKey();
-	!! EraseWindow();
-	!! new_line;
-	!! HorizontalRule();
-	!! new_line;
+	O__M(Silvia, 2);
+	PressAnyKey();
+	EraseWindow();
+	new_line;
+	HorizontalRule();
+	new_line;
 
 	!! Establece el PJ:
 	ChangePlayer(Silvia);
@@ -1617,6 +1617,41 @@ Verb 'no.verb'
 ];
 
 !!------------------------------------------------------------------------------
+!! ##Iron
+!!------------------------------------------------------------------------------
+
+Verb 'estira' 'plancha'
+    * noun							-> Iron
+	* '-me'/'-te'/'-le' noun		-> Iron
+;
+
+Extend 'haz' first
+	* noun							-> Iron
+;
+
+VerboIrregular "hacer" with imperativo 'haz';
+
+[ IronSub;
+	switch (DM.get_grammatical_inflection()) {
+		FIRST_PERSON_PAST,
+		SECOND_PERSON_PAST,
+		THIRD_PERSON_PAST:
+			"", (The) noun, " ya está", (n) noun, " bien como está",
+			(n) noun, ".";
+		FIRST_PERSON_PRESENT,
+		SECOND_PERSON_PRESENT,
+		THIRD_PERSON_PRESENT:
+			"", (The) noun, " ya estaba", (n) noun, " bien como estaba",
+			(n) noun, ".";
+		FIRST_PERSON_FUTURE,
+		SECOND_PERSON_FUTURE,
+		THIRD_PERSON_FUTURE:
+			"", (The) noun, " ya estará", (n) noun, " bien como estará",
+			(n) noun, ".";
+	}
+];
+
+!!------------------------------------------------------------------------------
 !! ##LMode2
 !!------------------------------------------------------------------------------
 
@@ -1635,6 +1670,10 @@ Extend only 'normal' replace
 	while (NextWordStopped() ~= -1);
 	return GPR_PREPOSITION;
 ];
+
+Extend	'nx' replace
+	* Anything						-> NoSuchVerb
+;
 
 Extend	'perdona' replace
 	* Anything						-> NoSuchVerb
@@ -1799,6 +1838,260 @@ Verb 'teleport.verb'
 
 	PlayerTo(noun, 2);
 ];
+
+!!------------------------------------------------------------------------------
+!! ##TestCustom
+!!------------------------------------------------------------------------------
+
+#Ifdef DEBUG;
+Verb meta	'testx'
+	* noun							-> TestCustom
+;
+
+[ TestCustomSub;
+	print "^##Dance ", (name) noun, ":^";
+	<Dance noun>;
+	!! ##GoDown
+	!! ##GoUp
+	print "^##Iron ", (name) noun, ":^";
+	<Iron noun>;
+	print "^##KnockOn ", (name) noun, ":^";
+	<KnockOn noun>;
+	print "^##Masturbate ", (name) noun, ":^";
+	<Masturbate noun>;
+	if (player notin noun) {
+		print "^##Sit ", (name) noun, ":^";
+		<Sit noun>;
+		print "^##StandUp ", (name) noun, ":^";
+		<StandUp noun>;
+	} else {
+		print "^##StandUp ", (name) noun, ":^";
+		<StandUp noun>;
+		print "^##Sit ", (name) noun, ":^";
+		<Sit noun>;
+	}
+	print "^##SleepWith ", (name) noun, ":^";
+	<SleepWith noun>;
+	print "^##TalkTo ", (name) noun, ":^";
+	<TalkTo noun>;
+	print "^##Untie ", (name) noun, ":^";
+	<Untie noun>;
+	print "^##Use ", (name) noun, ":^";
+	<Use noun>;
+	print "^##Write ", (name) noun, ":^";
+	<Write noun>;
+	print "^##Xyzzy ", (name) noun, ":^";
+	<Xyzzy noun>;
+];
+#Endif; ! DEBUG;
+
+!!------------------------------------------------------------------------------
+!! ##TestGroup2
+!!------------------------------------------------------------------------------
+
+#Ifdef DEBUG;
+Verb meta	'test2'
+	* noun							-> TestGroup2
+;
+
+[ TestGroup2Sub;
+	if (noun has open) {
+		print "^##Close ", (name) noun, ":^";
+		<Close noun>;
+		print "^##Open ", (name) noun, ":^";
+		<Open noun>;
+	} else {
+		print "^##Open ", (name) noun, ":^";
+		<Open noun>;
+		print "^##Close ", (name) noun, ":^";
+		<Close noun>;
+	}
+	if (noun has worn) {
+		print "^##Disrobe ", (name) noun, ":^";
+		<Disrobe noun>;
+		print "^##Wear ", (name) noun, ":^";
+		<Wear noun>;
+	} else {
+		print "^##Wear ", (name) noun, ":^";
+		<Wear noun>;
+		print "^##Disrobe ", (name) noun, ":^";
+		<Disrobe noun>;
+	}
+	if (IndirectlyContains(player, noun)) {
+		print "^##Drop ", (name) noun, ":^";
+		<Drop noun>;
+		print "^##Take ", (name) noun, ":^";
+		<Take noun>;
+	} else {
+		print "^##Take ", (name) noun, ":^";
+		<Take noun>;
+		print "^##Drop ", (name) noun, ":^";
+		<Drop noun>;
+	}
+	print "^##Eat ", (name) noun, ":^";
+	<Eat noun>;
+	print "^##Empty ", (name) noun, ":^";
+	<Empty noun>;
+	!! ##EmptyT
+	if (noun hasnt door) {
+		print "^##Enter ", (name) noun, ":^";
+		<Enter noun>;
+		print "^##Exit ", (name) noun, ":^";
+		<Exit noun>;
+		print "^##GoIn ", (name) noun, ":^";
+		<GoIn noun>;
+		print "^##GetOff ", (name) noun, ":^";
+		<GetOff noun>;
+	}
+	print "^##Examine ", (name) noun, ":^";
+	<Examine noun>;
+	if (noun has locked) {
+		print "^##Unlock ", (name) noun, ":^";
+		<Unlock noun>;
+		print "^##Lock ", (name) noun, ":^";
+		<Lock noun>;
+	} else {
+		print "^##Lock ", (name) noun, ":^";
+		<Lock noun>;
+		print "^##Unlock ", (name) noun, ":^";
+		<Unlock noun>;
+	}
+	!! ##Give
+	!! ##Go
+	!! ##Insert
+	!! ##Inv
+	!! ##InvTall
+	!! ##InvWide
+	!! ##Look
+	!! ##Order
+	!! ##PutOn
+	print "^##Remove ", (name) noun, ":^";
+	<Remove noun>;
+	print "^##Search ", (name) noun, ":^";
+	<Search noun>;
+	print "^##Show ", (name) noun, ":^";
+	<Show noun>;
+	if (noun has on) {
+		print "^##SwitchOff ", (name) noun, ":^";
+		<SwitchOff noun>;
+		print "^##SwitchOn ", (name) noun, ":^";
+		<SwitchOn noun>;
+	} else {
+		print "^##SwitchOn ", (name) noun, ":^";
+		<SwitchOn noun>;
+		print "^##SwitchOff ", (name) noun, ":^";
+		<SwitchOff noun>;
+	}
+	!! ##Transfer
+	!! ##VagueGo
+];
+#Endif; ! DEBUG;
+
+!!------------------------------------------------------------------------------
+!! ##TestGroup3
+!!------------------------------------------------------------------------------
+
+#Ifdef DEBUG;
+Verb meta	'test3'
+	* noun							-> TestGroup3
+;
+
+[ TestGroup3Sub;
+	!! ##Answer
+	!! ##Ask
+	!! ##AskFor
+	print "^##Attack ", (name) noun, ":^";
+	<Attack noun>;
+	print "^##Blow ", (name) noun, ":^";
+	<Blow noun>;
+	print "^##Burn ", (name) noun, ":^";
+	<Burn noun>;
+	print "^##Buy ", (name) noun, ":^";
+	<Buy noun>;
+	print "^##Climb ", (name) noun, ":^";
+	<Climb noun>;
+	print "^##Consult ", (name) noun, ":^";
+	<Consult noun>;
+	print "^##Cut ", (name) noun, ":^";
+	<Cut noun>;
+	print "^##Dig ", (name) noun, ":^";
+	<Dig noun>;
+	print "^##Drink ", (name) noun, ":^";
+	<Drink noun>;
+	print "^##Fill ", (name) noun, ":^";
+	<Fill noun>;
+	!! ##Jump
+	print "^##JumpOver ", (name) noun, ":^";
+	<JumpOver noun>;
+	print "^##Kiss ", (name) noun, ":^";
+	<Kiss noun>;
+	!! ##LetGo
+	print "^##Listen ", (name) noun, ":^";
+	<Listen noun>;
+	print "^##LookUnder ", (name) noun, ":^";
+	<LookUnder noun>;
+	print "^##Mild ", (name) noun, ":^";
+	<Mild noun>;
+	!! ##No
+	print "^##Pray ", (name) noun, ":^";
+	<Pray noun>;
+	print "^##Pull ", (name) noun, ":^";
+	<Pull noun>;
+	print "^##Push ", (name) noun, ":^";
+	<Push noun>;
+	print "^##PushDir ", (name) noun, ":^";
+	<PushDir noun>;
+	!! ##Receive
+	print "^##Rub ", (name) noun, ":^";
+	<Rub noun>;
+	print "^##Set ", (name) noun, ":^";
+	<Set noun>;
+	print "^##SetTo ", (name) noun, ":^";
+	<SetTo noun>;
+	print "^##Sing ", (name) noun, ":^";
+	<Sing noun>;
+	print "^##Sleep ", (name) noun, ":^";
+	<Sleep noun>;
+	print "^##Smell ", (name) noun, ":^";
+	<Smell noun>;
+	print "^##Sorry ", (name) noun, ":^";
+	<Sorry noun>;
+	print "^##Squeeze ", (name) noun, ":^";
+	<Squeeze noun>;
+	print "^##Strong ", (name) noun, ":^";
+	<Strong noun>;
+	print "^##Swim ", (name) noun, ":^";
+	<Swim noun>;
+	print "^##Swing ", (name) noun, ":^";
+	<Swing noun>;
+	print "^##Taste ", (name) noun, ":^";
+	<Taste noun>;
+	print "^##Tell ", (name) noun, ":^";
+	<Tell noun>;
+	print "^##Think ", (name) noun, ":^";
+	<Think noun>;
+	print "^##ThrowAt ", (name) noun, ":^";
+	<ThrowAt noun>;
+	print "^##Tie ", (name) noun, ":^";
+	<Tie noun>;
+	print "^##Touch ", (name) noun, ":^";
+	<Touch noun>;
+	print "^##Turn ", (name) noun, ":^";
+	<Turn noun>;
+	print "^##Wait ", (name) noun, ":^";
+	<Wait noun>;
+	print "^##Wake ", (name) noun, ":^";
+	<Wake noun>;
+	print "^##WakeOther ", (name) noun, ":^";
+	<WakeOther noun>;
+	print "^##Wave ", (name) noun, ":^";
+	<Wave noun>;
+	print "^##WaveHands ", (name) noun, ":^";
+	<WaveHands noun>;
+	print "^##Yes ", (name) noun, ":^";
+	<Yes noun>;
+];
+#Endif; ! DEBUG;
 
 
 

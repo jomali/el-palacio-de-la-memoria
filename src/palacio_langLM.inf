@@ -346,6 +346,9 @@ Object	LibraryMessages
 				new_line;
 		}
 
+	No:
+		print_ret (parser) "Sólo se trataba de una pregunta retórica.";
+
 	NotifyOff:
 		print_ret (parser) "Notificación de puntuación desactivada.";
 
@@ -517,6 +520,9 @@ Object	LibraryMessages
 				print_ret (parser) "Error al intentar iniciar la
 				transcripción.";
 		}
+
+	Sorry:
+		print_ret (parser) "No es necesario que te disculpes.";
 
 	Strong:
 		!! Respuesta si se usa como primera palabra algún taco.
