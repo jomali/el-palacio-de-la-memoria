@@ -419,8 +419,7 @@ Verb 'muestra' 'ensena'
     * held 'a//' creature        -> Show;
 VerboIrregular "mostrar" with imperativo 'muestra';
 [ ADirection; if (noun in compass) rtrue; rfalse; ];
-!! XXX - Se elimina el verbo vuelve/volver como sinónimo de la acción:
-Verb 'anda' 'camina' 'corre' 'ir' 've' 'vete' !'vuelve'
+Verb 'anda' 'camina' 'corre' 'ir' 've' 'vete' 'vuelve'
     *                                   -> VagueGo
     * noun=ADirection                   -> Go
     * 'a//' noun=ADirection           -> Go
@@ -430,8 +429,7 @@ Verb 'anda' 'camina' 'corre' 'ir' 've' 'vete' !'vuelve'
     * 'hacia' noun                      -> Enter
     * 'por' noun                        -> Enter;
 VerboIrregular "ir" with imperativo 've' 'vete' 'ir';
-!! XXX - Se elimina el verbo vuelve/volver como sinónimo de la acción:
-!VerboIrregular "volver" with imperativo 'vuelve';
+VerboIrregular "volver" with imperativo 'vuelve';
 
 Verb 'pasa'
     * 'por' noun            -> Enter;

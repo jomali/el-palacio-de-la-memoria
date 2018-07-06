@@ -102,6 +102,20 @@ return true;
 !! }
 
 !!------------------------------------------------------------------------------
+Ankylosaurus: switch (n) {
+1:	! ##Examine
+print "Un";
+return true;
+2:	! ##Examine
+print "Otro";
+return true;
+3:	! ##Examine
+print " pequeño dinosaurio de juguete; se trata de uno de esos hervívoros que tienen el cuerpo cubierto por una armadura de placas óseas y una cola terminada en forma de mazo.";
+new_line;
+return true;
+}
+
+!!------------------------------------------------------------------------------
 ArmarioCocina: switch (n) {
 1:	! ##Examine
 print "De madera, con unas tallas de motivos florales horteras.";
@@ -175,6 +189,15 @@ new_line;
 return true;
 }
 
+
+!!------------------------------------------------------------------------------
+BotesTinte: switch (n) {
+1:	! ##Examine
+print "Tinte para hombre en forma de gel. Están medio vacíos.";
+new_line;
+return true;
+}
+
 !!------------------------------------------------------------------------------
 BotonArranque: switch (n) {
 1:	! ##Examine
@@ -220,17 +243,25 @@ return true;
 !! }
 
 !!------------------------------------------------------------------------------
-CajaPreservativos: switch (n) {
+CajaPastillas: switch (n) {
 1:	! ##Examine
-!! TODO
-return false;
+print "Diazepam. Sedantes. No tenía ni idea de que su padre estuviese tomando nada.";
+new_line;
+return true;
 }
 
 !!------------------------------------------------------------------------------
-CajaTabaco: switch (n) {
-1:	! ##Examine
-!! TODO
-return false;
+CajonMesitaNoche: switch (n) {
+1:	! after:##Open
+print "Abre [el CajonMesitaNoche], descubriendo [lista de objetos en CajonMesitaNoche].";
+new_line;
+return true;
+2:	! after:##Open
+print "Abre [el CajonMesitaNoche], descubriendo [lista de objetos en CajonMesitaNoche].
+^^
+De algún modo resulta conmovedor estar revolviendo entre aquellas cosas de su padre, pero al mismo tiempo es horrible. Tanto que su estómago se revela de pronto contra ella y a punto está de hacerla expulsar el sándwich de la comida. ¿Qué derecho tiene a invadir su intimidad de aquella forma? ¿A hurgar por entre los rincones secretos de su mente? Tiene la sensación de que su padre irrumpirá en el dormitorio en cualquier momento, la mirará con incredulidad y la preguntará qué demonios está haciendo. Y ella no tendrá ninguna respuesta convincente.";
+new_line;
+return true;
 }
 
 !!------------------------------------------------------------------------------
@@ -521,7 +552,7 @@ return true;
 print " [una Camisa] tirada en el suelo";
 return true;
 4:	! ##Examine
-print " un ligero hedor a sudor flotando en la habitación. Parco en muebles y decoración, las paredes están desnudas excepto por [un Espejo] redondo. Hay [una MesitaNoche] junto a [la Cama]. [Un ArmarioDormitorio]. Y la puerta, [al w_obj], de vuelta al pasillo. Eso es todo.";
+print " un ligero hedor a sudor flotando en la habitación. Parco en muebles y decoración, las paredes están desnudas excepto por [un Espejo] redondo. Hay [una MesitaNoche] junto a [la Cama]. [Un ArmarioDormitorio]. Y la [PuertaDormitorio](puerta) de vuelta [al PasilloAdj]. Eso es todo.";
 new_line;
 return true;
 5:	! ##Examine
@@ -530,16 +561,10 @@ return true;
 6:	! ##Examine
 print " y";
 return true;
-7:
-print "No puede evitar echar otro vistazo general a la habitación antes de salir. Ni tampoco un estremecimiento. Es terrible tener que enfrentarse a las pertenencias de un hombre muerto. Aquellos objetos sólo tienen utilidad mientras hay una vida para la que son útiles. Cuando esa vida termina, los objetos parecen no cambiar, pero en realidad lo hacen a un nivel esencial y profundo. Están y no están allí. Son como los restos de una civilización antigua, inútiles ya, pero testimonio aún de una conciencia. Registros corpóreos de la soledad con la que una persona ha tomado decisiones sobre su propia vida: usar una camisa u otra, teñirse el pelo, vivir o morir.
-^^
-Y sólo ahora, por primera vez en todo el día, está cerca de las lágrimas.";
+7:	! cant_go
+print "No puede ir por ahí. El dormitorio comunica únicamente al [w_obj], con el pasillo.";
 new_line;
 return true;
-
-!! print "Las sábanas están hechas un rebujo sobre la cama. Una camisa tirada en el suelo. Algo que se rompe. Por primera vez desde la llamada telefónica de ayer aparecen las lágrimas y en un gesto involuntario se lleva la mano a la cara, avergonzada.
-!! ^^
-!! Hay un pequeño baño al norte, y una puerta a su espalda lleva de vuelta al pasillo.";
 }
 
 !!------------------------------------------------------------------------------
@@ -610,20 +635,7 @@ return true;
 }
 
 !!------------------------------------------------------------------------------
-Fotografias: switch (n) {
-1:	! ##Examine
-!! TODO
-return false;
-}
-
-!!------------------------------------------------------------------------------
 FrascoSales: switch (n) {
-1:	! ##Examine
-!! TODO
-return false;
-}
-!!------------------------------------------------------------------------------
-FrascosTinte: switch (n) {
 1:	! ##Examine
 !! TODO
 return false;
@@ -642,6 +654,10 @@ return true;
 HabitacionMultiusos: switch (n) {
 1:	! ##Examine
 print "Su antiguo dormitorio. No tiene exactamente el mismo aspecto que recuerda de cuando aún vivía allí, pero aún hay cosas que es capaz de reconocer; su cama, colocada contra una de las paredes, y el escritorio, en la pared opuesta, justo al lado del armario. Incluso algunas cajas de zapatos amontonadas en una esquina, dentro de las que guardaba sus juguetes. La puerta a su espalda lleva de regreso al pasillo.";
+new_line;
+return true;
+2:	! cant_go
+print "No puede ir por ahí. La habitación comunica únicamente al [s_obj], con el pasillo.";
 new_line;
 return true;
 }
@@ -1392,7 +1408,7 @@ return true;
 !!------------------------------------------------------------------------------
 MesitaNoche: switch (n) {
 1:	! ##Examine
-print "La mesita tiene un único cajón que en estos momentos está ";
+print "La mesita tiene un único [CajonMesitaNoche](cajón) que en estos momentos está ";
 if (x1) print "abierto";
 else print "cerrado";
 print ".";
@@ -1401,17 +1417,7 @@ return true;
 print " Dentro no hay nada.";
 return true;
 3:	! ##Examine
-print " Dentro hay [lista de objetos en MesitaNoche].";
-return true;
-4:	! After::##Open
-print "Abre el cajón de la [MesitaNoche](mesita), descubriendo [lista de objetos en MesitaNoche].";
-new_line;
-return true;
-5:	! After::##Open (primera vez)
-print "Abre el cajón de la [MesitaNoche](mesita), descubriendo [lista de objetos en MesitaNoche].
-^^
-Revolver entre las cosas de su padre resulta conmovedor de algún modo, pero al mismo tiempo es horrible. Tanto que su estómago se revela de pronto contra ella y a punto está de hacerla expulsar el sándwich de la comida. ¿Qué derecho tiene a invadir su intimidad de aquella forma? ¿A hurguar por entre los rincones secretos de la mente de otra persona? Tiene la sensación de que su padre irrumpirá en el dormitorio en cualquier momento, la mirará con incredulidad y la preguntará qué demonios está haciendo. Y no tendrá ninguna respuesta convincente.";
-new_line;
+print " Dentro hay [lista de objetos en CajonMesitaNoche].";
 return true;
 }
 
@@ -1457,19 +1463,9 @@ return true;
 !!------------------------------------------------------------------------------
 Pasillo: switch (n) {
 1:	! ##Examine
-print "El pasillo comunica su antiguo dormitorio [al n_obj], el dormitorio principal [al e_obj], y las [Escalera](escaleras) de madera que descienden en curva hasta la planta baja, [al s_obj].";
+print "El corto corredor se encarga de comunicar su [AntiguoDormitorioAdj] y [el DormitorioPrincipalAdj] con las [Escalera](escaleras) de madera por las que se puede descender hasta [la PlantaBajaAdj].";
 !! TODO
 !! "Adornado con algunas viejas fotografías en las paredes, el pasillo comunica su antiguo dormitorio [al n_obj], el dormitorio principal [al e_obj], y las escaleras de madera que descienden en curva hasta la planta baja, [al s_obj].";
-new_line;
-return true;
-2:	! ##Go (Dormitorio)
-print "Es la puerta del antiguo dormitorio de sus padres. Se corrige de inmediato: el dormitorio de su... la puerta a un dormitorio que no es de nadie ya.
-^^
-Duda, sin llegar a entrar.";
-new_line;
-return true;
-3:	! ##Go (Dormitorio)
-print "Inspira hondo antes de atravesar el umbral.";
 new_line;
 return true;
 }
@@ -1552,6 +1548,90 @@ return true;
 }
 
 !!------------------------------------------------------------------------------
+Preservativos: switch (n) {
+1:	! ##Examine
+print "No tiene intención de leerlo, ni curiosidad alguna, pero la tipografía es demasiado llamativa como para poder pasarlo por alto: ", (header) "XXL", ".";
+new_line;
+return true;
+2:	! ##Examine
+print " ---Bien por mamá.";
+new_line;
+return true;
+3:	! ##Read
+print "Más que para quedar guardada en el interior de un cajón, el diseño de la caja parece estar ideado especificamente para que te pasees con ellos en público y que todo el mundo pueda enterarse bien.";
+new_line;
+return true;
+}
+
+!!------------------------------------------------------------------------------
+PuertaHabitacionMultiusos: switch (n) {
+1:	! ##Examine
+print "Una sencilla [PuertaHabitacionMultiusos](puerta) de madera pintada en blanco. ";
+return true;
+2:
+print "Está abierta.";
+return true;
+3:
+print "Está cerrada.";
+return true;
+4:
+print "Abre la [PuertaHabitacionMultiusos](puerta) primero.";
+new_line;
+return true;
+5:	! ##Close:after
+print "Cierra la [PuertaHabitacionMultiusos](puerta).";
+new_line;
+return true;
+6:	! ##Open:after
+print "Abre la [PuertaHabitacionMultiusos](puerta).";
+new_line;
+return true;
+}
+
+!!------------------------------------------------------------------------------
+PuertaDormitorio: switch (n) {
+1:	! ##Examine
+print "Una sencilla [PuertaDormitorio](puerta) de madera pintada en blanco. ";
+return true;
+2:
+print "Está abierta.";
+return true;
+3:
+print "Está cerrada.";
+return true;
+4:
+print "Abre la [PuertaDormitorio](puerta) primero.";
+new_line;
+return true;
+5:	! ##Close:after
+print "Cierra la [PuertaDormitorio](puerta).";
+new_line;
+return true;
+6:	! ##Open:after
+print "Abre la [PuertaDormitorio](puerta).";
+new_line;
+return true;
+7:
+print "Esa es la [PuertaDormitorio](puerta) del antiguo dormitorio de sus padres. Se corrige de inmediato: el dormitorio de su... la puerta a un dormitorio que ya no es de nadie.";
+new_line;
+return true;
+8:
+print "Duda, sin llegar a entrar.";
+new_line;
+return true;
+9:
+print "Inspira hondo antes de atravesar el umbral.";
+new_line;
+return true;
+10:
+print "No puede evitar echar otro vistazo general a la habitación antes de salir. Ni puede evitar estremecerse. Es terrible tener que enfrentarse a las pertenencias de un hombre muerto. Aquellos objetos sólo tienen utilidad mientras hay una vida para la que son útiles. Cuando esa vida termina, los objetos parecen no cambiar, pero en realidad lo hacen a un nivel esencial y profundo. Están y no están allí. Son como los restos de una civilización antigua, inútiles ya, pero testimonio aún de una conciencia. Registros corpóreos de la soledad con la que un hombre toma decisiones sobre su propia vida: usar una camisa u otra, teñirse el pelo, vivir o morir.
+^^
+Y sólo ahora, por primera vez en todo el día, está cerca de las lágrimas.";
+new_line;
+return true;
+}
+
+!!------------------------------------------------------------------------------
 PuertaDelantera: switch (n) {
 1:	! ##Examine (A - Desde el patio)
 print "La puerta delantera de la casa. Está ";
@@ -1623,7 +1703,7 @@ Recibidor.print_random_colors(4);
 print " que penetran por el filtro del cristal tintado.";
 return true;
 4:	! ##Examine (C - Parte 2/3)
-print "Frente a la [PuertaDelantera](puerta), al [n_obj], un corto pasillo conduce hasta el salón, mientras que las desgastadas [Escalera](escaleras) de madera, al [e_obj], suben hasta el segundo piso. Hay [una Comoda] apoyada contra la pared";
+print "En línea recta desde la [PuertaDelantera](puerta), un arco conduce hasta [la DireccionSalon], mientras que unas desgastadas [Escalera](escaleras) de madera suben hasta el segundo piso. Hay [una Comoda] apoyada contra la pared";
 return true;
 5:	! ##Examine (D - Parte 3/3, si no hay objetos en el perchero)
 print " y [un Perchero] en una esquina";

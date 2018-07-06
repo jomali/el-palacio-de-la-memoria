@@ -697,7 +697,7 @@ Global _current_location = 0;
 !!		normal y que el sistema imprima el verbo de la forma habitual
 !!------------------------------------------------------------------------------
 [ PrintVerb word;
-	if (word == 'no.verb' or 'teleport.verb') {
+	if (word == 'no.verb') {
 		print "hacer algo con";
 		return true;
 	}
@@ -716,10 +716,6 @@ Global _current_location = 0;
 [ UnknownVerb
 	obj;
 	obj = ParsingPreprocessor.get_selected_object();
-	if (obj ~= real_location && obj ofclass Room) {
-		verb_wordnum = 0;
-		return 'teleport.verb';
-	}
 	if (TestScope(obj, player)) {
 		verb_wordnum = 0;
 		return 'no.verb';
@@ -1108,7 +1104,8 @@ Global _test = true; !! FIXME - eliminar
 			result = UseTextStyle(DM.get_highlight_style(1));
 		}
 		!! Objetos hacia los que el PC puede desplazarse:
-		else if ((item ofclass Room or CompassDirection) || (item has door)) {
+		else if ((item ofclass AdjacentRoom or Room or CompassDirection)
+			|| (item has door)) {
 			result = UseTextStyle(DM.get_highlight_style(2));
 		!! Otros objetos:
 		} else {
@@ -1418,17 +1415,17 @@ Global _test = true; !! FIXME - eliminar
       nothing:  print "<illegal object number ", obj, ">"; rtrue;
     }
     if (obj == player) { print (string) YOURSELF__TX; rtrue; }
-    #Ifdef LanguagePrintShortName;
-    if (LanguagePrintShortName(obj)) rtrue;
-    #Endif; ! LanguagePrintShortName
-    if (indef_mode && obj.&short_name_indef ~= 0
-		&& PrintOrRun(obj, short_name_indef, 1) ~= 0)
-		rtrue;
-    if (obj.&short_name ~= 0 && PrintOrRun(obj, short_name, 1) ~= 0)
-		rtrue;
 	#Ifdef USE_HYPERLINKS;
 	Hyperlink(obj);
 	#Ifnot;
+	#Ifdef LanguagePrintShortName;
+	if (LanguagePrintShortName(obj)) rtrue;
+	#Endif; ! LanguagePrintShortName
+	if (indef_mode && obj.&short_name_indef ~= 0
+		&& PrintOrRun(obj, short_name_indef, 1) ~= 0)
+		rtrue;
+	if (obj.&short_name ~= 0 && PrintOrRun(obj, short_name, 1) ~= 0)
+		rtrue;
     print (object) obj;
 	#Endif; ! USE_HYPERLINKS;
 ];
@@ -1478,14 +1475,19 @@ Global _test = true; !! FIXME - eliminar
 !!	IMPORTANTE: Los mensajes de algunas de las acciones que se añaden requieren
 !!	la extensión 'SpanishLM.h'. Acciones añadidas o modificadas:
 !!	<>	##Audio / ##AudioOn / ##AudioOff
+!!	<>	##Call
 !!	<>	##Confguration
 !!	<>	##DefaultAction
+!!	<>	##Enter
+!!	<>	##Iron
 !!	<>	##LMode2
 !!	<>	##NoSuchVerb --- Permite eliminar las acciones:
 !!		-	##Sorry
-!!	<>	##SwitchEngineOn
+!!	<>	##SwitchOnEngine
 !!	<>	##TalkOn / ##TalkTo
-!!	<>	##Teleport
+!!	<>	##TestCustom
+!!	<>	##TestGroup2
+!!	<>	##TestGroup3
 !!------------------------------------------------------------------------------
 
 Include "SpanishG.h";			! Gramática española
@@ -1615,6 +1617,78 @@ Verb 'no.verb'
 	!! new_line;
 	<<Examine noun>>;
 ];
+
+!!------------------------------------------------------------------------------
+!! ##Enter
+!!------------------------------------------------------------------------------
+
+[ AnAdjacentRoom;
+	if (noun ofclass AdjacentRoom) return true;
+	else return false;
+];
+
+Extend only 'anda' 'camina' 'corre' 'ir' 've' 'vete' last
+	* noun=AnAdjacentRoom							-> Enter
+	* 'a//'/'en' noun=AnAdjacentRoom				-> Enter
+	* 'hacia'/'por' noun=AnAdjacentRoom				-> Enter
+	* 'hasta' noun=AnAdjacentRoom					-> Enter
+;
+
+Extend only 'baja' last
+	* noun=AnAdjacentRoom							-> Enter
+	* 'a//'/'en' noun=AnAdjacentRoom				-> Enter
+	* 'hacia'/'por' noun=AnAdjacentRoom				-> Enter
+	* 'hasta' noun=AnAdjacentRoom					-> Enter
+;
+
+Extend only 'bajarse' 'bajarte' 'bajate' 'sal' 'salirse' 'salirte' 'salte' last
+	* noun=AnAdjacentRoom							-> Enter
+	* 'a//'/'en' noun=AnAdjacentRoom				-> Enter
+	* 'hacia'/'por' noun=AnAdjacentRoom				-> Enter
+	* 'hasta' noun=AnAdjacentRoom					-> Enter
+;
+
+Verb 'bajame' = 'bajate';
+Verb 'bajale' = 'bajate';
+
+Extend only 'entra' 'cruza' last
+	* noun=AnAdjacentRoom							-> Enter
+	* 'a//'/'en' noun=AnAdjacentRoom				-> Enter
+	* 'hacia'/'por' noun=AnAdjacentRoom				-> Enter
+	* 'hasta' noun=AnAdjacentRoom					-> Enter
+;
+
+Extend only 'meteme' 'meterme' 'meterse' 'meterte' 'metete' last
+	* noun=AnAdjacentRoom							-> Enter
+	* 'a//'/'en' noun=AnAdjacentRoom				-> Enter
+	* 'hacia'/'por' noun=AnAdjacentRoom				-> Enter
+	* 'hasta' noun=AnAdjacentRoom					-> Enter
+;
+
+Extend only 'pasa' last
+	* noun=AnAdjacentRoom							-> Enter
+	* 'a//'/'en' noun=AnAdjacentRoom				-> Enter
+	* 'hacia'/'por' noun=AnAdjacentRoom				-> Enter
+	* 'hasta' noun=AnAdjacentRoom					-> Enter
+;
+
+Extend only 'sube' last
+	* noun=AnAdjacentRoom							-> Enter
+	* 'a//'/'en' noun=AnAdjacentRoom				-> Enter
+	* 'hacia'/'por' noun=AnAdjacentRoom				-> Enter
+	* 'hasta' noun=AnAdjacentRoom					-> Enter
+;
+Extend only 'subete' 'subirse' 'subirte' last
+	* noun=AnAdjacentRoom							-> Enter
+	* 'a//'/'en' noun=AnAdjacentRoom				-> Enter
+	* 'hacia'/'por' noun=AnAdjacentRoom				-> Enter
+	* 'hasta' noun=AnAdjacentRoom					-> Enter
+;
+
+Verb 'subele' = 'sube';
+Verb 'subeme' = 'sube';
+Verb 'subirle' = 'sube';
+Verb 'subirme' = 'sube';
 
 !!------------------------------------------------------------------------------
 !! ##Iron
@@ -1784,59 +1858,6 @@ Verb	'conversa' 'platica'
 			print (The) noun, " no parecerá", (n) noun;
 	}
 	" interesad", (o) noun, " en hablar ", (contigo) player, ".";
-];
-
-!!------------------------------------------------------------------------------
-!! ##Teleport
-!!------------------------------------------------------------------------------
-
-[ TeleportScope
-	obj adjacent_location;
-	switch (scope_stage) {
-		1:	return false;
-		2:	objectloop (obj in Compass) {
-				keep_silent = true;
-				adjacent_location = real_location.(obj.door_dir)();
-				keep_silent = false;
-				if (adjacent_location ~= 0) {
-					PlaceInScope(adjacent_location);
-				}
-			}
-		3:	print_ret (parser) "No puedes llegar hasta ahí desde donde te
-			encuentras en estos momentos.";
-	}
-];
-
-Extend 've' last
-	* scope=TeleportScope			-> Teleport
-	* 'a//' scope=TeleportScope		-> Teleport
-	* 'hacia' scope=TeleportScope	-> Teleport
-;
-
-Extend 'entra' last
-	* scope=TeleportScope			-> Teleport
-	* 'a//' scope=TeleportScope		-> Teleport
-	* 'en' scope=TeleportScope		-> Teleport
-;
-
-Verb 'teleport.verb'
-	* scope=TeleportScope			-> Teleport
-;
-
-[ TeleportSub
-	obj adjacent_location;
-	objectloop (obj in Compass) {
-		keep_silent = true;
-		adjacent_location = real_location.(obj.door_dir)();
-		keep_silent = false;
-		if (adjacent_location ~= 0) {
-			if (noun == adjacent_location) {
-				<<Go obj>>;
-			}
-		}
-	}
-
-	PlayerTo(noun, 2);
 ];
 
 !!------------------------------------------------------------------------------
@@ -2109,7 +2130,7 @@ Verb 'test'
 ];
 
 !! FIXME - eliminar
-Verb 'dinosaurios'
+Verb 'coleccionables'
 	*							-> Dinosaurios
 ;
 

@@ -44,18 +44,19 @@
 !!	1)	Atributos
 !!		-	remarkable
 !!	2)	Clases
-!!		-	Thing
-!!			+	Item
-!!				*	Dinosaur
-!!			+	Furniture
-!!			+	Atrezzo
-!!			+	Receptacle
-!!			+	NPC
+!!		-	AdjacentRoom
+!!		-	Receptacle
 !!		-	Room
 !!			+	Outdoors
 !!			+	Indoors
 !!		-	SmartEnterable
-!!		-	Clothes
+!!		-	Thing
+!!			+	Atrezzo
+!!			+	Item
+!!				*	Clothes
+!!				*	Dinosaur
+!!				*	HeavyItem
+!!			+	NPC
 !!
 !!------------------------------------------------------------------------------
 !!
@@ -88,10 +89,11 @@
 !!==============================================================================
 !!	-	remarkable
 !!------------------------------------------------------------------------------
-!! 	Marca un objeto como destacado. El usuario puede utilizar la acción
-!!	##RemarkableObjects para obtener un listado de objetos destacados que se
-!!	encuentren a su alcance. Los objetos destacados, además, se imprimen con
-!!	un estilo de resaltado propio.
+!! 	Marca un objeto como destacado. Los objetos destacados se imprimen con un
+!!	estilo de resaltado propio.
+!!	TODO - Implementar acción extradiegética ##RemarkableObjects para que el
+!!	usuario pueda obtener un listado de objetos destacados que se encuentren a
+!!	su alcance.
 !!------------------------------------------------------------------------------
 
 Attribute remarkable;
@@ -104,228 +106,54 @@ Attribute remarkable;
 !!------------------------------------------------------------------------------
 
 !!==============================================================================
-!!	-	Thing
+!!	-	AdjacentRoom
 !!------------------------------------------------------------------------------
-!!	Representa un objeto dentro del modelo del mundo, con un tamaño, volumen y
-!!	peso específicos, así como diferentes valores de capacidad asociados a su
-!!	potencial como contenedor para otros objetos. Está ideada como una clase
-!!	abstracta sobre la que definir el resto de subclases más concretas de
-!!	objetos con los que modelar el mundo del relato.
+!!	Representa un objeto localidad dentro del modelo de mundo, hacia la que
+!!	el usuario se puede desplazar.
 !!------------------------------------------------------------------------------
 
-Class	Thing
- with	action_set 0,
-		capacity_size	-1,	! Capacidad total: en cuanto a tamaño
-		capacity_volume	-1,	! Capacidad total: en cuanto a volumen
-		capacity_weight	-1,	! Capacidad total: en cuanto a peso
-		size	0,			! Tamaño
-		volume	0,			! Volumen
-		weight	0,			! Peso
+Class	AdjacentRoom
+ with	short_name [
+			obj;
+			if (self.direction_obj ~= 0 && self.compass_reference) {
+				if (metaclass(self.direction_obj) == Routine) {
+					obj = self.direction_obj();
+				}
+				if (metaclass(self.direction_obj) == Object) {
+					obj = self.direction_obj;
+				}
+				print (object) self, " ", (al) obj;
+				return true;
+			}
+		],
 		description [;
-			switch (_grammatical_inflection) {
-				FIRST_PERSON_PRESENT:
-					if (IsPluralNoun(player)) print "No vemos";
-					else print "No veo";
-				SECOND_PERSON_PRESENT:
-					if (IsPluralNoun(player)) print "No veis";
-					else print "No ves";
-				THIRD_PERSON_PRESENT:
-					if (IsPluralNoun(player)) print "No ven";
-					else print "No ve";
-				FIRST_PERSON_PAST:
-					if (IsPluralNoun(player)) print "No vimos";
-					else print "No vi";
-				SECOND_PERSON_PAST:
-					if (IsPluralNoun(player)) print "No visteis";
-					else print "No viste";
-				THIRD_PERSON_PAST:
-					if (IsPluralNoun(player)) print "No vieron";
-					else print "No vio";
-				FIRST_PERSON_FUTURE:
-					if (IsPluralNoun(player)) print "No veremos";
-					else print "No veré";
-				SECOND_PERSON_FUTURE:
-					if (IsPluralNoun(player)) print "No veréis";
-					else print "No verás";
-				THIRD_PERSON_FUTURE:
-					if (IsPluralNoun(player)) print "No verán";
-					else print "No verá";
-			}
-			" nada especial en ", (the) self, ".";
+			return L__M(##Look, 7, self);
 		],
-		reset [; return false; ],
-;
-
-!!==============================================================================
-!!	+	Item
-!!------------------------------------------------------------------------------
-!!	Representa un objeto simple dentro del modelo de mundo sobre el que
-!!	inicialmente no se aplican restricciones de ningún tipo.
-!!------------------------------------------------------------------------------
-
-Class	Item
- class	Thing
- with	description [;
-			switch (_grammatical_inflection) {
-				FIRST_PERSON_PRESENT,
-				SECOND_PERSON_PRESENT,
-				THIRD_PERSON_PRESENT:
-					print "Tiene", (n) self;
-				FIRST_PERSON_PAST,
-				SECOND_PERSON_PAST,
-				THIRD_PERSON_PAST:
-					print "Tenía", (n) self;
-				FIRST_PERSON_FUTURE,
-				SECOND_PERSON_FUTURE,
-				THIRD_PERSON_FUTURE:
-					print "Tendrá", (n) self;
-			}
-			print " el mismo aspecto que ";
-			if (IsPluralNoun(self)) print "cualesquiera";
-			else print "cualquier";
-			print " otr", (o) self, " ", (name) self, " que ";
-			switch (_grammatical_inflection) {
-				FIRST_PERSON_PRESENT:
-					if (IsPluralNoun(player)) print "hayamos";
-					else print "haya";
-				SECOND_PERSON_PRESENT:
-					if (IsPluralNoun(player)) print "hayáis";
-					else print "hayas";
-				THIRD_PERSON_PRESENT:
-					if (IsPluralNoun(player)) print "hayan";
-					else print "haya";
-				FIRST_PERSON_PAST:
-					if (IsPluralNoun(player)) print "hubiésemos";
-					else print "hubiese";
-				SECOND_PERSON_PAST:
-					if (IsPluralNoun(player)) print "hubieseis";
-					else print "hubieses";
-				THIRD_PERSON_PAST:
-					if (IsPluralNoun(player)) print "hubiesen";
-					else print "hubiese";
-				FIRST_PERSON_FUTURE:
-					if (IsPluralNoun(player)) print "habremos";
-					else print "habré";
-				SECOND_PERSON_FUTURE:
-					if (IsPluralNoun(player)) print "habréis";
-					else print "habrás";
-				THIRD_PERSON_FUTURE:
-					if (IsPluralNoun(player)) print "habrán";
-					else print "habrá";
-			}
-			" visto antes.";
-		],
-;
-
-
-!!==============================================================================
-!!	*	Dinosaur
-!!------------------------------------------------------------------------------
-!!	Representa un objeto coleccionable.
-!!------------------------------------------------------------------------------
-
-Class	Dinosaur
- class	Item
- with	after [;
-			Examine, Take:
-				if (~~self.discovered) {
-					self.discovered = true;
-					PlaySFX(SFX_COLECCIONABLE);
-					new_line;
-					"", (parser) "Nuevo dinosaurio descubierto.";
+		before [
+			previous_style obj;
+			DefaultAction:
+				previous_style = UseTextStyle(TEXT_STYLE_PARSER);
+				print (string) TEXT_STYLE_PARSER_PREFIX;
+				print "ve ", (al_) self, "", (object) self;
+				print (string) TEXT_STYLE_PARSER_SUFIX;
+				UseTextStyle(previous_style);
+				new_line;
+				<<Enter self>>;
+			Enter,
+			Go:
+				if (self.direction_obj ~= 0) {
+					if (metaclass(self.direction_obj) == Routine) {
+						obj = self.direction_obj();
+					}
+					if (metaclass(self.direction_obj) == Object) {
+						obj = self.direction_obj;
+					}
+					<<Go obj>>;
 				}
 		],
-		discovered false,
-;
-
-
-!!==============================================================================
-!!	+	Furniture
-!!------------------------------------------------------------------------------
-!!	Representa un objeto estático dentro del modelo de mundo. Se aplica la
-!!	restricción 'static' definida por la librería Inform.
-!!------------------------------------------------------------------------------
-
-Class	Furniture
- class	Thing,
- with	before [;
-			Pull, Push, PushDir, Take, Turn:
-				switch (_grammatical_inflection) {
-					FIRST_PERSON_PRESENT,
-					SECOND_PERSON_PRESENT,
-					THIRD_PERSON_PRESENT:
-						print (The) self, " ", (es) self;
-					FIRST_PERSON_PAST,
-					SECOND_PERSON_PAST,
-					THIRD_PERSON_PAST:
-						print (The) self, " era", (n) self;
-					FIRST_PERSON_FUTURE,
-					SECOND_PERSON_FUTURE,
-					THIRD_PERSON_FUTURE:
-						print (The) self, " será", (n) self;
-				} " demasiado pesad", (o) self, " para andar moviéndol",
-				(o) self, ".";
-		],
- has	static;
-
-!!==============================================================================
-!!	+	Atrezzo.
-!!------------------------------------------------------------------------------
-!!	Representa un objeto decorado dentro del modelo de mundo. Se aplica la
-!!	restricción 'scenery' definida por la librería Inform.
-!!------------------------------------------------------------------------------
-
-Class	Atrezzo
- class	Thing
- with	before [;
-			Examine, Search,
-			DefaultAction: ! custom actions
-				return false;
-			default:
-				switch (_grammatical_inflection) {
-					FIRST_PERSON_PRESENT:
-						if (IsPluralNoun(player))
-							print "No creemos que necesitemos preocuparnos";
-						else print "No creo que necesite preocuparme";
-					SECOND_PERSON_PRESENT:
-						print "No es necesario que ";
-						if (IsPluralNoun(player)) print "os preocupéis";
-						else print "te preocupes";
-					THIRD_PERSON_PRESENT:
-						print "No es necesario que ";
-						if (IsPluralNoun(player)) print "se preocupen";
-						else print "se preocupe";
-					FIRST_PERSON_PAST:
-						if (IsPluralNoun(player))
-							print "No creíamos que necesitásemos preocuparnos";
-						else print "No creía que necesitase preocuparme";
-					SECOND_PERSON_PAST:
-						print "No era necesario que ";
-						if (IsPluralNoun(player)) print "os preocupaseis";
-						else print "te preocupases";
-					THIRD_PERSON_PAST:
-						print "No era necesario que ";
-						if (IsPluralNoun(player)) print "se preocupasen";
-						else print "se preocupase";
-					FIRST_PERSON_FUTURE:
-						print "Es difícil que";
-						if (IsPluralNoun(player))
-							print "vayamos a necesitar preocuparnos";
-						else print "vaya a necesitar preocuparme";
-					SECOND_PERSON_FUTURE:
-						print "No será necesario que ";
-						if (IsPluralNoun(player)) print "os preocupéis";
-						else print "te preocupes";
-					THIRD_PERSON_FUTURE:
-						print "No será necesario que ";
-						if (IsPluralNoun(player)) print "se preocupen";
-						else print "se preocupe";
-				}
-				print " por ";
-				SpanishNominativePronoun(self);
-				".";
-		],
- has	scenery;
+		compass_reference false,
+		direction_obj 0,
+ has	open scenery;
 
 !!==============================================================================
 !!	+	Receptacle
@@ -336,7 +164,6 @@ Class	Atrezzo
 !!------------------------------------------------------------------------------
 
 Class	Receptacle
- class	Thing
  with	before [;
 			Receive:
 				switch (CheckIfObjectFits(self, noun)) {
@@ -466,36 +293,8 @@ Class	Receptacle
 						}
 						" demasiado pesado para ", (the) self, ".";
 				}
-		];
-
-!!==============================================================================
-!!	+	NPC
-!!------------------------------------------------------------------------------
-!!	Representa un personaje no jugador. Hay algunas extensiones que definen
-!!	también sus propias clases personaje (por ejemplo, 'gtalk.h' de Greg
-!!	Boettcher, Krister Fundin y Mark J. Tilford, para manejar conversaciones
-!!	por medio de menús, define la clase 'Character'). Se pueden utilizar estas
-!!	librerías y reutilizar las clases definidas en ellas dentro de NPC
-!!	convirtiendo esta última en una subclase de aquella definida en la librería
-!!	externa. Por ejemplo:
-!!
-!!		Class NPC
-!!			class Thing
-!!			class Character ! (definida en la librería 'gtalk.h')
-!!			[...]
-!!		;
-!!
-!!------------------------------------------------------------------------------
-
-Class	NPC
- class	Thing,
- with	before [;
-			DefaultAction:
-				if (self has described) {
-					<<TalkTo self>>;
-				}
 		],
- has	animate;
+;
 
 !!==============================================================================
 !!	-	Room
@@ -505,8 +304,9 @@ Class	NPC
 
 Class	Room
  with	description [;
-			if (action == ##Look || self hasnt visited) self.long_description();
-			else self.short_description();
+			if (action == ##Look || self hasnt visited) {
+				self.long_description();
+			} else self.short_description();
 			!! Espacio para elementos comunes a las dos descripciones.
 			return true;
 		],
@@ -519,7 +319,7 @@ Class	Room
 		!! librería):
 		inhibit_object_list false,
 		!! Volumen del mar:
-		sea_volume 100,
+		sea_volume 50,
 	    initial [;
 			#Ifdef USE_DAMUSIX;
 			if (Damusix.QueVolumen(SFX_MAR) < self.sea_volume) {
@@ -537,7 +337,7 @@ Class	Room
 
 Class	Outdoors
  class	Room
- with	sea_volume 90,
+ with	sea_volume 80,
 ;
 
 !!==============================================================================
@@ -555,22 +355,25 @@ Class	Indoors
 !!	Representa un objeto al que el jugador puede entrar o subirse encima. NOTA:
 !!	Conviene recordar que Inform permite herencia múltiple. de manera que se
 !!	pueden crear objetos instancias de varias clases a la vez. Por ejemplo, se
-!!	pueden crear un 'Furniture' que sea además 'SmartEnterable':
+!!	pueden crear un 'HeavyItem' que sea además 'SmartEnterable':
 !!
-!!		Furniture	-> cama "cama"
+!!		HeavyItem	-> cama "cama"
 !!		 class		SmartEnterable
 !!		 with		[...];
 !!------------------------------------------------------------------------------
 
 Class	SmartEnterable
- with	react_before [; if (parent(player) ~= self) return false;
+ with	react_before [;
+			if (parent(player) ~= self) return false;
 			!! GROUP 2 ACTIONS: Usually work, given the right circumstances.
-			Close, Open:
+			Close,
+			Open:
 				if (noun hasnt openable) return false;
 				if (self.out_of_reach(noun))
 					{ <Exit self>; new_line; }
 				return false;
-			Disrobe, Wear:
+			Disrobe,
+			Wear:
 				if (noun hasnt clothing) return false;
 				<Exit self>; new_line;
 				return false;
@@ -586,7 +389,10 @@ Class	SmartEnterable
 				if (self.out_of_reach(noun))
 					{ <Exit self>; new_line; }
 				return false;
-			Empty, Remove, Search, Take:
+			Empty,
+			Remove,
+			Search,
+			Take:
 				if (self.out_of_reach(noun))
 					{ <Exit self>; new_line; }
 				return false;
@@ -608,7 +414,8 @@ Class	SmartEnterable
 				<Exit self>; new_line;
 				return false;
 			!! GoIn:
-			Insert, PutOn:
+			Insert,
+			PutOn:
 				if ((second == d_obj) || (player in second)) <<Drop noun>>;
 				if (self.out_of_reach(second))
 					{ <Exit self>; new_line; }
@@ -616,7 +423,8 @@ Class	SmartEnterable
 			!! Inv:
 			!! InvTall:
 			!! InvWide:
-			Lock, Unlock:
+			Lock,
+			Unlock:
 				if (noun hasnt lockable) return false;
 				if (self.out_of_reach(noun))
 					{ <Exit self>; new_line; }
@@ -628,7 +436,8 @@ Class	SmartEnterable
 			!! Remove:		Ver ##Empty
 			!! Search:		Ver ##Empty
 			!! Show:
-			SwitchOff, SwitchOn:
+			SwitchOff,
+			SwitchOn:
 				if (noun hasnt switchable) return false;
 				if (self.out_of_reach(noun))
 					{ <Exit self>; new_line; }
@@ -643,7 +452,13 @@ Class	SmartEnterable
 			!! Answer:
 			!! Ask:
 			!! AskFor:
-			Attack, Blow, LookUnder, Smell, Squeeze, Taste, Touch:
+			Attack,
+			Blow,
+			LookUnder,
+			Smell,
+			Squeeze,
+			Taste,
+			Touch:
 				if (self.out_of_reach(noun))
 					{ <Exit self>; new_line; }
 				return false;
@@ -671,7 +486,9 @@ Class	SmartEnterable
 			!! Mild:
 			!! No:
 			!! Pray:
-			Pull, Push, Turn:
+			Pull,
+			Push,
+			Turn:
 				!! TODO - Comprobar mensaje al empujar objetos scenery o static
 				if (noun has scenery or static) return false;
 				if (self.out_of_reach(noun))
@@ -767,15 +584,144 @@ Class	SmartEnterable
 		],
  has	enterable;
 
+!!==============================================================================
+!!	-	Thing
+!!------------------------------------------------------------------------------
+!!	Representa un objeto dentro del modelo del mundo, con un tamaño, volumen y
+!!	peso específicos, así como diferentes valores de capacidad asociados a su
+!!	potencial como contenedor para otros objetos. Está ideada como una clase
+!!	abstracta sobre la que definir el resto de subclases más concretas de
+!!	objetos con los que modelar el mundo del relato.
+!!------------------------------------------------------------------------------
+
+Class	Thing
+ with	action_set 0,
+		capacity_size	-1,	! Capacidad total: en cuanto a tamaño
+		capacity_volume	-1,	! Capacidad total: en cuanto a volumen
+		capacity_weight	-1,	! Capacidad total: en cuanto a peso
+		size	0,			! Tamaño
+		volume	0,			! Volumen
+		weight	0,			! Peso
+		description [;
+			switch (_grammatical_inflection) {
+				FIRST_PERSON_PRESENT:
+					if (IsPluralNoun(player)) print "No vemos";
+					else print "No veo";
+				SECOND_PERSON_PRESENT:
+					if (IsPluralNoun(player)) print "No veis";
+					else print "No ves";
+				THIRD_PERSON_PRESENT:
+					if (IsPluralNoun(player)) print "No ven";
+					else print "No ve";
+				FIRST_PERSON_PAST:
+					if (IsPluralNoun(player)) print "No vimos";
+					else print "No vi";
+				SECOND_PERSON_PAST:
+					if (IsPluralNoun(player)) print "No visteis";
+					else print "No viste";
+				THIRD_PERSON_PAST:
+					if (IsPluralNoun(player)) print "No vieron";
+					else print "No vio";
+				FIRST_PERSON_FUTURE:
+					if (IsPluralNoun(player)) print "No veremos";
+					else print "No veré";
+				SECOND_PERSON_FUTURE:
+					if (IsPluralNoun(player)) print "No veréis";
+					else print "No verás";
+				THIRD_PERSON_FUTURE:
+					if (IsPluralNoun(player)) print "No verán";
+					else print "No verá";
+			}
+			" nada especial en ", (the) self, ".";
+		],
+		reset [; return false; ],
+;
 
 !!==============================================================================
-!!	-	Clothes
+!!	+	Atrezzo.
+!!------------------------------------------------------------------------------
+!!	Representa un objeto decorado dentro del modelo de mundo. Se aplica la
+!!	restricción 'scenery' definida por la librería Inform.
+!!------------------------------------------------------------------------------
+
+Class	Atrezzo
+ class	Thing
+ with	before [;
+			DefaultAction,
+			Examine,
+			Search:
+				return false;
+			default:
+				switch (_grammatical_inflection) {
+					FIRST_PERSON_PRESENT:
+						if (IsPluralNoun(player))
+							print "No creemos que necesitemos preocuparnos";
+						else print "No creo que necesite preocuparme";
+					SECOND_PERSON_PRESENT:
+						print "No es necesario que ";
+						if (IsPluralNoun(player)) print "os preocupéis";
+						else print "te preocupes";
+					THIRD_PERSON_PRESENT:
+						print "No es necesario que ";
+						if (IsPluralNoun(player)) print "se preocupen";
+						else print "se preocupe";
+					FIRST_PERSON_PAST:
+						if (IsPluralNoun(player))
+							print "No creíamos que necesitásemos preocuparnos";
+						else print "No creía que necesitase preocuparme";
+					SECOND_PERSON_PAST:
+						print "No era necesario que ";
+						if (IsPluralNoun(player)) print "os preocupaseis";
+						else print "te preocupases";
+					THIRD_PERSON_PAST:
+						print "No era necesario que ";
+						if (IsPluralNoun(player)) print "se preocupasen";
+						else print "se preocupase";
+					FIRST_PERSON_FUTURE:
+						print "Es difícil que";
+						if (IsPluralNoun(player))
+							print "vayamos a necesitar preocuparnos";
+						else print "vaya a necesitar preocuparme";
+					SECOND_PERSON_FUTURE:
+						print "No será necesario que ";
+						if (IsPluralNoun(player)) print "os preocupéis";
+						else print "te preocupes";
+					THIRD_PERSON_FUTURE:
+						print "No será necesario que ";
+						if (IsPluralNoun(player)) print "se preocupen";
+						else print "se preocupe";
+				}
+				print " por ";
+				SpanishNominativePronoun(self);
+				".";
+		],
+ has	scenery;
+
+!!==============================================================================
+!!	+	Item
+!!------------------------------------------------------------------------------
+!!	Representa un objeto simple dentro del modelo de mundo sobre el que
+!!	inicialmente no se aplican restricciones de ningún tipo.
+!!------------------------------------------------------------------------------
+
+Class	Item
+ class	Thing
+;
+
+!!==============================================================================
+!!	*	Clothes
+!!------------------------------------------------------------------------------
+!!	Para objetos vestibles. Implementa un mecanismo de capas, de modo que no es
+!!	posible vestir ni desvistir prendas de una capa mientras haya puestas
+!!	prendas de una capa superior.
 !!------------------------------------------------------------------------------
 
 Class	Clothes
+ class	Item
  with	before [
 			obj i temp layer_a layer_b;
-			Disrobe, Wear:
+			Disrobe,
+			Wear:
 				!! Calcula la capa de referencia del objeto:
 				for (i = 0 : i < (self.#layers)/WORDSIZE : i++) {
 					temp = self.&layers-->i;
@@ -834,3 +780,145 @@ Class	Clothes
 		],
 		layers 0,
  has	clothing;
+
+!!==============================================================================
+!!	*	Dinosaur
+!!------------------------------------------------------------------------------
+!!	Representa un objeto coleccionable.
+!!------------------------------------------------------------------------------
+
+Class	Dinosaur
+ class	Item
+ with	after [;
+			Examine,
+			Take:
+				if (~~self.discovered) {
+					self.discovered = true;
+					PlaySFX(SFX_COLECCIONABLE);
+					new_line;
+					"", (parser) "Nuevo dinosaurio descubierto.";
+				}
+		],
+		discovered false,
+;
+
+!!==============================================================================
+!!	*	HeavyItem
+!!------------------------------------------------------------------------------
+!!	Representa un objeto pesado dentro del modelo de mundo. Se aplica la
+!!	restricción 'static' definida por la librería Inform.
+!!------------------------------------------------------------------------------
+
+Class	HeavyItem
+ class	Item,
+ with	description [;
+			switch (_grammatical_inflection) {
+				FIRST_PERSON_PRESENT,
+				SECOND_PERSON_PRESENT,
+				THIRD_PERSON_PRESENT:
+					print "Tiene", (n) self;
+				FIRST_PERSON_PAST,
+				SECOND_PERSON_PAST,
+				THIRD_PERSON_PAST:
+					print "Tenía", (n) self;
+				FIRST_PERSON_FUTURE,
+				SECOND_PERSON_FUTURE,
+				THIRD_PERSON_FUTURE:
+					print "Tendrá", (n) self;
+			}
+			print " el mismo aspecto que ";
+			if (IsPluralNoun(self)) print "cualesquiera";
+			else print "cualquier";
+			print " otr", (o) self, " ", (name) self, " que ";
+			switch (_grammatical_inflection) {
+				FIRST_PERSON_PRESENT:
+					if (IsPluralNoun(player)) print "hayamos";
+					else print "haya";
+				SECOND_PERSON_PRESENT:
+					if (IsPluralNoun(player)) print "hayáis";
+					else print "hayas";
+				THIRD_PERSON_PRESENT:
+					if (IsPluralNoun(player)) print "hayan";
+					else print "haya";
+				FIRST_PERSON_PAST:
+					if (IsPluralNoun(player)) print "hubiésemos";
+					else print "hubiese";
+				SECOND_PERSON_PAST:
+					if (IsPluralNoun(player)) print "hubieseis";
+					else print "hubieses";
+				THIRD_PERSON_PAST:
+					if (IsPluralNoun(player)) print "hubiesen";
+					else print "hubiese";
+				FIRST_PERSON_FUTURE:
+					if (IsPluralNoun(player)) print "habremos";
+					else print "habré";
+				SECOND_PERSON_FUTURE:
+					if (IsPluralNoun(player)) print "habréis";
+					else print "habrás";
+				THIRD_PERSON_FUTURE:
+					if (IsPluralNoun(player)) print "habrán";
+					else print "habrá";
+			}
+			" visto antes.";
+		],
+		before [;
+			Pull,
+			Push,
+			PushDir,
+			Take,
+			Turn:
+				switch (_grammatical_inflection) {
+					FIRST_PERSON_PRESENT,
+					SECOND_PERSON_PRESENT,
+					THIRD_PERSON_PRESENT:
+						print (The) self, " ", (es) self;
+					FIRST_PERSON_PAST,
+					SECOND_PERSON_PAST,
+					THIRD_PERSON_PAST:
+						print (The) self, " era", (n) self;
+					FIRST_PERSON_FUTURE,
+					SECOND_PERSON_FUTURE,
+					THIRD_PERSON_FUTURE:
+						print (The) self, " será", (n) self;
+				} " demasiado pesad", (o) self, " para andar moviéndol",
+				(o) self, ".";
+		],
+ has	static;
+
+!!==============================================================================
+!!	+	NPC
+!!------------------------------------------------------------------------------
+!!	Representa un personaje no jugador. Hay algunas extensiones que definen
+!!	también sus propias clases personaje (por ejemplo, 'gtalk.h' de Greg
+!!	Boettcher, Krister Fundin y Mark J. Tilford, para manejar conversaciones
+!!	por medio de menús, define la clase 'Character'). Se pueden utilizar estas
+!!	librerías y reutilizar las clases definidas en ellas dentro de NPC
+!!	convirtiendo esta última en una subclase de aquella definida en la librería
+!!	externa. Por ejemplo:
+!!
+!!		Class NPC
+!!			class Thing
+!!			class Character ! (definida en la librería 'gtalk.h')
+!!			[...]
+!!		;
+!!
+!!------------------------------------------------------------------------------
+
+Class	NPC
+ class	Thing,
+ with	before [
+			previous_style;
+			DefaultAction:
+				if (self has described) {
+					previous_style = UseTextStyle(TEXT_STYLE_PARSER);
+					print (string) TEXT_STYLE_PARSER_PREFIX;
+					print "habla con ";
+					PrintToBuffer(temp_array, INPUT_BUFFER_LEN, self);
+					PrintCharacterArray(temp_array);
+					print (string) TEXT_STYLE_PARSER_SUFIX;
+					UseTextStyle(previous_style);
+					new_line;
+					<<TalkTo self>>;
+				}
+		],
+ has	animate;

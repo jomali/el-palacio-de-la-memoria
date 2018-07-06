@@ -62,9 +62,9 @@
 !!------------------------------------------------------------------------------
 
 Room	Limbo "En algún lugar"
- with	name_f	'babia',
-		name_m	'limbo' 'lugar' 'sueno' 'vacio',
-		gender	G_MASCULINO,
+ with	name_f 'babia',
+		name_m 'limbo' 'lugar' 'sueno' 'vacio',
+		gender G_MASCULINO,
 		description [;
 			O__M(self, 1);
 			if (self hasnt visited) O__M(self, 2);
@@ -74,10 +74,12 @@ Room	Limbo "En algún lugar"
 		clarification 0,
  has	male;
 
+!!------------------------------------------------------------------------------
+
 NPC		-> Silvia "Silvia"
- with	name_f	'chica' 'joven' 'mujer' 'persona' 'protagonista' 'silvia',
-		name_m	'personaje',
-		gender	G_FEMENINO,
+ with	name_f 'chica' 'joven' 'mujer' 'persona' 'protagonista' 'silvia',
+		name_m 'personaje',
+		gender G_FEMENINO,
 		adjectives 'principal',
 		capacity MAX_CARRIED,
 		description [; <<Inv>>; ],
@@ -86,11 +88,11 @@ NPC		-> Silvia "Silvia"
 
 Item	-> -> Ropa "ropa"
  class	Clothes,
- with	name_f	'falda' 'indumentaria' 'prenda' 'ropa' 'vestimenta',
-		name_fp	'faldas' 'medias' 'prendas' 'vestimentas',
-		name_m	'atavio' 'atuendo' 'panty' 'vestido' 'vestuario',
-		name_mp	'atavios' 'atuendos' 'pantys',
-		gender	G_FEMENINO,
+ with	name_f 'falda' 'indumentaria' 'prenda' 'ropa' 'vestimenta',
+		name_fp 'faldas' 'medias' 'prendas' 'vestimentas',
+		name_m 'atavio' 'atuendo' 'panty' 'vestido' 'vestuario',
+		name_mp 'atavios' 'atuendos' 'pantys',
+		gender G_FEMENINO,
 		adjectives 'luto' 'negra' 'negras' 'negro',
 		article "su",
 		description [
@@ -148,12 +150,11 @@ Item	-> -> Ropa "ropa"
 
 Item	-> -> Zapatos "zapatos"
  class	Clothes,
- with	name_m	'calzado' 'zapato',
-		name_mp	'zapatos',
-		gender	G_MASCULINO + G_PLURAL,
-		adjectives
-			'brillante' 'brillantes' 'cepillado' 'cepillados' 'negro' 'negros'
-			'reluciente' 'relucientes',
+ with	name_m 'calzado' 'zapato',
+		name_mp 'zapatos',
+		gender G_MASCULINO + G_PLURAL,
+		adjectives 'brillante' 'brillantes' 'cepillado' 'cepillados' 'negro'
+			'negros' 'reluciente' 'relucientes',
 		article "sus",
 		description [
 			obj;
@@ -177,21 +178,23 @@ Item	-> -> Zapatos "zapatos"
 		layers 2 3,
  has	clothing male pluralname worn;
 
+!!------------------------------------------------------------------------------
+
 Atrezzo Cielo "cielo"
  with	found_in [; if (location ofclass Outdoors) return true; ],
-		name_f	'nube',
-		name_fp	'nubes',
-		name_m	'cielo' 'firmamento' 'nubarron' 'sol' 'tiempo',
-		name_mp	'nubarrones',
-		gender	G_MASCULINO,
+		name_f 'nube',
+		name_fp 'nubes',
+		name_m 'cielo' 'firmamento' 'nubarron' 'sol' 'tiempo',
+		name_mp 'nubarrones',
+		gender G_MASCULINO,
 		adjectives 'despejado' 'luminoso' 'noviembre',
 		description [; return O__M(self, 1); ],
  has	male;
 
 Atrezzo	Suelo "suelo"
  with	found_in [; return true; ],
-		name_m	'pavimento' 'piso' 'suelo' 'terreno',
-		gender	G_MASCULINO,
+		name_m 'pavimento' 'piso' 'suelo' 'terreno',
+		gender G_MASCULINO,
 		react_before [;
 			if (noun ~= nothing && second == self)
 				second = nothing;
@@ -205,26 +208,46 @@ Atrezzo	Suelo "suelo"
 !!
 !!------------------------------------------------------------------------------
 
-Outdoors	Cala "Cala de los cangrejos"
- with	name_f	'abra' 'arena' 'bahia' 'cala' 'caleta' 'costa' 'ensenada'
-				'grava' 'gravilla' 'orilla' 'playa' 'rada',
-		name_m	'ancon' 'grao' 'grijillo' 'grijo' 'litoral',
-		gender	G_FEMENINO,
+AdjacentRoom	DireccionCala "cala"
+ with	found_in Terraza,
+		name_f 'abra' 'arena' 'bahia' 'cala' 'caleta' 'costa' 'ensenada'
+			'grava' 'gravilla' 'orilla' 'playa' 'rada',
+ 		name_m 'ancon' 'grao' 'grijillo' 'grijo' 'litoral',
+		gender G_FEMENINO,
 		adjectives 'cangrejos',
-		description [; return O__M(self, 1);
-		],
-		s_to	Sendero,
-		u_to	[; return self.s_to(); ],
+		direction_obj n_obj,
+ has	female;
+
+Room	Cala "Cala de los cangrejos"
+ class	Outdoors
+ with	name_f 'abra' 'arena' 'bahia' 'cala' 'caleta' 'costa' 'ensenada'
+			'grava' 'gravilla' 'orilla' 'playa' 'rada',
+		name_m 'ancon' 'grao' 'grijillo' 'grijo' 'litoral',
+		gender G_FEMENINO,
+		adjectives 'cangrejos',
+		description [; return O__M(self, 1); ],
+		sea_volume 100,
+		s_to Sendero,
+		u_to [; return self.s_to(); ],
  has	female;
 
 !!------------------------------------------------------------------------------
 
+Atrezzo	-> CasaCala "casa"
+ with	name_f 'casa' 'enredadera' 'fachada',
+		name_fp 'enredaderas',
+		name_m 'edificio' 'verdin',
+		gender G_FEMENINO,
+		adjectives 'blanca' 'blanco' 'planta',
+		description [; return O__M(self, 1); ],
+ has	female;
+
 Array marFlags -> 5; ! hasta 32 flags
 Atrezzo	-> Mar "mar"
- with	name_f	'espuma' 'ola',
-		name_fp	'olas',
-		name_m	'agua' 'atlantico' 'cantabrico' 'mar' 'oceano' 'oleaje',
-		gender	G_MASCULINO,
+ with	name_f 'espuma' 'ola',
+		name_fp 'olas',
+		name_m 'agua' 'atlantico' 'cantabrico' 'mar' 'oceano' 'oleaje',
+		gender G_MASCULINO,
 		description [
 			i previous_style;
 			!! i = Shuffle(21, marFlags) * 2;
@@ -239,14 +262,16 @@ Atrezzo	-> Mar "mar"
 		],
  has	male;
 
+!!------------------------------------------------------------------------------
+
 Item	Sendero "sendero"
  with	found_in Cala Terraza,
-		name_f	'bajada' 'cuesta' 'ladera' 'inclinacion' 'pendiente' 'pena'
+		name_f 'bajada' 'cuesta' 'ladera' 'inclinacion' 'pendiente' 'pena'
 			'piedra' 'rampa' 'roca' 'subida',
-		name_fp	'piedras' 'rocas',
-		name_m	'acantilado' 'camino' 'desnivel' 'escollo' 'risco' 'sendero',
-		name_mp	'acantilados' 'escollos' 'riscos',
-		gender	G_MASCULINO,
+		name_fp 'piedras' 'rocas',
+		name_m 'acantilado' 'camino' 'desnivel' 'escollo' 'risco' 'sendero',
+		name_mp 'acantilados' 'escollos' 'riscos',
+		gender G_MASCULINO,
 		adjectives 'rocosa' 'rocoso',
 		description [;
 			if (location == Cala) return O__M(self, 1);
@@ -280,15 +305,6 @@ Item	Sendero "sendero"
 		],
  has	door male open ~openable scenery;
 
-Atrezzo	-> CasaCala "casa"
- with	name_f	'casa' 'enredadera' 'fachada',
-		name_fp	'enredaderas',
-		name_m	'edificio' 'verdin',
-		gender	G_FEMENINO,
-		adjectives 'blanca' 'blanco' 'planta',
-		description [; return O__M(self, 1); ],
- has	female;
-
 
 !!==============================================================================
 !!
@@ -296,9 +312,24 @@ Atrezzo	-> CasaCala "casa"
 !!
 !!------------------------------------------------------------------------------
 
-Indoors	Cocina "cocina"
- with	name_f	'cocina' 'estancia' 'habitacion',
-		gender	G_FEMENINO,
+AdjacentRoom	DireccionCocina "cocina"
+ with	found_in Salon Terraza,
+		name_f 'cocina',
+		gender G_FEMENINO,
+		direction_obj [;
+			switch (location) {
+				Salon:
+					return w_obj;
+				Terraza:
+					return s_obj;
+			}
+		],
+ has	female;
+
+Room	Cocina "cocina"
+ class	Indoors
+ with	name_f 'cocina' 'estancia' 'habitacion',
+		gender G_FEMENINO,
 		description [
 			obj n_encimera n_mesa;
  			objectloop(obj in Encimera && obj hasnt concealed) {
@@ -327,23 +358,25 @@ Indoors	Cocina "cocina"
 		out_to	[; return self.n_to(); ],
  has	female;
 
+!!------------------------------------------------------------------------------
+
 Atrezzo	-> ArmarioCocina "armario"
- with	name_m	'armario' 'mobiliario' 'mueble',
-		name_mp	'muebles',
-		gender	G_MASCULINO,
+ with	name_m 'armario' 'mobiliario' 'mueble',
+		name_mp 'muebles',
+		gender G_MASCULINO,
 		description [; return O__M(self, 1); ],
  has	concealed female;
 
 Atrezzo	-> Frigorifico "frigorífico"
- with	name_m	'electrodomestico' 'frigorifico' 'mobiliario' 'mueble',
-		name_mp	'electrodomesticos' 'muebles',
-		gender	G_MASCULINO,
+ with	name_m 'electrodomestico' 'frigorifico' 'mobiliario' 'mueble',
+		name_mp 'electrodomesticos' 'muebles',
+		gender G_MASCULINO,
 		description [; return O__M(self, 1); ],
  has	concealed male;
 
 Atrezzo	-> HornoLena "horno de leña"
- with	name_m	'horno',
-		gender	G_MASCULINO,
+ with	name_m 'horno',
+		gender G_MASCULINO,
 		adjectives 'forja' 'hierro' 'lena',
 		description [;
 			O__M(self, 1);
@@ -354,10 +387,10 @@ Atrezzo	-> HornoLena "horno de leña"
  has	male;
 
 Item	-> Encimera "encimera"
- with	name_f	'encimera',
-		name_m	'mobiliario' 'muebles',
-		name_mp	'muebles',
-		gender	G_FEMENINO,
+ with	name_f 'encimera',
+		name_m 'mobiliario' 'muebles',
+		name_mp 'muebles',
+		gender G_FEMENINO,
 		description [
 			obj n;
 			obj = n = 0;
@@ -389,12 +422,13 @@ Item	-> Encimera "encimera"
 !! 		description [; return O__M(self, 1); ],
 !!  has	male;
 
-Furniture	-> MesaCocina "mesa"
- with	name_f	'mesa' 'silla',
-		name_fp	'sillas',
-		name_m	'mobiliario' 'mueble',
-		name_mp	'muebles',
-		gender	G_FEMENINO,
+Item	-> MesaCocina "mesa"
+ class	HeavyItem
+ with	name_f 'mesa' 'silla',
+		name_fp 'sillas',
+		name_m 'mobiliario' 'mueble',
+		name_mp 'muebles',
+		gender G_FEMENINO,
 		description [
 			obj n;
 			obj = n = 0;
@@ -408,9 +442,9 @@ Furniture	-> MesaCocina "mesa"
 
 Item	-> -> Bolso "bolso"
  class	Clothes,
- with	name_f	'bandolera' 'bolsa',
-		name_m	'bolso',
-		gender	G_MASCULINO,
+ with	name_f 'bandolera' 'bolsa',
+		name_m 'bolso',
+		gender G_MASCULINO,
 		adjectives 'silvia' 'su',
 		article "su",
 		description [
@@ -437,10 +471,10 @@ Item	-> -> Bolso "bolso"
  has	container male open remarkable;
 
 Item	-> -> -> Llaves "llaves"
- with	name_f	'llave' 'muñeca' 'muñequita' 'sally',
-		name_fp	'llaves',
-		name_m	'llavero' 'muñeco' 'muñequito',
-		gender	G_FEMENINO + G_PLURAL,
+ with	name_f 'llave' 'muñeca' 'muñequita' 'sally',
+		name_fp 'llaves',
+		name_m 'llavero' 'muñeco' 'muñequito',
+		gender G_FEMENINO + G_PLURAL,
 		adjectives 'silvia' 'su',
 		article	"sus",
 		description [;
@@ -457,10 +491,11 @@ Item	-> -> -> Llaves "llaves"
 !!
 !!------------------------------------------------------------------------------
 
-Indoors	Dormitorio "Dormitorio principal"
- with	name_f	'estancia' 'habitacion',
-		name_m	'cuarto' 'dormitorio',
-		gender	G_MASCULINO,
+Room	Dormitorio "Dormitorio principal"
+ class	Indoors
+ with	name_f 'estancia' 'habitacion',
+		name_m 'cuarto' 'dormitorio',
+		gender G_MASCULINO,
 		adjectives 'principal',
 		description [
 			i;
@@ -479,106 +514,40 @@ Indoors	Dormitorio "Dormitorio principal"
 			return O__M(self, 4);
 		],
 		w_to [;
-			if (self has general) {
-				give self ~general;
-				O__M(self, 7);
+			if (PuertaDormitorio hasnt open) {
+				give PuertaDormitorio open;
+				O__M(PuertaDormitorio, 4);
 				new_line;
 			}
-			return Pasillo;
+			return PuertaDormitorio;
 		],
-		out_to	[; return self.w_to(); ],
+		out_to [; return self.w_to(); ],
+		cant_go [; return O__M(self, 7); ],
+		state 0,
  has	male;
 
-!!	-	'general' se activa para evitar las comprobaciones de 'react_before'
-!! Atrezzo	-> Oscuridad "oscuridad"
-!!  with	name_f	'lobreguez' 'negrura' 'oscuridad' 'penumbra' 'tenebrosidad',
-!! 		name_fp	'penumbras' 'sombras' 'tinieblas',
-!! 		gender	G_FEMENINO,
-!! 		article	"la",
-!! 		description [; <<Look>>; ],
-!! 		react_before [;
-!! 			if (self has general) return false;
-!! 			Blow, Listen, Rub, SetTo, Smell, Taste, Touch:
-!! 				if (self has general) return false;
-!! 				if (noun == nothing or player or self)
-!! 					return false;
-!! 				if (IndirectlyContains(player, noun))
-!! 					return false;
-!! 				if (noun == self.exception)
-!! 					return false;
-!! 				return self.cannot_find_object(noun);
-!! 			Close:
-!! 				if (noun hasnt openable)
-!! 					return false;
-!! 				if (noun == self.exception)
-!! 					return false;
-!! 				return self.cannot_find_object(noun);
-!! 			Consult, Examine, Look, LookUnder, Read, Search:
-!! 				if (noun == nothing or player or self)
-!! 					return false;
-!! 				if (noun == location or real_location)
-!! 					return false;
-!! 				if (noun == self.exception)
-!! 					return false;
-!! 				return self.cannot_see_object(noun);
-!! 			Dance:
-!! 				return O__M(self, 1);
-!! 			Empty, EmptyT, Insert, PutOn, Remove, Transfer:
-!! 				if (noun hasnt supporter or container)
-!! 					return false;
-!! 				if (IndirectlyContains(player, noun))
-!! 					return false;
-!! 				if (second ~= nothing && IndirectlyContains(player, second))
-!! 					return false;
-!! 				return self.cannot_find_object(noun);
-!! 			Jump, JumpOver:
-!! 				return O__M(self, 2);
-!! 			Lock, Unlock:
-!! 				if (noun hasnt lockable)
-!! 					return false;
-!! 				if (IndirectlyContains(player, noun))
-!! 					return false;
-!! 				return self.cannot_find_object(noun);
-!! 			Open:
-!! 				if (noun hasnt openable)
-!! 					return false;
-!! 				if (noun == self.exception)
-!! 					return false;
-!! 				return self.cannot_find_object(noun);
-!! 			Pull, Push, PushDir, Take:
-!! 				if (noun has scenery or static)
-!! 					return false;
-!! 				if (noun == nothing or player)
-!! 					return false;
-!! 				if (IndirectlyContains(player, noun))
-!! 					return false;
-!! 				if (noun == self.exception)
-!! 					return false;
-!! 				return self.cannot_find_object(noun);
-!! 			Swing:
-!! 				return self.not_a_good_idea("columpiándose");
-!! 			Wear:
-!! 				if (noun hasnt clothing) return false;
-!! 				return self.cannot_find_object(noun);
-!! 		],
-!! 		exception Cortinas,
-!!  private
-!! 		cannot_see_object [;
-!! 		],
-!! 		cannot_find_object [;
-!! 		],
-!! 		not_a_good_idea [;
-!! 		],
-!!  has	female;
+Item	-> ArmarioDormitorio "armario"
+ class	HeavyItem
+ with	name_m 'armario',
+		gender G_MASCULINO,
+		description [; return O__M(self, 1); ],
+		before [;
+			Open,
+			Search:
+				return O__M(self, 2);
+		],
+ has	concealed container male ~open openable;
 
-Furniture	-> Cama "cama"
+Item	-> Cama "cama"
+ class	HeavyItem
  class	SmartEnterable
- with	name_f	'cama' 'piltra',
-		name_m	'camastro' 'catre' 'colchon' 'jergon' 'lecho' 'mobiliario'
+ with	name_f 'cama' 'piltra',
+		name_m
+			'camastro' 'catre' 'colchon' 'jergon' 'lecho' 'mobiliario'
 			'moblaje' 'mueble' 'somier',
-		name_mp	'muebles',
-		gender	G_FEMENINO,
+		name_mp 'muebles',
 		adjectives 'desecha' 'desecho' 'hacer' 'sin',
+		gender G_FEMENINO,
 		describe [
 			obj i;
 			if (child(self) == nothing)
@@ -605,7 +574,8 @@ Furniture	-> Cama "cama"
 		],
 		react_before [;
 			if (self.SmartEnterable::react_before()) return true;
-			Jump, Swing:
+			Jump,
+			Swing:
 				if (noun == nothing && IndirectlyContains(self, player))
 					<<JumpOver self>>;
 			Sit:
@@ -654,7 +624,8 @@ Furniture	-> Cama "cama"
 			!! referencia desde la descripción de la localidad. Si los hay, se
 			!! desoculta (elimina el atributo 'concealed') para que la librería
 			!! imprima el mensaje de 'describe':
-			LetGo, Receive:
+			LetGo,
+			Receive:
 				objectloop(obj in self && obj ~= player
 					&& obj hasnt scenery or concealed) i++;
 				if (i == 0) give self concealed;
@@ -667,82 +638,48 @@ Furniture	-> Cama "cama"
  has	concealed female supporter;
 
 Atrezzo	-> -> Sabanas "sábanas"
- with	name_f	'almohada' 'cubierta' 'manta' 'sabana',
-		name_fp	'cubiertas' 'mantas' 'sabanas',
-		name_m	'almohadon' 'cojin' 'edredon',
-		gender	G_FEMENINO,
+ with	name_f 'almohada' 'cubierta' 'manta' 'sabana',
+		name_fp 'cubiertas' 'mantas' 'sabanas',
+		name_m 'almohadon' 'cojin' 'edredon',
+		gender G_FEMENINO + G_PLURAL,
 		adjectives 'arrugada' 'arrugadas' 'cama' 'deshecha' 'deshechas',
 		before [;
+			Enter,
+			Sleep:
+				<<Sleep Cama>>;
 			Examine:
 				<<Examine Cama>>;
-			!! Iron, Pull, Turn:
-			!! 	<<Iron Cama>>;
-			Search, LookUnder:
+			Iron,
+			Pull,
+			Turn:
+				<<Iron Cama>>;
+			LookUnder,
+			Search:
 				return O__M(self, 1);
 			Smell:
 				<<Smell Cama>>;
 		],
- has	female;
+ has	female pluralname;
 
-Furniture	-> MesitaNoche "mesita de noche"
- class	Receptacle
-!! TODO - sinónimos
- with	name_f	'mesita',
-		gender	G_FEMENINO,
-		adjectives 'de' 'noche',
-		description [;
-			O__M(self, 1, (self has open));
-			if (self has open) {
-				if (child(self)) O__M(self, 3);
-				else O__M(self, 2);
-			}
-			new_line;
-			return true;
-		],
+Item	-> Camisa "camisa"
+ with	name_f 'camisa',
+		gender G_FEMENINO,
+		description [; return O__M(self, 1); ],
 		after [;
-			Open:
-				if (self.opened == false) {
-					give Dormitorio general;
-					self.opened = true;
-					return O__M(self, 5);
-				}
-				return O__M(self, 4);
+			Take:
+				give self moved;
+				move self to ArmarioDormitorio;
+				return O__M(self, 2);
 		],
- private
-		opened false,
- has	concealed container female openable ~open;
-
-Dinosaur	-> -> Ankylosaurus "ankylosaurus"
- with	name_m 'ankylosaurus' 'anquilosaurio' 'dinosaurio' 'juguete',
- has	male;
-
-Item	-> -> CajaPreservativos "caja de preservativos"
- with	name_f	'caja' 'cajetilla',
-		name_m	'condon' 'preservativo' 'profiláctico',
-		name_mp	'condones' 'preservativos' 'profilácticos',
-		gender	G_FEMENINO,
-		description [; return O__M(self, 1); ],
- has	female;
-
-Item	-> -> CajaTabaco "cajetilla de tabaco"
- with	name_f	'caja' 'cajetilla',
-		name_m	'cigarrillo' 'cigarro' 'tabaco',
-		name_mp	'cigarrillos' 'cigarros',
-		gender	G_FEMENINO,
-		description [; return O__M(self, 1); ],
- has	female;
-
-Item	-> -> FrascosTinte "frascos de tinte"
- with	name_m	'frasco' 'tinte',
-		name_mp	'frascos' 'tintes',
-		gender	G_MASCULINO + G_PLURAL,
-		description [; return O__M(self, 1); ],
- has	male pluralname;
+		reset [;
+			move self to Dormitorio;
+		],
+ has	concealed female;
 
 Item	-> Espejo "espejo"
- with	name_f	'cara',
-		name_m	'cristal' 'espejo' 'reflejo' 'rostro',
-		gender	G_MASCULINO,
+ with	name_f 'cara',
+		name_m 'cristal' 'espejo' 'reflejo' 'rostro',
+		gender G_MASCULINO,
 		description [;
 			if (self hasnt described) O__M(self, 1);
 			else O__M(self, 2);
@@ -761,30 +698,223 @@ Item	-> Espejo "espejo"
 		],
  has	concealed male static;
 
-Item	-> Camisa "camisa"
- with	name_f	'camisa',
+Item	-> MesitaNoche "mesita de noche"
+ with	name_f 'aparador' 'mesa' 'mesita',
+		name_m 'mobiliario' 'moblaje' 'mueble',
+		name_mp 'muebles',
+		adjectives 'de' 'noche',
+		gender G_FEMENINO,
+		description [;
+			O__M(self, 1, (CajonMesitaNoche has open));
+			if (CajonMesitaNoche has open) {
+				if (child(CajonMesitaNoche)) O__M(self, 3);
+				else O__M(self, 2);
+			}
+			new_line;
+			return true;
+		],
+		before [;
+			Close:
+				<<Close CajonMesitaNoche>>;
+			Open:
+				<<Open CajonMesitaNoche>>;
+		],
+ has	concealed female static transparent;
+
+Item	-> -> CajonMesitaNoche "cajón de la mesita"
+ class	Receptacle
+ with	name_f 'gaveta',
+		name_m 'cajon',
+		adjectives 'mesita' 'noche',
+		gender G_MASCULINO,
+		before [;
+			DefaultAction:
+				if (self has open) {
+					print (parser) "cierra cajón de la mesita";
+					new_line;
+					<<Close self>>;
+				} else {
+					print (parser) "abre cajón de la mesita";
+					new_line;
+					<<Open self>>;
+				}
+			Examine:
+				<<Search self>>;
+			Pull:
+				<<Open self>>;
+			Push:
+				<<Close self>>;
+		],
+		after [;
+			Open:
+				if (self.state == 0) {
+					self.state++;
+					return O__M(self, 2);
+				}
+				return O__M(self, 1);
+		],
+		state 0,
+		reset [;
+			give self ~open;
+			self.state = 0;
+		],
+ has	concealed container male openable ~open;
+
+Atrezzo	-> -> -> Ankylosaurus "Ankylosaurus"
+ class	Dinosaur
+ with	short_name [;
+			if (self has described) print "ankylosaurus de juguete";
+			else print "dinosaurio de juguete";
+			return true;
+		],
+		name_m 'ankylosaurus' 'anquilosaurio' 'dinosaurio' 'juguete',
+		description [
+			obj n;
+			objectloop (obj ofclass Dinosaur && obj has described) n++;
+			if (self hasnt described) n++;
+			if (n > 1) O__M(self, 2);
+			else O__M(self, 1);
+			return O__M(self, 3);
+		],
+ has	~concealed male;
+
+Atrezzo	-> -> -> BotesTinte "botes de tinte para el pelo"
+ with	name_m 'bote' 'tinte',
+		name_mp 'botes' 'tintes',
+		adjectives 'casi' 'para' 'pelo' 'vacio' 'vacios',
+		gender G_MASCULINO + G_PLURAL,
+		description [; return O__M(self, 1); ],
+ has	~concealed male pluralname;
+
+Item	-> -> -> CajaPastillas "caja de pastillas"
+ with	name_f 'caja' 'pastilla' 'pildora',
+		name_fp 'pastillas' 'pildoras',
+		name_m 'antidepresivo' 'diazepam' 'sedante' 'valium',
+		name_mp 'antidepresivos' 'sedantes',
 		gender G_FEMENINO,
 		description [; return O__M(self, 1); ],
+ has	female;
+
+Atrezzo	-> -> -> Preservativos "preservativos"
+ with	name_m 'condon' 'preservativo' 'profiláctico',
+		name_mp 'condones' 'preservativos' 'profilácticos',
+		adjectives
+			'algun' 'algunos' 'extragrande' 'extragrandes' 'extralargo'
+			'extralargos' 'xxl',
+		gender G_MASCULINO + G_PLURAL,
+		article "algunos",
+		description [;
+			O__M(self, 1);
+			if (self hasnt described) {
+				new_line;
+				O__M(self, 2);
+			}
+			return true;
+		],
+		before [;
+			Read:
+				return O__M(self, 3);
+		],
+ has	~concealed male pluralname;
+
+AdjacentRoom	-> PasilloAdj "pasillo"
+ with	found_in Dormitorio HabitacionMultiusos,
+		name_m 'corredor' 'pasillo',
+		adjectives 'arriba' 'piso' 'planta' 'segunda' 'segundo',
+		gender G_MASCULINO,
+		direction_obj [;
+			switch (location) {
+				Dormitorio:
+					return w_obj;
+				HabitacionMultiusos:
+					return s_obj;
+			}
+		],
+ has	male;
+
+Item	-> PuertaDormitorio "puerta del dormitorio principal"
+ with	found_in Dormitorio Pasillo,
+		name_f 'entrada' 'puerta' 'salida',
+		name_fp 'entradas' 'puertas' 'salidas',
+		adjectives
+			'blanca' 'dormitorio' 'madera' 'nadie' 'padre' 'padres'
+			'principal' 'sencilla',
+		gender G_FEMENINO,
+		description [;
+			O__M(self, 1);
+			if (self has open) O__M(self, 2);
+			else O__M(self, 3);
+			new_line;
+			return true;
+		],
+		before [
+			previous_style;
+			DefaultAction:
+				if (self hasnt open) {
+					previous_style = UseTextStyle(TEXT_STYLE_PARSER);
+					print (string) TEXT_STYLE_PARSER_PREFIX;
+					print "abre ", (el_) self, "", (object) self;
+					print (string) TEXT_STYLE_PARSER_SUFIX;
+					UseTextStyle(previous_style);
+					new_line;
+					<<Open self>>;
+				} else {
+					previous_style = UseTextStyle(TEXT_STYLE_PARSER);
+					print (string) TEXT_STYLE_PARSER_PREFIX;
+					print "ve ", (al_) self, "", (object) self;
+					print (string) TEXT_STYLE_PARSER_SUFIX;
+					UseTextStyle(previous_style);
+					new_line;
+					<<Go self>>;
+				}
+			Pull:
+				<<Open self>>;
+			Push:
+				<<Close self>>;
+		],
 		after [;
-			Take:
-				give self moved;
-				move self to ArmarioDormitorio;
-				return O__M(self, 2);
+			Close:
+				return O__M(self, 5);
+			Open:
+				return O__M(self, 6);
+		],
+		door_dir [;
+			if (location == Dormitorio) return w_to;
+			else return e_to;
+		],
+		door_to [;
+			!! XXX - Hay que asegurar que el estado de la puerta sólo se
+			!! modifica desde dentro del dormitorio para no provocar
+			!! situaciones de error:
+			if (location == Dormitorio) {
+				if (CajonMesitaNoche.state == 1) {
+					CajonMesitaNoche.state++;
+					O__M(self, 10);
+					new_line;
+				}
+				return Pasillo;
+			} else {
+				switch (self.state) {
+					0:
+						self.state++;
+						O__M(self, 7);
+						new_line;
+						O__M(self, 8);
+						return true;
+					1:
+						self.state++;
+						O__M(self, 9);
+						new_line;
+				}
+				return Dormitorio;
+			}
 		],
 		reset [;
-			move self to Dormitorio;
+			give self open;
+			self.state = 0;
 		],
- has	concealed female;
-
-Furniture	-> ArmarioDormitorio "armario"
- with	name_m	'armario',
-		gender	G_MASCULINO,
-		description [; return O__M(self, 1); ],
-		before [;
-			Open:
-				return O__M(self, 2);
-		],
- has	concealed container male ~open openable;
+		state 0,
+ has	door female open openable scenery;
 
 
 !!==============================================================================
@@ -793,58 +923,115 @@ Furniture	-> ArmarioDormitorio "armario"
 !!
 !!------------------------------------------------------------------------------
 
-Indoors	HabitacionMultiusos "Habitación multiusos"
- with	name_f	'estancia' 'habitacion',
-		name_m	'cuarto',
-		gender	G_FEMENINO,
+Room	HabitacionMultiusos "Habitación multiusos"
+ class	Indoors
+ with	name_f 'estancia' 'habitacion',
+		name_m 'cuarto' 'gimnasio',
+		gender G_FEMENINO,
 		description [; return O__M(self, 1); ],
-		s_to	Pasillo,
+		s_to [;
+			if (PuertaHabitacionMultiusos hasnt open) {
+				give PuertaHabitacionMultiusos open;
+				O__M(PuertaHabitacionMultiusos, 4);
+				new_line;
+			}
+			return PuertaHabitacionMultiusos;
+		],
+		out_to [; return self.s_to(); ],
+		cant_go [; return O__M(self, 2); ],
  has	female;
 
+!!------------------------------------------------------------------------------
+
 Atrezzo	-> BancoAbdominales "banco de abdominales"
- with	name_fp	'flexiones',
-		name_m	'banco',
-		name_mp	'abdominales',
-		gender	G_MASCULINO,
+ with	name_fp 'flexiones',
+		name_m 'banco',
+		name_mp 'abdominales',
+		gender G_MASCULINO,
 		description [; return O__M(self, 1); ],
  has	male transparent;
 
 Atrezzo	-> -> BancoAbdominalesCilindros "apoyos"
- with	name_f	'espuma' 'gomaespuma',
-		name_m	'apoyo' 'cilindro' 'sujeccion',
-		name_mp	'apoyos' 'cilindros' 'sujecciones',
-		gender	G_MASCULINO + G_PLURAL,
+ with	name_f 'espuma' 'gomaespuma',
+		name_m 'apoyo' 'cilindro' 'sujeccion',
+		name_mp 'apoyos' 'cilindros' 'sujecciones',
+		gender G_MASCULINO + G_PLURAL,
 		description [; return O__M(self, 1); ],
  has	male pluralname;
 
 Atrezzo	-> BiciletaEstatica "bicicleta estática"
- with	name_f	'bicicleta' 'estatica',
-		gender	G_FEMENINO,
+ with	name_f 'bicicleta' 'estatica',
+		gender G_FEMENINO,
 		description [; return O__M(self, 1); ],
  has	female;
 
 Atrezzo	-> Esterillas "esterillas"
- with	name_f	'estera' 'esterilla',
-		name_fp	'esteras' 'esterillas',
-		gender	G_FEMENINO + G_PLURAL,
+ with	name_f 'estera' 'esterilla',
+		name_fp 'esteras' 'esterillas',
+		gender G_FEMENINO + G_PLURAL,
 		description [; return O__M(self, 1); ],
  has	female pluralname;
 
 Atrezzo	-> Mancuernas "mancuernas"
- with	name_f	'mancuerna' 'pesa',
-		name_fp	'mancuernas' 'pesas',
-		gender	G_FEMENINO + G_PLURAL,
+ with	name_f 'mancuerna' 'pesa',
+		name_fp 'mancuernas' 'pesas',
+		gender G_FEMENINO + G_PLURAL,
 		description [; return O__M(self, 1); ],
  has	female pluralname;
 
 Atrezzo	-> PelotaYoga "pelota de yoga"
- with	name_f	'pelota' 'yoga',
-		gender	G_FEMENINO,
+ with	name_f 'pelota' 'yoga',
+		gender G_FEMENINO,
 		description [;
 			if (self hasnt described) return O__M(self, 1);
 			else return O__M(self, 2);
 		],
  has	female;
+
+Item	PuertaHabitacionMultiusos "puerta de la habitación multiusos"
+ with	found_in HabitacionMultiusos Pasillo,
+		name_f 'entrada' 'puerta' 'salida',
+		name_fp 'entradas' 'puertas' 'salidas',
+		gender G_FEMENINO,
+		adjectives 'blanca' 'cuarto' 'habitacion' 'madera' 'multiusos'
+			'sencilla',
+		description [;
+			O__M(self, 1);
+			if (self has open) O__M(self, 2);
+			else O__M(self, 3);
+			new_line;
+			return true;
+		],
+		before [;
+			DefaultAction:
+				if (self hasnt open) {
+					print (parser) "abre la puerta de la habitación multiusos";
+					new_line;
+					<<Open self>>;
+				}
+				print (parser) "ve a la puerta de la habitación multiusos";
+				new_line;
+				<<Go self>>;
+			Pull:
+				<<Open self>>;
+			Push:
+				<<Close self>>;
+		],
+		after [;
+			Close:
+				return O__M(self, 5);
+			Open:
+				return O__M(self, 6);
+		],
+		door_dir [;
+			if (location == HabitacionMultiusos) return s_to;
+			else return n_to;
+		],
+		door_to [;
+			if (location == HabitacionMultiusos) return Pasillo;
+			else return HabitacionMultiusos;
+		],
+ has	door female open openable scenery;
 
 
 !!==============================================================================
@@ -853,52 +1040,54 @@ Atrezzo	-> PelotaYoga "pelota de yoga"
 !!
 !!------------------------------------------------------------------------------
 
-Indoors	Pasillo "Pasillo de la segunda planta"
- with	name_f	'estancia' 'habitacion',
-		name_m	'corredor' 'pasillo',
-		gender	G_MASCULINO,
+Room	Pasillo "Pasillo de la segunda planta"
+ class	Indoors
+ with	name_f 'estancia' 'habitacion',
+		name_m 'corredor' 'pasillo',
+		adjectives 'arriba' 'piso' 'planta' 'segunda' 'segundo',
+		gender G_MASCULINO,
 		description [; return O__M(self, 1); ],
-		n_to	HabitacionMultiusos,
-		e_to	[;
-			if (self.temp == 0) {
-				self.temp++;
-				return O__M(self, 2);
-			} else if (self.temp == 1) {
-				self.temp++;
-				O__M(self, 3);
+		n_to HabitacionMultiusos,
+		s_to Escalera,
+		e_to [;
+			if (PuertaDormitorio hasnt open) {
+				give PuertaDormitorio open;
+				O__M(PuertaDormitorio, 4);
 				new_line;
-				return Dormitorio;
-			} else {
-				return Dormitorio;
 			}
+			return PuertaDormitorio;
 		],
-		s_to	Escalera,
-		d_to	[; return self.s_to(); ],
+		d_to [; return self.s_to(); ],
 		reset [;
-			self.temp = 0;
+			self.state = 0;
 		],
- private
-		temp 0,
+		state 0,
  has	male;
 
-Atrezzo	-> Fotografias "fotografías"
- with	name_f	'foto' 'instantanea',
- 		name_fp	'fotografias' 'instantaneas',
-		name_m	'retrato',
-		name_mp	'retratos',
-		gender	G_FEMENINO + G_PLURAL,
-		description [; return O__M(self, 1); ],
- has	female pluralname;
+AdjacentRoom	-> AntiguoDormitorioAdj "antiguo dormitorio"
+ with	name_f 'estancia' 'habitacion',
+		name_m 'cuarto' 'dormitorio' 'gimnasio',
+		adjectives 'antiguo' 'multiusos',
+		gender G_MASCULINO,
+		article "su",
+		direction_obj n_obj,
+ has	male;
 
-!!------------------------------------------------------------------------------
+AdjacentRoom	-> DormitorioPrincipalAdj "dormitorio de sus padres"
+ with	name_f 'estancia' 'habitacion',
+		name_m 'cuarto' 'dormitorio',
+		adjectives 'nadie' 'padres' 'padre' 'principal' 'su' 'sus',
+		gender G_MASCULINO,
+		direction_obj e_obj,
+ has	male;
 
-Item	Escalera "escalera"
+Item	-> Escalera "escalera"
  with	found_in Pasillo Recibidor,
-		name_f	'escalera' 'escalinata',
-		name_fp	'escaleras',
-		name_m	'escalon' 'peldano',
-		name_mp	'escalones' 'pendanos',
-		gender	G_FEMENINO,
+		name_f 'escalera' 'escalinata',
+		name_fp 'escaleras',
+		name_m 'escalon' 'peldano',
+		name_mp 'escalones' 'pendanos',
+		gender G_FEMENINO,
 		adjectives 'madera',
 		description [;
 			if (location == Pasillo) return O__M(self, 1);
@@ -932,6 +1121,14 @@ Item	Escalera "escalera"
 		],
  has	door female open ~openable scenery;
 
+AdjacentRoom	-> PlantaBajaAdj "planta baja"
+ with	name_f 'planta',
+		name_m 'piso' 'recibidor',
+		adjectives 'abajo' 'baja',
+		gender G_FEMENINO,
+		direction_obj s_obj,
+ has	female;
+
 
 !!==============================================================================
 !!
@@ -939,10 +1136,20 @@ Item	Escalera "escalera"
 !!
 !!------------------------------------------------------------------------------
 
-Outdoors	Patio "Patio delantero"
- with	name_f	'entrada' 'terraza',
-		name_m	'corral' 'patio',
-		gender	G_MASCULINO,
+AdjacentRoom	DireccionPatio "patio delantero"
+ with	found_in Recibidor,
+		name_f 'calle' 'entrada' 'terraza',
+ 		name_m 'corral' 'patio',
+		gender G_MASCULINO,
+		adjectives 'delantera' 'delantero',
+		direction_obj s_obj,
+ has	male;
+
+Room	Patio "Patio delantero"
+ class	Outdoors
+ with	name_f 'calle' 'entrada' 'terraza',
+		name_m 'corral' 'patio',
+		gender G_MASCULINO,
 		adjectives 'delantera' 'delantero',
 		description [;
 			O__M(self, 1);
@@ -966,18 +1173,18 @@ Outdoors	Patio "Patio delantero"
 !!------------------------------------------------------------------------------
 
 Atrezzo	-> CaminoGrava "camino de grava"
- with	name_f	'carretera' 'grava' 'gravilla',
-		name_m	'acceso' 'camino' 'grijillo' 'grijo',
-		gender	G_FEMENINO,
+ with	name_f 'carretera' 'grava' 'gravilla',
+		name_m 'acceso' 'camino' 'grijillo' 'grijo',
+		gender G_FEMENINO,
 		adjectives 'secundaria',
 		description [; <<Look>>; ],
  has	female;
 
 Atrezzo	-> Casa "casa"
- with	name_f	'casa' 'enredadera' 'fachada',
-		name_fp	'enredaderas',
-		name_m	'edificio' 'verdin',
-		gender	G_FEMENINO,
+ with	name_f 'casa' 'enredadera' 'fachada',
+		name_fp 'enredaderas',
+		name_m 'edificio' 'verdin',
+		gender G_FEMENINO,
 		adjectives 'blanca' 'blanco' 'planta',
 		description [; return O__M(self, 1); ],
 		before [;
@@ -988,24 +1195,24 @@ Atrezzo	-> Casa "casa"
  has	enterable female;
 
 Atrezzo	-> Construcciones "construcciones"
- with	name_f	'construccion' 'cuadra',
-		name_fp	'casas' 'construcciones' 'cuadras',
-		gender	G_FEMENINO + G_PLURAL,
+ with	name_f 'construccion' 'cuadra',
+		name_fp 'casas' 'construcciones' 'cuadras',
+		gender G_FEMENINO + G_PLURAL,
 		description [; return O__M(self, 1); ],
  has	male pluralname;
 
 Atrezzo	-> Bosques "bosques"
- with	name_m	'arbol' 'bosque' 'haya' 'hayedo' 'roble' 'robledal',
-		name_mp	'arboles' 'bosques' 'hayedos' 'robledales',
-		gender	G_MASCULINO + G_PLURAL,
+ with	name_m 'arbol' 'bosque' 'haya' 'hayedo' 'roble' 'robledal',
+		name_mp 'arboles' 'bosques' 'hayedos' 'robledales',
+		gender G_MASCULINO + G_PLURAL,
 		description [; return O__M(self, 1); ],
  has	male pluralname;
 
 Atrezzo	-> MarPatio "mar"
- with	name_f	'espuma' 'ola',
-		name_fp	'olas',
-		name_m	'agua' 'atlantico' 'cantabrico' 'mar' 'oceano' 'oleaje',
-		gender	G_MASCULINO,
+ with	name_f 'espuma' 'ola',
+		name_fp 'olas',
+		name_m 'agua' 'atlantico' 'cantabrico' 'mar' 'oceano' 'oleaje',
+		gender G_MASCULINO,
 		description [; return O__M(self, 1); ],
 		react_before [;
 			Listen:
@@ -1019,16 +1226,16 @@ Atrezzo	-> MarPatio "mar"
  has	male;
 
 Atrezzo	-> Montannas "montañas"
- with	name_f	'colina' 'cordillera' 'elevacion' 'montana',
-		name_fp	'colinas' 'elevaciones' 'montanas',
-		gender	G_FEMENINO + G_PLURAL,
+ with	name_f 'colina' 'cordillera' 'elevacion' 'montana',
+		name_fp 'colinas' 'elevaciones' 'montanas',
+		gender G_FEMENINO + G_PLURAL,
 		description [; return O__M(self, 1); ],
  has	male pluralname;
 
 Atrezzo	-> Prados "pastos"
- with	name_m	'pasto' 'prado',
-		name_mp	'pastos' 'prados',
-		gender	G_MASCULINO + G_PLURAL,
+ with	name_m 'pasto' 'prado',
+		name_mp 'pastos' 'prados',
+		gender G_MASCULINO + G_PLURAL,
 		adjectives 'verde' 'verdes',
 		description [; return O__M(self, 1); ],
  has	male pluralname;
@@ -1037,8 +1244,8 @@ Atrezzo	-> Prados "pastos"
 
 Item	-> Coche "coche"
  class	SmartEnterable
- with	name_m	'auto' 'automovil' 'coche' 'megan' 'megane' 'vehiculo',
-		gender	G_MASCULINO,
+ with	name_m 'auto' 'automovil' 'coche' 'megan' 'megane' 'vehiculo',
+		gender G_MASCULINO,
 		adjectives 'aparcado' 'granate',
 		describe [;
 			new_line;
@@ -1141,9 +1348,9 @@ Item	-> Coche "coche"
  has	container enterable lockable locked male ~open openable remarkable
 		static;
 
-Item	BotonArranque "botón de arranque" LIMBO
- with	name_m	'boton',
-		gender	G_MASCULINO,
+Item	BotonArranque "botón de arranque" Limbo
+ with	name_m 'boton',
+		gender G_MASCULINO,
 		adjectives 'arranque',
 		describe [; new_line; return O__M(self, 2); ],
 		description [; return O__M(self, 1); ],
@@ -1157,8 +1364,8 @@ Item	BotonArranque "botón de arranque" LIMBO
 
 Atrezzo	Cristalera "cristalera de colores"
  with	found_in Patio Recibidor,
-		name_f	'cristalera',
-		name_m	'panel',
+		name_f 'cristalera',
+		name_m 'panel',
 		adjectives
 			'coloreada' 'colores' 'policromada' 'policromado' 'tintada'
 			'tintado' 'traslúcida' 'traslúcido',
@@ -1172,8 +1379,8 @@ Atrezzo	Cristalera "cristalera de colores"
 
 Item	PuertaDelantera "puerta de entrada"
  with	found_in Patio Recibidor,
-		name_f	'entrada' 'puerta' 'salida',
-		gender	G_FEMENINO,
+		name_f 'entrada' 'puerta' 'salida',
+		gender G_FEMENINO,
 		adjectives 'casa' 'delantera' 'principal',
 		description [;
 			if (location == Patio) return O__M(self, 1);
@@ -1238,13 +1445,31 @@ Item	PuertaDelantera "puerta de entrada"
 !!
 !!------------------------------------------------------------------------------
 
+AdjacentRoom	DireccionRecibidor "recibidor"
+ with	found_in Pasillo Patio Salon,
+		name_f 'antesala',
+ 		name_m 'hall' 'recibidor' 'vestibulo',
+		gender G_MASCULINO,
+		direction_obj [;
+			switch (location) {
+				Pasillo:
+					return s_obj;
+				Patio:
+					return n_obj;
+				Salon:
+					return s_obj;
+			}
+		],
+ has	male;
+
 Array colorFlags -> 2; ! hasta 8 flags
 !!	<>	'general' se activa cuando Silvia regresa a la localidad después de
 !!		haber estado ya en ella
-Indoors	Recibidor "Recibidor"
- with	name_f	'antesala' 'estancia' 'habitacion',
-		name_m	'hall' 'recibidor' 'vestibulo',
-		gender	G_MASCULINO,
+Room	Recibidor "Recibidor"
+ class	Indoors
+ with	name_f 'antesala' 'estancia' 'habitacion',
+		name_m 'hall' 'recibidor' 'vestibulo',
+		gender G_MASCULINO,
 		description [;
 			if (self hasnt visited) {
 				O__M(Silvia, 3);
@@ -1306,73 +1531,12 @@ Indoors	Recibidor "Recibidor"
 
 !!------------------------------------------------------------------------------
 
-Item	-> Perchero "perchero alto"
- with	name_f	'percha',
-		name_m	'perchero',
-		gender	G_MASCULINO,
-		adjectives 'alto',
-		describe [
-			obj i;
-			if (child(self) == false) return true;
-			objectloop(obj in self && obj hasnt concealed) i++;
-			if (i == 0) return true;
-			new_line;
-			if (i == 1 && child(self) == Abrigo) return O__M(self, 4);
-			if (i == 1) return O__M(self, 5);
-			return O__M(self, 6);
-		],
-		description [
-			obj i;
-			O__M(self, 1);
-			if (child(self) == false) ".";
-			objectloop(obj in self && obj hasnt concealed) i++;
-			if (i == 0) ".";
-			if (i == 1) return O__M(self, 2);
-			return O__M(self, 3);
-		],
-		react_before [;
-!			Drop, Hang:
-			Drop:
-				if ((IndirectlyContains(player, noun))
-					&& (noun has clothing)
-					&& (noun hasnt worn)
-					&& (second == nothing)) {
-					<<PutOn noun self>>;
-				}
-		],
-		before [;
-			Pull, Push, PushDir, Take, Turn:
-				return O__M(self, 7);
-			Receive:
-				if (noun hasnt clothing) {
-					return O__M(self, 8, noun);
-				}
-		],
-		after [;
-			Receive:
-				return O__M(self, 9, noun);
-		],
- has	male supporter transparent;
-
-Item	-> -> Abrigo "abrigo"
- class	Clothes,
- with	name_f	'pelliza',
-		name_m	'abrigo' 'gaban' 'sobretodo',
-		gender	G_MASCULINO,
-		description [; return O__M(self, 1); ],
-		before [;
-			if (self.Clothes::before()) return true;
-			Iron:
-				return O__M(self, 2);
-		],
-		layers 2,
- has	clothing male;
-
-Furniture	-> Comoda "cómoda"
+Item	-> Comoda "cómoda"
+ class	HeavyItem
  class	Receptacle
- with	name_f	'comoda',
-		name_m	'mobiliario' 'mueble',
-		gender	G_FEMENINO,
+ with	name_f 'comoda',
+		name_m 'mobiliario' 'mueble',
+		gender G_FEMENINO,
 		adjectives 'madera',
 		description [;
 			O__M(self, 1);
@@ -1381,13 +1545,14 @@ Furniture	-> Comoda "cómoda"
 			return true;
 		],
 		after [;
-			if (Recibidor hasnt general) give Recibidor general;
+			if (Recibidor hasnt general)
+				give Recibidor general;
 		],
  has	concealed female supporter;
 
 Item	-> -> Telefono "teléfono"
- with	name_m	'telf' 'tlf' 'telefono',
-		gender	G_MASCULINO,
+ with	name_m 'telf' 'tlf' 'telefono',
+		gender G_MASCULINO,
 		adjectives 'anticuado' 'antiguo',
 		description [; return O__M(self, 1); ],
 		before [;
@@ -1411,8 +1576,8 @@ Item	-> -> Telefono "teléfono"
  has	male static;
 
 Item	-> -> ContestadorAutomatico "contestador automático"
- with	name_m	'contestador' 'maquina',
-		gender	G_MASCULINO,
+ with	name_m 'contestador' 'maquina',
+		gender G_MASCULINO,
 		adjectives 'automatica' 'automatico',
 		description [;
 			O__M(self, 1);
@@ -1430,8 +1595,8 @@ Item	-> -> ContestadorAutomatico "contestador automático"
  has	male static transparent;
 
 Item	-> -> -> ContestadorAutomaticoPlay "botón de PLAY"
- with	name_m	'boton' 'play' 'reproducir',
-		gender	G_MASCULINO,
+ with	name_m 'boton' 'play' 'reproducir',
+		gender G_MASCULINO,
 		before [;
 			DefaultAction:
 				print (parser) "pulsar botón de PLAY";
@@ -1469,8 +1634,8 @@ Item	-> -> -> ContestadorAutomaticoPlay "botón de PLAY"
  has	concealed male static;
 
 Item	-> -> -> ContestadorAutomaticoDelete "botón de DELETE"
- with	name_m	'boton' 'borrar' 'borrado' 'delete',
-		gender	G_MASCULINO,
+ with	name_m 'boton' 'borrar' 'borrado' 'delete',
+		gender G_MASCULINO,
 		before [;
 			DefaultAction:
 				print (parser) "pulsar botón de DELETE";
@@ -1495,6 +1660,72 @@ Item	-> -> -> ContestadorAutomaticoDelete "botón de DELETE"
 		],
  has	concealed male static;
 
+Item	-> Perchero "perchero alto"
+ with	name_f 'percha',
+		name_m 'perchero',
+		gender G_MASCULINO,
+		adjectives 'alto',
+		describe [
+			obj i;
+			if (child(self) == false) return true;
+			objectloop(obj in self && obj hasnt concealed) i++;
+			if (i == 0) return true;
+			new_line;
+			if (i == 1 && child(self) == Abrigo) return O__M(self, 4);
+			if (i == 1) return O__M(self, 5);
+			return O__M(self, 6);
+		],
+		description [
+			obj i;
+			O__M(self, 1);
+			if (child(self) == false) ".";
+			objectloop(obj in self && obj hasnt concealed) i++;
+			if (i == 0) ".";
+			if (i == 1) return O__M(self, 2);
+			return O__M(self, 3);
+		],
+		react_before [;
+			Drop:
+				if ((IndirectlyContains(player, noun))
+					&& (noun has clothing)
+					&& (noun hasnt worn)
+					&& (second == nothing)) {
+					<<PutOn noun self>>;
+				}
+		],
+		before [;
+			Pull, Push, PushDir, Take, Turn:
+				return O__M(self, 7);
+			Receive:
+				if (noun hasnt clothing) {
+					return O__M(self, 8, noun);
+				}
+		],
+		after [;
+			Receive:
+				return O__M(self, 9, noun);
+		],
+ has	male supporter transparent;
+
+Item	-> -> Abrigo "abrigo"
+ class	Clothes,
+ with	name_f 'pelliza',
+		name_m 'abrigo' 'gaban' 'sobretodo',
+		gender G_MASCULINO,
+		description [;
+			return O__M(self, 1);
+		],
+		before [;
+			if (self.Clothes::before()) return true;
+			Iron:
+				return O__M(self, 2);
+		],
+		layers 2,
+		reset [;
+			move self to Perchero;
+		],
+ has	clothing male;
+
 
 !!==============================================================================
 !!
@@ -1502,32 +1733,47 @@ Item	-> -> -> ContestadorAutomaticoDelete "botón de DELETE"
 !!
 !!------------------------------------------------------------------------------
 
-Indoors	Salon "Salón"
- with	name_f	'estancia' 'habitacion' 'sala',
-		name_m	'comedor' 'salon',
-		gender	G_MASCULINO,
+AdjacentRoom	DireccionSalon "salón"
+ with	found_in Cocina Recibidor,
+ 		name_f 'estancia' 'habitacion' 'sala',
+ 		name_m 'comedor' 'salon',
+		gender G_MASCULINO,
+		direction_obj [;
+			switch (location) {
+				Cocina:
+					return e_obj;
+				Recibidor:
+					return n_obj;
+			}
+		],
+		react_before [;
+			Xyzzy:
+				if (self.compass_reference) self.compass_reference = false;
+ 				else self.compass_reference = true;
+				"Piticlín.";
+		],
+ has	male;
+
+Room	Salon "Salón"
+ class	Indoors
+ with	name_f 'estancia' 'habitacion' 'sala',
+		name_m 'comedor' 'salon',
+		gender G_MASCULINO,
 		description [;
 			return O__M(self, 1);
 		],
-		s_to	Recibidor,
-		w_to	Cocina,
+		s_to Recibidor,
+		w_to Cocina,
  has	male;
 
-Atrezzo	-> Ventanales "ventanales"
- with	name_f	'ventana',
-		name_fp	'ventanas',
-		name_m	'ventanal',
-		name_mp	'ventanales',
-		gender	G_MASCULINO + G_PLURAL,
-		description [; return O__M(self, 1); ],
- has	male pluralname;
+!!------------------------------------------------------------------------------
 
 Atrezzo	-> Estanterias "estanterías"
- with	name_f	'balda' 'estanteria' 'repisa',
-		name_fp	'baldas' 'estanterias' 'repisas',
-		name_m	'anaquel' 'estante' 'pluteo',
-		name_mp	'anaqueles' 'estantes' 'pluteos',
-		gender	G_FEMENINO + G_PLURAL,
+ with	name_f 'balda' 'estanteria' 'repisa',
+		name_fp 'baldas' 'estanterias' 'repisas',
+		name_m 'anaquel' 'estante' 'pluteo',
+		name_mp 'anaqueles' 'estantes' 'pluteos',
+		gender G_FEMENINO + G_PLURAL,
 		description [
 			i obj;
 			O__M(self, 1);
@@ -1547,9 +1793,9 @@ Atrezzo	-> Estanterias "estanterías"
  has	female pluralname supporter transparent;
 
 Atrezzo	-> -> Libros "libros"
- with	name_m	'libro',
-		name_mp	'libros',
-		gender	G_MASCULINO + G_PLURAL,
+ with	name_m 'libro',
+		name_mp 'libros',
+		gender G_MASCULINO + G_PLURAL,
 		description [;
 			if (self has described) return O__M(self, 1);
 			else return O__M(self, 2);
@@ -1557,31 +1803,26 @@ Atrezzo	-> -> Libros "libros"
  has	male pluralname;
 
 Item	-> -> FrascoSales "frasco de colores"
- with	name_m	'frasco' 'regalo',
-		gender	G_MASCULINO,
+ with	name_m 'frasco' 'regalo',
+		gender G_MASCULINO,
 		description [;
 			return O__M(self, 1);
 		],
  has	concealed male;
 
-Dinosaur -> -> Stegosaurus "stegosaurus"
- with	name_m	'dinosaurio' 'estegosaurio' 'juguete' 'stegosaurus',
-		gender	G_MASCULINO,
+Item	-> -> Stegosaurus "stegosaurus"
+ class	Dinosaur
+ with	name_m 'dinosaurio' 'estegosaurio' 'juguete' 'stegosaurus',
+		gender G_MASCULINO,
 		discovered true,
  has	male;
 
-!! Atrezzo	-> MuebleBar "mueblebar"
-!!  with	name_f	'bar',
-!! 		name_m	'mobiliario' 'mueble' 'mueblebar',
-!! 		gender	G_MASCULINO,
-!! 		description [; return O__M(self, 1); ],
-!!  has	male ~open openable;
-
-Furniture	-> Sofa "sofá"
+Item	-> Sofa "sofá"
+ class	HeavyItem
  class	SmartEnterable
- with	name_f	'butaca',
-		name_m	'asiento' 'butacon' 'sillon' 'sofa',
-		gender	G_MASCULINO,
+ with	name_f 'butaca',
+		name_m 'asiento' 'butacon' 'sillon' 'sofa',
+		gender G_MASCULINO,
 		description [;
 			O__M(self, 1);
 			if (self hasnt described) O__M(self, 2);
@@ -1589,12 +1830,22 @@ Furniture	-> Sofa "sofá"
 		],
  has	concealed enterable male supporter transparent;
 
-Furniture	-> Televisor "televisor"
- with	name_f	'tele' 'television' 'tv',
-		name_m	'televisor',
-		gender	G_MASCULINO,
+Item	-> Televisor "televisor"
+ class	HeavyItem
+ with	name_f 'tele' 'television' 'tv',
+		name_m 'televisor',
+		gender G_MASCULINO,
 		description [; return O__M(self, 1); ],
  has	concealed male;
+
+Atrezzo	-> Ventanales "ventanales"
+ with	name_f 'ventana',
+		name_fp 'ventanas',
+		name_m 'ventanal',
+		name_mp 'ventanales',
+		gender	G_MASCULINO + G_PLURAL,
+		description [; return O__M(self, 1); ],
+ has	male pluralname;
 
 
 !!==============================================================================
@@ -1603,40 +1854,51 @@ Furniture	-> Televisor "televisor"
 !!
 !!------------------------------------------------------------------------------
 
-Outdoors	Terraza "Terraza trasera"
- with	name_f	'terraza',
-		name_m	'mirador' 'patio',
-		gender	G_FEMENINO,
+AdjacentRoom	DireccionTerraza "terraza"
+ with	found_in Cala Cocina,
+		name_f 'terraza',
+   		name_m 'mirador' 'patio',
+		gender G_FEMENINO,
+		adjectives 'trasera' 'trasero',
+		direction_obj [;
+			switch (location) {
+				Cala:
+					return s_obj;
+				Cocina:
+					return n_obj;
+			}
+		],
+ has	female;
+
+Room	Terraza "Terraza trasera"
+ class	Outdoors
+ with	name_f 'terraza',
+		name_m 'mirador' 'patio',
+		gender G_FEMENINO,
 		adjectives 'trasera' 'trasero',
 		description [; return O__M(self, 1); ],
-		n_to	Sendero,
-		s_to	Cocina,
-		in_to	[; return self.s_to(); ],
-		d_to	[; return self.n_to(); ],
+		n_to Sendero,
+		s_to Cocina,
+		in_to [; return self.s_to(); ],
+		d_to [; return self.n_to(); ],
  has	female;
 
 !!------------------------------------------------------------------------------
 
-Atrezzo	-> MarTerraza "mar"
- with	name_f	'espuma' 'ola',
-		name_fp	'olas',
-		name_m	'agua' 'atlantico' 'cantabrico' 'mar' 'oceano' 'oleaje',
-		gender	G_MASCULINO,
-		description [; return O__M(self, 1); ],
- has	male;
-
-Furniture	-> Macetas "macetas"
- with	name_f	'jardinera' 'maceta',
-		name_fp	'jardineras' 'macetas',
-		name_m	'tiesto',
-		name_mp	'tiestos',
-		gender	G_FEMENINO + G_PLURAL,
+Item	-> Macetas "macetas"
+ class	HeavyItem
+ with	name_f 'jardinera' 'maceta',
+		name_fp 'jardineras' 'macetas',
+		name_m 'tiesto',
+		name_mp 'tiestos',
+		gender G_FEMENINO + G_PLURAL,
 		description [; return O__M(self, 1); ],
  has	container female pluralname ~openable open;
 
-Dinosaur -> -> Triceratops "triceratops"
- with	name_m	'dinosaurio' 'juguete' 'triceratops',
-		gender	G_MASCULINO,
+Item	-> -> Triceratops "triceratops"
+ class	Dinosaur
+ with	name_m 'dinosaurio' 'juguete' 'triceratops',
+		gender G_MASCULINO,
 		description [;
 			O__M(self, 1);
 			if (self hasnt described) O__M(self, 2);
@@ -1645,8 +1907,17 @@ Dinosaur -> -> Triceratops "triceratops"
 		],
  has	concealed male;
 
-Dinosaur -> -> Tyrannosaurus "tyrannosaurus rex"
- with	name_m	'dinosaurio' 'juguete' 'rex' 'tiranosaurio' 'trex'
-				'tyrannosaurus',
-		gender	G_MASCULINO,
+Item	-> -> Tyrannosaurus "tyrannosaurus rex"
+ class	Dinosaur
+ with	name_m 'dinosaurio' 'juguete' 'rex' 'tiranosaurio' 'trex'
+			'tyrannosaurus',
+		gender G_MASCULINO,
  has	concealed male;
+
+Atrezzo	-> MarTerraza "mar"
+ with	name_f 'espuma' 'ola',
+		name_fp 'olas',
+		name_m 'agua' 'atlantico' 'cantabrico' 'mar' 'oceano' 'oleaje',
+		gender G_MASCULINO,
+		description [; return O__M(self, 1); ],
+ has	male;

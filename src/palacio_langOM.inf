@@ -28,6 +28,19 @@ return true;
 }
 
 
+Ankylosaurus: switch (n) {
+1:	! ##Examine
+print "Un";
+return true;
+2:	! ##Examine
+print "Otro";
+return true;
+3:	! ##Examine
+print " pequeño dinosaurio de juguete; se trata de uno de esos hervívoros que tienen el cuerpo cubierto por una armadura de placas óseas y una cola terminada en forma de mazo.";
+new_line;
+return true;
+}
+
 ArmarioCocina: switch (n) {
 1:	! ##Examine
 print "De madera, con unas tallas de motivos florales horteras.";
@@ -92,6 +105,14 @@ new_line;
 return true;
 }
 
+
+BotesTinte: switch (n) {
+1:	! ##Examine
+print "Tinte para hombre en forma de gel. Están medio vacíos.";
+new_line;
+return true;
+}
+
 BotonArranque: switch (n) {
 1:	! ##Examine
 print "Tiene impresa la leyenda ", (strong) "@<<START -- STOP@>>", " en letras blancas, algo desgastadas por el uso.";
@@ -124,14 +145,28 @@ return true;
 }
 
 
-CajaPreservativos: switch (n) {
+CajaPastillas: switch (n) {
 1:	! ##Examine
-return false;
+print "Diazepam. Sedantes. No tenía ni idea de que su padre estuviese tomando nada.";
+new_line;
+return true;
 }
 
-CajaTabaco: switch (n) {
-1:	! ##Examine
-return false;
+CajonMesitaNoche: switch (n) {
+1:	! after:##Open
+print "Abre ", (the) CajonMesitaNoche, ", descubriendo ";
+WriteListFrom(child(CajonMesitaNoche), ENGLISH_BIT);
+print ".";
+new_line;
+return true;
+2:	! after:##Open
+print "Abre ", (the) CajonMesitaNoche, ", descubriendo ";
+WriteListFrom(child(CajonMesitaNoche), ENGLISH_BIT);
+print ".
+^^
+De algún modo resulta conmovedor estar revolviendo entre aquellas cosas de su padre, pero al mismo tiempo es horrible. Tanto que su estómago se revela de pronto contra ella y a punto está de hacerla expulsar el sándwich de la comida. ¿Qué derecho tiene a invadir su intimidad de aquella forma? ¿A hurgar por entre los rincones secretos de su mente? Tiene la sensación de que su padre irrumpirá en el dormitorio en cualquier momento, la mirará con incredulidad y la preguntará qué demonios está haciendo. Y ella no tendrá ninguna respuesta convincente.";
+new_line;
+return true;
 }
 
 Cala: switch (n) {
@@ -440,7 +475,9 @@ return true;
 print " ", (a) Camisa, " tirada en el suelo";
 return true;
 4:	! ##Examine
-print " un ligero hedor a sudor flotando en la habitación. Parco en muebles y decoración, las paredes están desnudas excepto por ", (a) Espejo, " redondo. Hay ", (a) MesitaNoche, " junto a ", (the) Cama, ". ", (A) ArmarioDormitorio, ". Y la puerta, ", (al) w_obj, ", de vuelta al pasillo. Eso es todo.";
+print " un ligero hedor a sudor flotando en la habitación. Parco en muebles y decoración, las paredes están desnudas excepto por ", (a) Espejo, " redondo. Hay ", (a) MesitaNoche, " junto a ", (the) Cama, ". ", (A) ArmarioDormitorio, ". Y la ";
+Hyperlink(PuertaDormitorio, "puerta", 0);
+print " de vuelta ", (al) PasilloAdj, ". Eso es todo.";
 new_line;
 return true;
 5:	! ##Examine
@@ -449,13 +486,10 @@ return true;
 6:	! ##Examine
 print " y";
 return true;
-7:
-print "No puede evitar echar otro vistazo general a la habitación antes de salir. Y tampoco un estremecimiento. Es terrible tener que enfrentarse a las pertenencias de un hombre muerto. Aquellos objetos sólo tienen utilidad mientras hay una vida para la que son útiles. Cuando esa vida termina, los objetos parecen no cambiar, pero en realidad lo hacen a un nivel esencial y profundo. Están y no están allí. Son como los restos de una civilización antigua, inútiles ya, pero testimonio aún de una conciencia. Registros corpóreos de la soledad con la que una persona ha tomado decisiones sobre su propia vida: usar una camisa u otra, teñirse el pelo, vivir o morir.
-^^
-Este momento es en el que más cerca está de las lágrimas en todo el día.";
+7:	! cant_go
+print "No puede ir por ahí. El dormitorio comunica únicamente al ", (name) w_obj, ", con el pasillo.";
 new_line;
 return true;
-
 }
 
 Encimera: switch (n) {
@@ -522,16 +556,7 @@ new_line;
 return true;
 }
 
-Fotografias: switch (n) {
-1:	! ##Examine
-return false;
-}
-
 FrascoSales: switch (n) {
-1:	! ##Examine
-return false;
-}
-FrascosTinte: switch (n) {
 1:	! ##Examine
 return false;
 }
@@ -546,6 +571,10 @@ return true;
 HabitacionMultiusos: switch (n) {
 1:	! ##Examine
 print "Su antiguo dormitorio. No tiene exactamente el mismo aspecto que recuerda de cuando aún vivía allí, pero aún hay cosas que es capaz de reconocer; su cama, colocada contra una de las paredes, y el escritorio, en la pared opuesta, justo al lado del armario. Incluso algunas cajas de zapatos amontonadas en una esquina, dentro de las que guardaba sus juguetes. La puerta a su espalda lleva de regreso al pasillo.";
+new_line;
+return true;
+2:	! cant_go
+print "No puede ir por ahí. La habitación comunica únicamente al ", (name) s_obj, ", con el pasillo.";
 new_line;
 return true;
 }
@@ -1287,7 +1316,9 @@ return true;
 
 MesitaNoche: switch (n) {
 1:	! ##Examine
-print "La mesita tiene un único cajón que en estos momentos está ";
+print "La mesita tiene un único ";
+Hyperlink(CajonMesitaNoche, "cajón", 0);
+print " que en estos momentos está ";
 if (x1) print "abierto";
 else print "cerrado";
 print ".";
@@ -1297,26 +1328,8 @@ print " Dentro no hay nada.";
 return true;
 3:	! ##Examine
 print " Dentro hay ";
-WriteListFrom(child(MesitaNoche), ENGLISH_BIT);
+WriteListFrom(child(CajonMesitaNoche), ENGLISH_BIT);
 print ".";
-return true;
-4:	! After::##Open
-print "Abre el cajón de la ";
-Hyperlink(MesitaNoche, "mesita", 0);
-print ", descubriendo ";
-WriteListFrom(child(MesitaNoche), ENGLISH_BIT);
-print ".";
-new_line;
-return true;
-5:	! After::##Open (primera vez)
-print "Abre el cajón de la ";
-Hyperlink(MesitaNoche, "mesita", 0);
-print ", descubriendo ";
-WriteListFrom(child(MesitaNoche), ENGLISH_BIT);
-print ".
-^^
-Revolver entre las cosas de su padre resulta conmovedor de algún modo, pero al mismo tiempo es horrible. Tanto que su estómago se revela de pronto contra ella y a punto está de hacerla expulsar el sándwich de la comida. ¿Qué derecho tiene a invadir su intimidad de aquella forma? ¿A hurguar por entre los rincones secretos de la mente de otra persona? Tiene la sensación de que su padre irrumpirá en el dormitorio en cualquier momento, la mirará con incredulidad y la preguntará qué demonios está haciendo. Y no tendrá ninguna respuesta convincente.";
-new_line;
 return true;
 }
 
@@ -1330,19 +1343,9 @@ return true;
 
 Pasillo: switch (n) {
 1:	! ##Examine
-print "El pasillo comunica su antiguo dormitorio ", (al) n_obj, ", el dormitorio principal ", (al) e_obj, ", y las ";
+print "El corto corredor se encarga de comunicar su ", (name) AntiguoDormitorioAdj, " y ", (the) DormitorioPrincipalAdj, " con las ";
 Hyperlink(Escalera, "escaleras", 0);
-print " de madera que descienden en curva hasta la planta baja, ", (al) s_obj, ".";
-new_line;
-return true;
-2:	! ##Go (Dormitorio)
-print "Es la puerta del antiguo dormitorio de sus padres. Se corrige de inmediato: el dormitorio de su... la puerta a un dormitorio que no es de nadie ya.
-^^
-Duda, sin llegar a entrar.";
-new_line;
-return true;
-3:	! ##Go (Dormitorio)
-print "Inspira hondo antes de atravesar el umbral.";
+print " de madera por las que se puede descender hasta ", (the) PlantaBajaAdj, ".";
 new_line;
 return true;
 }
@@ -1436,6 +1439,105 @@ print "---con sus guerras, conspiraciones y otras rencillas entre vecinos incluí
 return true;
 }
 
+Preservativos: switch (n) {
+1:	! ##Examine
+print "No tiene intención de leerlo, ni curiosidad alguna, pero la tipografía es demasiado llamativa como para poder pasarlo por alto: ", (header) "XXL", ".";
+new_line;
+return true;
+2:	! ##Examine
+print " ---Bien por mamá.";
+new_line;
+return true;
+3:	! ##Read
+print "Más que para quedar guardada en el interior de un cajón, el diseño de la caja parece estar ideado especificamente para que te pasees con ellos en público y que todo el mundo pueda enterarse bien.";
+new_line;
+return true;
+}
+
+PuertaHabitacionMultiusos: switch (n) {
+1:	! ##Examine
+print "Una sencilla ";
+Hyperlink(PuertaHabitacionMultiusos, "puerta", 0);
+print " de madera pintada en blanco. ";
+return true;
+2:
+print "Está abierta.";
+return true;
+3:
+print "Está cerrada.";
+return true;
+4:
+print "Abre la ";
+Hyperlink(PuertaHabitacionMultiusos, "puerta", 0);
+print " primero.";
+new_line;
+return true;
+5:	! ##Close:after
+print "Cierra la ";
+Hyperlink(PuertaHabitacionMultiusos, "puerta", 0);
+print ".";
+new_line;
+return true;
+6:	! ##Open:after
+print "Abre la ";
+Hyperlink(PuertaHabitacionMultiusos, "puerta", 0);
+print ".";
+new_line;
+return true;
+}
+
+PuertaDormitorio: switch (n) {
+1:	! ##Examine
+print "Una sencilla ";
+Hyperlink(PuertaDormitorio, "puerta", 0);
+print " de madera pintada en blanco. ";
+return true;
+2:
+print "Está abierta.";
+return true;
+3:
+print "Está cerrada.";
+return true;
+4:
+print "Abre la ";
+Hyperlink(PuertaDormitorio, "puerta", 0);
+print " primero.";
+new_line;
+return true;
+5:	! ##Close:after
+print "Cierra la ";
+Hyperlink(PuertaDormitorio, "puerta", 0);
+print ".";
+new_line;
+return true;
+6:	! ##Open:after
+print "Abre la ";
+Hyperlink(PuertaDormitorio, "puerta", 0);
+print ".";
+new_line;
+return true;
+7:
+print "Esa es la ";
+Hyperlink(PuertaDormitorio, "puerta", 0);
+print " del antiguo dormitorio de sus padres. Se corrige de inmediato: el dormitorio de su... la puerta a un dormitorio que ya no es de nadie.";
+new_line;
+return true;
+8:
+print "Duda, sin llegar a entrar.";
+new_line;
+return true;
+9:
+print "Inspira hondo antes de atravesar el umbral.";
+new_line;
+return true;
+10:
+print "No puede evitar echar otro vistazo general a la habitación antes de salir. Ni tampoco un estremecimiento. Es terrible tener que enfrentarse a las pertenencias de un hombre muerto. Aquellos objetos sólo tienen utilidad mientras hay una vida para la que son útiles. Cuando esa vida termina, los objetos parecen no cambiar, pero en realidad lo hacen a un nivel esencial y profundo. Están y no están allí. Son como los restos de una civilización antigua, inútiles ya, pero testimonio aún de una conciencia. Registros corpóreos de la soledad con la que una persona ha tomado decisiones sobre su propia vida: usar una camisa u otra, teñirse el pelo, vivir o morir.
+^^
+Y sólo ahora, por primera vez en todo el día, está cerca de las lágrimas.";
+new_line;
+return true;
+}
+
 PuertaDelantera: switch (n) {
 1:	! ##Examine (A - Desde el patio)
 print "La puerta delantera de la casa. Está ";
@@ -1507,11 +1609,11 @@ Recibidor.print_random_colors(4);
 print " que penetran por el filtro del cristal tintado.";
 return true;
 4:	! ##Examine (C - Parte 2/3)
-print "Frente a la ";
+print "En línea recta desde la ";
 Hyperlink(PuertaDelantera, "puerta", 0);
-print ", al ", (name) n_obj, ", un corto pasillo conduce hasta el salón, mientras que las desgastadas ";
+print ", un arco conduce hasta ", (the) DireccionSalon, ", mientras que unas desgastadas ";
 Hyperlink(Escalera, "escaleras", 0);
-print " de madera, al ", (name) e_obj, ", suben hasta el segundo piso. Hay ", (a) Comoda, " apoyada contra la pared";
+print " de madera suben hasta el segundo piso. Hay ", (a) Comoda, " apoyada contra la pared";
 return true;
 5:	! ##Examine (D - Parte 3/3, si no hay objetos en el perchero)
 print " y ", (a) Perchero, " en una esquina";
