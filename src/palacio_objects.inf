@@ -523,7 +523,6 @@ Room	Dormitorio "Dormitorio principal"
 		],
 		out_to [; return self.w_to(); ],
 		cant_go [; return O__M(self, 7); ],
-		state 0,
  has	male;
 
 Item	-> ArmarioDormitorio "armario"
@@ -585,7 +584,8 @@ Item	-> Cama "cama"
 				if (noun == nothing)
 					<<Sleep self>>;
 		],
-		before [;
+		before [
+			previous_style;
 			Climb:
 				<<Enter self>>;
 			Iron:
@@ -610,6 +610,14 @@ Item	-> Cama "cama"
 					<<Exit self>>;
 			Swing:
 				<<JumpOver self>>;
+			Use:
+				previous_style = UseTextStyle(TEXT_STYLE_PARSER);
+				print (string) TEXT_STYLE_PARSER_PREFIX;
+				print "duerme en ", (el_) self, "", (object) self;
+				print (string) TEXT_STYLE_PARSER_SUFIX;
+				UseTextStyle(previous_style);
+				new_line;
+				<<Sleep self>>;
 		],
 		after [
 			obj i;
@@ -631,10 +639,6 @@ Item	-> Cama "cama"
 				if (i == 0) give self concealed;
 				else give self ~concealed;
 		],
-		reset [;
-			self.state = 0;
-		],
-		state 0, !! 0:desecha; 1:hecha; 2:hecha, pero arrugada
  has	concealed female supporter;
 
 Atrezzo	-> -> Sabanas "sábanas"
@@ -643,7 +647,8 @@ Atrezzo	-> -> Sabanas "sábanas"
 		name_m 'almohadon' 'cojin' 'edredon',
 		gender G_FEMENINO + G_PLURAL,
 		adjectives 'arrugada' 'arrugadas' 'cama' 'deshecha' 'deshechas',
-		before [;
+		before [
+			previous_style;
 			Enter,
 			Sleep:
 				<<Sleep Cama>>;
@@ -658,6 +663,14 @@ Atrezzo	-> -> Sabanas "sábanas"
 				return O__M(self, 1);
 			Smell:
 				<<Smell Cama>>;
+			Use:
+				previous_style = UseTextStyle(TEXT_STYLE_PARSER);
+				print (string) TEXT_STYLE_PARSER_PREFIX;
+				print "duerme en ", (el_) self, "", (object) self;
+				print (string) TEXT_STYLE_PARSER_SUFIX;
+				UseTextStyle(previous_style);
+				new_line;
+				<<Sleep self>>;
 		],
  has	female pluralname;
 
@@ -665,6 +678,24 @@ Item	-> Camisa "camisa"
  with	name_f 'camisa',
 		gender G_FEMENINO,
 		description [; return O__M(self, 1); ],
+		before [
+			previous_style;
+			Use:
+				previous_style = UseTextStyle(TEXT_STYLE_PARSER);
+				print (string) TEXT_STYLE_PARSER_PREFIX;
+				print "ponte ", (el_) self, "", (object) self;
+				print (string) TEXT_STYLE_PARSER_SUFIX;
+				UseTextStyle(previous_style);
+				new_line;
+				<<Wear self>>;
+			Wear:
+				if (self.state == 0) {
+					self.state++;
+					return O__M(self, 3);
+				} else {
+					return O__M(self, 4);
+				}
+		],
 		after [;
 			Take:
 				give self moved;
@@ -690,11 +721,21 @@ Item	-> Espejo "espejo"
 				if (noun == player)
 					<<Examine self>>;
 		],
-		before [;
-			Consult:
+		before [
+			previous_style;
+			Consult,
+			Search:
 				<<Examine self>>;
 			Kiss:
 				return O__M(self, 4);
+			Use:
+				previous_style = UseTextStyle(TEXT_STYLE_PARSER);
+				print (string) TEXT_STYLE_PARSER_PREFIX;
+				print "examina ", (el_) self, "", (object) self;
+				print (string) TEXT_STYLE_PARSER_SUFIX;
+				UseTextStyle(previous_style);
+				new_line;
+				<<Examine self>>;
 		],
  has	concealed male static;
 
@@ -727,14 +768,24 @@ Item	-> -> CajonMesitaNoche "cajón de la mesita"
 		name_m 'cajon',
 		adjectives 'mesita' 'noche',
 		gender G_MASCULINO,
-		before [;
-			DefaultAction:
+		before [
+			previous_style;
+			DefaultAction,
+			Use:
 				if (self has open) {
-					print (parser) "cierra cajón de la mesita";
+					previous_style = UseTextStyle(TEXT_STYLE_PARSER);
+					print (string) TEXT_STYLE_PARSER_PREFIX;
+					print "cierra ", (el_) self, "", (object) self;
+					print (string) TEXT_STYLE_PARSER_SUFIX;
+					UseTextStyle(previous_style);
 					new_line;
 					<<Close self>>;
 				} else {
-					print (parser) "abre cajón de la mesita";
+					previous_style = UseTextStyle(TEXT_STYLE_PARSER);
+					print (string) TEXT_STYLE_PARSER_PREFIX;
+					print "abre ", (el_) self, "", (object) self;
+					print (string) TEXT_STYLE_PARSER_SUFIX;
+					UseTextStyle(previous_style);
 					new_line;
 					<<Open self>>;
 				}
@@ -747,16 +798,18 @@ Item	-> -> CajonMesitaNoche "cajón de la mesita"
 		],
 		after [;
 			Open:
-				if (self.state == 0) {
-					self.state++;
-					return O__M(self, 2);
-				}
 				return O__M(self, 1);
 		],
-		state 0,
+		react_after [;
+			Examine:
+				if (self.state < 2 && parent(noun) == self) {
+					self.state++;
+					if (self.state == 2) { new_line; O__M(self, 2); }
+					return true;
+				}
+		],
 		reset [;
 			give self ~open;
-			self.state = 0;
 		],
  has	concealed container male openable ~open;
 
@@ -786,14 +839,14 @@ Atrezzo	-> -> -> BotesTinte "botes de tinte para el pelo"
 		description [; return O__M(self, 1); ],
  has	~concealed male pluralname;
 
-Item	-> -> -> CajaPastillas "caja de pastillas"
+Atrezzo	-> -> -> CajaPastillas "caja de pastillas"
  with	name_f 'caja' 'pastilla' 'pildora',
 		name_fp 'pastillas' 'pildoras',
 		name_m 'antidepresivo' 'diazepam' 'sedante' 'valium',
 		name_mp 'antidepresivos' 'sedantes',
 		gender G_FEMENINO,
 		description [; return O__M(self, 1); ],
- has	female;
+ has	~concealed female;
 
 Atrezzo	-> -> -> Preservativos "preservativos"
  with	name_m 'condon' 'preservativo' 'profiláctico',
@@ -818,7 +871,7 @@ Atrezzo	-> -> -> Preservativos "preservativos"
  has	~concealed male pluralname;
 
 AdjacentRoom	-> PasilloAdj "pasillo"
- with	found_in Dormitorio HabitacionMultiusos,
+ with	found_in Dormitorio Gimnasio,
 		name_m 'corredor' 'pasillo',
 		adjectives 'arriba' 'piso' 'planta' 'segunda' 'segundo',
 		gender G_MASCULINO,
@@ -826,19 +879,19 @@ AdjacentRoom	-> PasilloAdj "pasillo"
 			switch (location) {
 				Dormitorio:
 					return w_obj;
-				HabitacionMultiusos:
+				Gimnasio:
 					return s_obj;
 			}
 		],
  has	male;
 
-Item	-> PuertaDormitorio "puerta del dormitorio principal"
+Item	-> PuertaDormitorio "puerta del dormitorio de sus padres"
  with	found_in Dormitorio Pasillo,
 		name_f 'entrada' 'puerta' 'salida',
 		name_fp 'entradas' 'puertas' 'salidas',
 		adjectives
-			'blanca' 'dormitorio' 'madera' 'nadie' 'padre' 'padres'
-			'principal' 'sencilla',
+			'blanca' 'de' 'del' 'dormitorio' 'madera' 'nadie' 'padre' 'padres'
+			'principal' 'sencilla' 'su' 'sus',
 		gender G_FEMENINO,
 		description [;
 			O__M(self, 1);
@@ -849,7 +902,8 @@ Item	-> PuertaDormitorio "puerta del dormitorio principal"
 		],
 		before [
 			previous_style;
-			DefaultAction:
+			DefaultAction,
+			Use:
 				if (self hasnt open) {
 					previous_style = UseTextStyle(TEXT_STYLE_PARSER);
 					print (string) TEXT_STYLE_PARSER_PREFIX;
@@ -911,65 +965,185 @@ Item	-> PuertaDormitorio "puerta del dormitorio principal"
 		],
 		reset [;
 			give self open;
-			self.state = 0;
 		],
-		state 0,
  has	door female open openable scenery;
 
 
 !!==============================================================================
 !!
-!!	@HabitacionMultiusos
+!!	@Gimnasio
 !!
 !!------------------------------------------------------------------------------
 
-Room	HabitacionMultiusos "Habitación multiusos"
+Room	Gimnasio "Habitación multiusos"
  class	Indoors
  with	name_f 'estancia' 'habitacion',
 		name_m 'cuarto' 'gimnasio',
 		gender G_FEMENINO,
-		description [; return O__M(self, 1); ],
+		description [;
+			if (self.state < 3) return O__M(self, 1);
+			else return O__M(self, 2);
+		],
+		increase_state [;
+			if (self.state < (3+1)) self.state++;
+			if (self.state == 3) {
+				!! Cambia el banco de abdominales:
+				BancoAbdominales.gender = G_MASCULINO;
+				BancoAbdominales.state++;
+				give BancoAbdominales ~female;
+				give BancoAbdominales male;
+				give BancoAbdominales ~pluralname;
+				!! Cambia la bicicleta estática:
+				BicicletaEstatica.gender = G_FEMENINO;
+				BicicletaEstatica.state++;
+				give BicicletaEstatica female;
+				give BicicletaEstatica ~male;
+				give BicicletaEstatica ~pluralname;
+				!! Cambia las esterillas:
+				Esterillas.gender = G_FEMENINO + G_PLURAL;
+				Esterillas.state++;
+				give Esterillas female;
+				give Esterillas ~male;
+				give Esterillas pluralname;
+				!! Cambia la pelota de yoga:
+				PelotaYoga.gender = G_FEMENINO;
+				PelotaYoga.state++;
+				give PelotaYoga female;
+				give PelotaYoga ~male;
+				give PelotaYoga ~pluralname;
+			}
+		],
 		s_to [;
-			if (PuertaHabitacionMultiusos hasnt open) {
-				give PuertaHabitacionMultiusos open;
-				O__M(PuertaHabitacionMultiusos, 4);
+			if (PuertaGimnasio hasnt open) {
+				give PuertaGimnasio open;
+				O__M(PuertaGimnasio, 4);
 				new_line;
 			}
-			return PuertaHabitacionMultiusos;
+			return PuertaGimnasio;
 		],
 		out_to [; return self.s_to(); ],
-		cant_go [; return O__M(self, 2); ],
+		cant_go [; return O__M(self, 3); ],
  has	female;
 
-!!------------------------------------------------------------------------------
-
 Atrezzo	-> BancoAbdominales "banco de abdominales"
- with	name_fp 'flexiones',
+ with	short_name [;
+			if (self.state == 0) print "cama";
+			else print "banco de abdominales";
+			return true;
+		],
+		name_f 'cama' 'piltra',
+		name_fp
+			'camastro' 'catre' 'colchon' 'flexiones' 'jergon' 'lecho' 'somier',
 		name_m 'banco',
 		name_mp 'abdominales',
-		gender G_MASCULINO,
+		gender G_FEMENINO,
 		description [; return O__M(self, 1); ],
- has	male transparent;
+		before [
+			previous_style;
+			Enter:
+				return O__M(self, 2);
+			Use:
+				previous_style = UseTextStyle(TEXT_STYLE_PARSER);
+				print (string) TEXT_STYLE_PARSER_PREFIX;
+				print "sube ", (al_) self;
+				self.short_name();
+				print (string) TEXT_STYLE_PARSER_SUFIX;
+				UseTextStyle(previous_style);
+				new_line;
+				<<Enter self>>;
+		],
+		after [;
+			Examine:
+				Gimnasio.increase_state();
+		],
+		reset [;
+			self.gender = G_FEMENINO;
+			give self female;
+			give self ~male;
+			give self ~pluralname;
+		],
+ has	female transparent;
 
 Atrezzo	-> -> BancoAbdominalesCilindros "apoyos"
- with	name_f 'espuma' 'gomaespuma',
-		name_m 'apoyo' 'cilindro' 'sujeccion',
-		name_mp 'apoyos' 'cilindros' 'sujecciones',
+ with	name_f 'almohada' 'espuma' 'gomaespuma' 'manta' 'sabana',
+		name_fp 'mantas' 'sabanas',
+		name_m 'apoyo' 'cilindro' 'cojin' 'sujeccion',
+		name_mp 'apoyos' 'cilindros' 'cojines' 'sujecciones',
 		gender G_MASCULINO + G_PLURAL,
 		description [; return O__M(self, 1); ],
  has	male pluralname;
 
-Atrezzo	-> BiciletaEstatica "bicicleta estática"
- with	name_f 'bicicleta' 'estatica',
-		gender G_FEMENINO,
+Atrezzo	-> BicicletaEstatica "bicicleta estática"
+ with	short_name [;
+		   if (self.state == 0) print "escritorio";
+		   else print "bicicleta estática";
+		   return true;
+		],
+		name_f 'bicicleta' 'estatica' 'mesa',
+		name_m 'escritorio',
+		gender G_MASCULINO,
 		description [; return O__M(self, 1); ],
- has	female;
+		before [
+			previous_style;
+			Enter:
+				return O__M(self, 2);
+			Use:
+				previous_style = UseTextStyle(TEXT_STYLE_PARSER);
+				print (string) TEXT_STYLE_PARSER_PREFIX;
+				print "sube ", (al_) self;
+				self.short_name();
+				print (string) TEXT_STYLE_PARSER_SUFIX;
+				UseTextStyle(previous_style);
+				new_line;
+				<<Enter self>>;
+		],
+		after [;
+			Examine:
+				Gimnasio.increase_state();
+		],
+		reset [;
+			self.gender = G_MASCULINO;
+			give self ~female;
+			give self male;
+			give self ~pluralname;
+		],
+ has	male;
 
 Atrezzo	-> Esterillas "esterillas"
- with	name_f 'estera' 'esterilla',
-		name_fp 'esteras' 'esterillas',
+ with	short_name [;
+			if (self.state == 0) print "cajas de zapatos";
+			else print "esterillas";
+			return true;
+		],
+		name_f 'caja' 'estera' 'esterilla',
+		name_fp 'cajas' 'esteras' 'esterillas',
+		adjectives 'zapatos',
 		gender G_FEMENINO + G_PLURAL,
 		description [; return O__M(self, 1); ],
+		before [
+			previous_style;
+			Take:
+				return O__M(self, 2);
+			Use:
+				previous_style = UseTextStyle(TEXT_STYLE_PARSER);
+				print (string) TEXT_STYLE_PARSER_PREFIX;
+				print "coge ", (el_) self;
+				self.short_name();
+				print (string) TEXT_STYLE_PARSER_SUFIX;
+				UseTextStyle(previous_style);
+				new_line;
+				<<Take self>>;
+		],
+		after [;
+			Examine:
+				Gimnasio.increase_state();
+		],
+		reset [;
+			self.gender = G_FEMENINO + G_PLURAL;
+			give self female;
+			give self ~male;
+			give self pluralname;
+		],
  has	female pluralname;
 
 Atrezzo	-> Mancuernas "mancuernas"
@@ -977,24 +1151,66 @@ Atrezzo	-> Mancuernas "mancuernas"
 		name_fp 'mancuernas' 'pesas',
 		gender G_FEMENINO + G_PLURAL,
 		description [; return O__M(self, 1); ],
+		before [
+			previous_style;
+			Take:
+				return O__M(self, 2);
+			Use:
+				previous_style = UseTextStyle(TEXT_STYLE_PARSER);
+				print (string) TEXT_STYLE_PARSER_PREFIX;
+				print "coge ", (el_) self, "", (object) self;
+				print (string) TEXT_STYLE_PARSER_SUFIX;
+				UseTextStyle(previous_style);
+				new_line;
+				<<Take self>>;
+		],
  has	female pluralname;
 
 Atrezzo	-> PelotaYoga "pelota de yoga"
- with	name_f 'pelota' 'yoga',
-		gender G_FEMENINO,
+ with	short_name [;
+			if (self.state == 0) print "baúl";
+			else print "pelota de yoga";
+			return true;
+		],
+		name_f 'arca' 'pelota' 'yoga',
+		name_m 'arcon' 'balon' 'baul' 'cofre',
+		adjectives 'juguetes',
+		gender G_MASCULINO,
 		description [;
 			if (self hasnt described) return O__M(self, 1);
 			else return O__M(self, 2);
 		],
- has	female;
+		before [
+			previous_style;
+			Use:
+				previous_style = UseTextStyle(TEXT_STYLE_PARSER);
+				print (string) TEXT_STYLE_PARSER_PREFIX;
+				print "examina ", (el_) self;
+				self.short_name();
+				print (string) TEXT_STYLE_PARSER_SUFIX;
+				UseTextStyle(previous_style);
+				new_line;
+				<<Examine self>>;
+		],
+		after [;
+			Examine:
+				Gimnasio.increase_state();
+		],
+		reset [;
+			give self ~female;
+			give self male;
+			self.gender = G_MASCULINO;
+		],
+ has	male;
 
-Item	PuertaHabitacionMultiusos "puerta de la habitación multiusos"
- with	found_in HabitacionMultiusos Pasillo,
+Item	-> PuertaGimnasio "puerta de su viejo dormitorio"
+ with	found_in Gimnasio Pasillo,
 		name_f 'entrada' 'puerta' 'salida',
 		name_fp 'entradas' 'puertas' 'salidas',
+		adjectives
+			'antiguo' 'blanca' 'casero' 'de' 'dormitorio' 'gimnasio' 'madera'
+			'mujer' 'multiusos' 'privado' 'silvia' 'su' 'viejo',
 		gender G_FEMENINO,
-		adjectives 'blanca' 'cuarto' 'habitacion' 'madera' 'multiusos'
-			'sencilla',
 		description [;
 			O__M(self, 1);
 			if (self has open) O__M(self, 2);
@@ -1002,16 +1218,26 @@ Item	PuertaHabitacionMultiusos "puerta de la habitación multiusos"
 			new_line;
 			return true;
 		],
-		before [;
+		before [
+			previous_style;
 			DefaultAction:
 				if (self hasnt open) {
-					print (parser) "abre la puerta de la habitación multiusos";
+					previous_style = UseTextStyle(TEXT_STYLE_PARSER);
+					print (string) TEXT_STYLE_PARSER_PREFIX;
+					print "abre ", (el_) self, "", (object) self;
+					print (string) TEXT_STYLE_PARSER_SUFIX;
+					UseTextStyle(previous_style);
 					new_line;
 					<<Open self>>;
+				} else {
+					previous_style = UseTextStyle(TEXT_STYLE_PARSER);
+					print (string) TEXT_STYLE_PARSER_PREFIX;
+					print "ve ", (al_) self, "", (object) self;
+					print (string) TEXT_STYLE_PARSER_SUFIX;
+					UseTextStyle(previous_style);
+					new_line;
+					<<Go self>>;
 				}
-				print (parser) "ve a la puerta de la habitación multiusos";
-				new_line;
-				<<Go self>>;
 			Pull:
 				<<Open self>>;
 			Push:
@@ -1024,14 +1250,24 @@ Item	PuertaHabitacionMultiusos "puerta de la habitación multiusos"
 				return O__M(self, 6);
 		],
 		door_dir [;
-			if (location == HabitacionMultiusos) return s_to;
+			if (location == Gimnasio) return s_to;
 			else return n_to;
 		],
 		door_to [;
-			if (location == HabitacionMultiusos) return Pasillo;
-			else return HabitacionMultiusos;
+			if (location == Gimnasio) return Pasillo;
+			else return Gimnasio;
+		],
+		reset [;
+			give self open;
 		],
  has	door female open openable scenery;
+
+Atrezzo	-> VentanaGimnasio "ventana"
+ with	name_f 'ventana',
+		name_m 'agua' 'atlantico' 'cantabrico' 'mar' 'oceano' 'oleaje',
+		gender G_FEMENINO,
+		description [; return O__M(self, 1); ],
+ has	female;
 
 
 !!==============================================================================
@@ -1047,7 +1283,14 @@ Room	Pasillo "Pasillo de la segunda planta"
 		adjectives 'arriba' 'piso' 'planta' 'segunda' 'segundo',
 		gender G_MASCULINO,
 		description [; return O__M(self, 1); ],
-		n_to HabitacionMultiusos,
+		n_to [;
+			if (PuertaGimnasio hasnt open) {
+				give PuertaGimnasio open;
+				O__M(PuertaGimnasio, 4);
+				new_line;
+			}
+			return PuertaGimnasio;
+		],
 		s_to Escalera,
 		e_to [;
 			if (PuertaDormitorio hasnt open) {
@@ -1058,16 +1301,12 @@ Room	Pasillo "Pasillo de la segunda planta"
 			return PuertaDormitorio;
 		],
 		d_to [; return self.s_to(); ],
-		reset [;
-			self.state = 0;
-		],
-		state 0,
  has	male;
 
-AdjacentRoom	-> AntiguoDormitorioAdj "antiguo dormitorio"
+AdjacentRoom	-> AntiguoDormitorioAdj "viejo dormitorio"
  with	name_f 'estancia' 'habitacion',
 		name_m 'cuarto' 'dormitorio' 'gimnasio',
-		adjectives 'antiguo' 'multiusos',
+		adjectives 'antiguo' 'mujer' 'multiusos' 'silvia' 'viejo',
 		gender G_MASCULINO,
 		article "su",
 		direction_obj n_obj,
@@ -1093,16 +1332,23 @@ Item	-> Escalera "escalera"
 			if (location == Pasillo) return O__M(self, 1);
 			else return O__M(self, 2);
 		],
-		before [;
-			DefaultAction:
-				if (location == Pasillo) print (parser) "baja por la escalera";
-				else print (parser) "sube por la escalera";
+		before [
+			previous_style;
+			DefaultAction,
+			Use:
+				previous_style = UseTextStyle(TEXT_STYLE_PARSER);
+				print (string) TEXT_STYLE_PARSER_PREFIX;
+				if (location == Pasillo) print "baja";
+				else print "sube";
+				print " por ", (el_) self, "", (object) self;
+				print (string) TEXT_STYLE_PARSER_SUFIX;
+				UseTextStyle(previous_style);
 				new_line;
 				<<Enter self>>;
 		],
 		after [;
-			if (Recibidor hasnt general) give Recibidor general;
-
+			if (Recibidor hasnt general)
+				give Recibidor general;
 		],
 		door_dir [;
 			if (location == Pasillo) return s_to;

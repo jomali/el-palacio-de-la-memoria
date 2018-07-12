@@ -44,13 +44,13 @@
 !!	1)	Atributos
 !!		-	remarkable
 !!	2)	Clases
-!!		-	AdjacentRoom
 !!		-	Receptacle
 !!		-	Room
 !!			+	Outdoors
 !!			+	Indoors
 !!		-	SmartEnterable
 !!		-	Thing
+!!			+	AdjacentRoom
 !!			+	Atrezzo
 !!			+	Item
 !!				*	Clothes
@@ -106,57 +106,7 @@ Attribute remarkable;
 !!------------------------------------------------------------------------------
 
 !!==============================================================================
-!!	-	AdjacentRoom
-!!------------------------------------------------------------------------------
-!!	Representa un objeto localidad dentro del modelo de mundo, hacia la que
-!!	el usuario se puede desplazar.
-!!------------------------------------------------------------------------------
-
-Class	AdjacentRoom
- with	short_name [
-			obj;
-			if (self.direction_obj ~= 0 && self.compass_reference) {
-				if (metaclass(self.direction_obj) == Routine) {
-					obj = self.direction_obj();
-				}
-				if (metaclass(self.direction_obj) == Object) {
-					obj = self.direction_obj;
-				}
-				print (object) self, " ", (al) obj;
-				return true;
-			}
-		],
-		description [;
-			return L__M(##Look, 7, self);
-		],
-		before [
-			previous_style obj;
-			DefaultAction:
-				previous_style = UseTextStyle(TEXT_STYLE_PARSER);
-				print (string) TEXT_STYLE_PARSER_PREFIX;
-				print "ve ", (al_) self, "", (object) self;
-				print (string) TEXT_STYLE_PARSER_SUFIX;
-				UseTextStyle(previous_style);
-				new_line;
-				<<Enter self>>;
-			Enter,
-			Go:
-				if (self.direction_obj ~= 0) {
-					if (metaclass(self.direction_obj) == Routine) {
-						obj = self.direction_obj();
-					}
-					if (metaclass(self.direction_obj) == Object) {
-						obj = self.direction_obj;
-					}
-					<<Go obj>>;
-				}
-		],
-		compass_reference false,
-		direction_obj 0,
- has	open scenery;
-
-!!==============================================================================
-!!	+	Receptacle
+!!	-	Receptacle
 !!------------------------------------------------------------------------------
 !!	Clase para definir contenedores o soportes con comprobación automática de
 !!	los límites de cantidad, tamaño, volumen y peso al introducir objetos.
@@ -329,16 +279,8 @@ Class	Room
 			}
 			#Endif; ! USE_DAMUSIX;
 		],
+		state 0,
  has	light;
-
-!!==============================================================================
-!!	+	Outdoors
-!!------------------------------------------------------------------------------
-
-Class	Outdoors
- class	Room
- with	sea_volume 80,
-;
 
 !!==============================================================================
 !!	+	Indoors
@@ -347,6 +289,15 @@ Class	Outdoors
 Class	Indoors
  class	Room
  with	sea_volume 25,
+;
+
+!!==============================================================================
+!!	+	Outdoors
+!!------------------------------------------------------------------------------
+
+Class	Outdoors
+ class	Room
+ with	sea_volume 80,
 ;
 
 !!==============================================================================
@@ -634,8 +585,61 @@ Class	Thing
 			}
 			" nada especial en ", (the) self, ".";
 		],
+		state 0,
 		reset [; return false; ],
 ;
+
+!!==============================================================================
+!!	+	AdjacentRoom
+!!------------------------------------------------------------------------------
+!!	Representa un objeto dentro del modelo de mundo, hacia la que el usuario se
+!!	puede desplazar.
+!!------------------------------------------------------------------------------
+
+Class	AdjacentRoom
+ class	Thing
+ with	short_name [
+			obj;
+			if (self.direction_obj ~= 0 && self.compass_reference) {
+				if (metaclass(self.direction_obj) == Routine) {
+					obj = self.direction_obj();
+				}
+				if (metaclass(self.direction_obj) == Object) {
+					obj = self.direction_obj;
+				}
+				print (object) self, " ", (al) obj;
+				return true;
+			}
+		],
+		description [;
+			return L__M(##Look, 7, self);
+		],
+		before [
+			previous_style obj;
+			DefaultAction,
+			Use:
+				previous_style = UseTextStyle(TEXT_STYLE_PARSER);
+				print (string) TEXT_STYLE_PARSER_PREFIX;
+				print "ve ", (al_) self, "", (object) self;
+				print (string) TEXT_STYLE_PARSER_SUFIX;
+				UseTextStyle(previous_style);
+				new_line;
+				<<Enter self>>;
+			Enter,
+			Go:
+				if (self.direction_obj ~= 0) {
+					if (metaclass(self.direction_obj) == Routine) {
+						obj = self.direction_obj();
+					}
+					if (metaclass(self.direction_obj) == Object) {
+						obj = self.direction_obj;
+					}
+					<<Go obj>>;
+				}
+		],
+		compass_reference false,
+		direction_obj 0,
+ has	open scenery;
 
 !!==============================================================================
 !!	+	Atrezzo.

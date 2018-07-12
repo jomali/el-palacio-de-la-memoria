@@ -1252,7 +1252,7 @@ Global _test = true; !! FIXME - eliminar
 				result = Pasillo;
 			'8':
 				done = true;
-				result = HabitacionMultiusos;
+				result = Gimnasio;
 			'9':
 				done = true;
 				result = Dormitorio;

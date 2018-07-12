@@ -244,11 +244,13 @@ Object	DM "(Dungeon Master)"
 				give obj ~described;
 				give obj ~general;
 				give obj ~moved;
+				obj.state = 0;
 				obj.reset();
 			}
 			objectloop(obj ofclass Room) {
 				give obj ~general;
 				give obj ~visited;
+				obj.state = 0;
 			}
 		],
 		!!----------------------------------------------------------------------

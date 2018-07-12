@@ -62,7 +62,7 @@ return true;
 
 BancoAbdominales: switch (n) {
 1:	! ##Examine
-print "Un extremo está elevado sobre el suelo mientras que el otro lo toca, de manera que la superficie queda inclinada. El aspecto es el de un triángulo rectángulo escaleno, como un gran cartabón de dibujo técnico, apoyado sobre su hipotenusa. En la parte elevada hay varios cilindros forrados de gomaespuma a los que uno puede sujetarse para hacer ejercicios.";
+print "Un extremo está elevado sobre el suelo mientras que el otro lo toca, de manera que la superficie queda inclinada. El aspecto es el de un triángulo rectángulo escaleno, como un gran cartabón de dibujo técnico apoyado sobre su hipotenusa. En la parte elevada hay varios cilindros forrados de gomaespuma a los que uno puede sujetarse para hacer ejercicios.";
 new_line;
 return true;
 2:	! ##Enter
@@ -78,9 +78,15 @@ new_line;
 return true;
 }
 
-BiciletaEstatica: switch (n) {
+BicicletaEstatica: switch (n) {
 1:	! ##Examine
-print "Está justo frente a la ventana, de manera que puedas ver el mar mientras pedaleas. Prefiere una con ruedas, en cualquier caso, y más aquí que apenas hay tráfico y puedes pasear y disfrutar del sol ---cuando sale--- y la brisa tranquilamente.";
+print "Está justo frente a ", (the) VentanaGimnasio, ", de manera que puedas ver el ";
+Hyperlink(VentanaGimnasio, "mar", 0);
+print " mientras pedaleas. Sigue prefiriendo una con ruedas, en cualquier caso. Y más aquí que puedes disfrutar tranquilamente del paisaje marítimo por carreteras sin apenas tráfico.";
+new_line;
+return true;
+2:	! ##Enter
+print "No tiene gana alguna de ponerse a hacer ejercicio ahora.";
 new_line;
 return true;
 }
@@ -147,7 +153,7 @@ return true;
 
 CajaPastillas: switch (n) {
 1:	! ##Examine
-print "Diazepam. Sedantes. No tenía ni idea de que su padre estuviese tomando nada.";
+print "Diazepam. Sedantes. No tenía ni idea de que su padre estuviese tomando ninguna medicación.";
 new_line;
 return true;
 }
@@ -160,11 +166,7 @@ print ".";
 new_line;
 return true;
 2:	! after:##Open
-print "Abre ", (the) CajonMesitaNoche, ", descubriendo ";
-WriteListFrom(child(CajonMesitaNoche), ENGLISH_BIT);
-print ".
-^^
-De algún modo resulta conmovedor estar revolviendo entre aquellas cosas de su padre, pero al mismo tiempo es horrible. Tanto que su estómago se revela de pronto contra ella y a punto está de hacerla expulsar el sándwich de la comida. ¿Qué derecho tiene a invadir su intimidad de aquella forma? ¿A hurgar por entre los rincones secretos de su mente? Tiene la sensación de que su padre irrumpirá en el dormitorio en cualquier momento, la mirará con incredulidad y la preguntará qué demonios está haciendo. Y ella no tendrá ninguna respuesta convincente.";
+print "De algún modo resulta conmovedor estar revolviendo entre aquellas cosas de su padre, pero al mismo tiempo es horrible. Tanto que su estómago se revela de pronto contra ella y a punto está de hacerla expulsar el sándwich de la comida. ¿Qué derecho tiene a invadir su intimidad de aquella forma? ¿A hurgar por entre los rincones secretos de su mente? Tiene la sensación de que su padre irrumpirá en el dormitorio en cualquier momento, la mirará con incredulidad y la preguntará qué demonios está haciendo. Y ella no tendrá ninguna respuesta convincente.";
 new_line;
 return true;
 }
@@ -242,6 +244,14 @@ new_line;
 return true;
 2:	! ##Take
 print "Recoje la camisa del suelo con suma delicadeza, y la guarda en ", (the) ArmarioDormitorio, ".";
+new_line;
+return true;
+3:	! ##Wear
+print "Esa ", (name) Camisa, " le quedaría enorme. Su padre es casi dos veces más grande que ella... lo era.";
+new_line;
+return true;
+4:	! ##Wear
+print "Esa ", (name) Camisa, " le quedaría enorme. Su padre era casi dos veces más grande que ella.";
 new_line;
 return true;
 }
@@ -534,7 +544,11 @@ return true;
 
 Esterillas: switch (n) {
 1:	! ##Examine
-print "Un par de esterillas enrrolladas.";
+print "Están enrrolladas y amontonadas contra la pared.";
+new_line;
+return true;
+2:	! ##Take
+print "No tiene gana alguna de ponerse a hacer ejercicio ahora.";
 new_line;
 return true;
 }
@@ -568,13 +582,19 @@ new_line;
 return true;
 }
 
-HabitacionMultiusos: switch (n) {
+Gimnasio: switch (n) {
 1:	! ##Examine
-print "Su antiguo dormitorio. No tiene exactamente el mismo aspecto que recuerda de cuando aún vivía allí, pero aún hay cosas que es capaz de reconocer; su cama, colocada contra una de las paredes, y el escritorio, en la pared opuesta, justo al lado del armario. Incluso algunas cajas de zapatos amontonadas en una esquina, dentro de las que guardaba sus juguetes. La puerta a su espalda lleva de regreso al pasillo.";
+print "Su antiguo dormitorio. No tiene exactamente el mismo aspecto que recuerda de cuando todavía vivía aquí, pero aún hay ciertos detalles reconocibles; como ", (the) BancoAbdominales, ", a un lado, y ", (the) BicicletaEstatica, " enfrente, justo debajo de ", (the) VentanaGimnasio, ". Incluso pueden distinguirse también las viejas ", (name) Esterillas, " amontonadas en una esquina y ", (the) PelotaYoga, ", en los que guardaba los juguetes, al lado de la ";
+Hyperlink(PuertaGimnasio, "puerta", 0);
+print ".";
 new_line;
 return true;
-2:	! cant_go
-print "No puede ir por ahí. La habitación comunica únicamente al ", (name) s_obj, ", con el pasillo.";
+2:	! ##Examine
+print "Su padre ha convertido su antiguo dormitorio en un pequeño gimnasio. En el lugar de su cama ahora hay ", (a) BancoAbdominales, ", y ", (a) BicicletaEstatica, " donde primero estaba el escritorio. Hay además un par de ", (name) Esterillas, " enrrolladas junto a ", (the) PuertaGimnasio, ", ", (name) Mancuernas, ", e incluso una gran ", (name) PelotaYoga, ".";
+new_line;
+return true;
+3:	! cant_go
+print "No puede ir por ahí. La habitación comunica únicamente al ", (name) s_obj, ", con ", (the) PasilloAdj, ".";
 new_line;
 return true;
 }
@@ -630,6 +650,10 @@ return false;
 Mancuernas: switch (n) {
 1:	! ##Examine
 print "Varias pesas de pequeño tamaño.";
+new_line;
+return true;
+2:	! ##Take
+print "No tiene gana alguna de ponerse a hacer ejercicio ahora.";
 new_line;
 return true;
 }
@@ -1454,10 +1478,10 @@ new_line;
 return true;
 }
 
-PuertaHabitacionMultiusos: switch (n) {
+PuertaGimnasio: switch (n) {
 1:	! ##Examine
 print "Una sencilla ";
-Hyperlink(PuertaHabitacionMultiusos, "puerta", 0);
+Hyperlink(PuertaGimnasio, "puerta", 0);
 print " de madera pintada en blanco. ";
 return true;
 2:
@@ -1468,19 +1492,19 @@ print "Está cerrada.";
 return true;
 4:
 print "Abre la ";
-Hyperlink(PuertaHabitacionMultiusos, "puerta", 0);
+Hyperlink(PuertaGimnasio, "puerta", 0);
 print " primero.";
 new_line;
 return true;
 5:	! ##Close:after
 print "Cierra la ";
-Hyperlink(PuertaHabitacionMultiusos, "puerta", 0);
+Hyperlink(PuertaGimnasio, "puerta", 0);
 print ".";
 new_line;
 return true;
 6:	! ##Open:after
 print "Abre la ";
-Hyperlink(PuertaHabitacionMultiusos, "puerta", 0);
+Hyperlink(PuertaGimnasio, "puerta", 0);
 print ".";
 new_line;
 return true;
@@ -1531,7 +1555,7 @@ print "Inspira hondo antes de atravesar el umbral.";
 new_line;
 return true;
 10:
-print "No puede evitar echar otro vistazo general a la habitación antes de salir. Ni tampoco un estremecimiento. Es terrible tener que enfrentarse a las pertenencias de un hombre muerto. Aquellos objetos sólo tienen utilidad mientras hay una vida para la que son útiles. Cuando esa vida termina, los objetos parecen no cambiar, pero en realidad lo hacen a un nivel esencial y profundo. Están y no están allí. Son como los restos de una civilización antigua, inútiles ya, pero testimonio aún de una conciencia. Registros corpóreos de la soledad con la que una persona ha tomado decisiones sobre su propia vida: usar una camisa u otra, teñirse el pelo, vivir o morir.
+print "No puede evitar echar otro vistazo general a la habitación antes de salir. Ni puede evitar estremecerse. Es terrible tener que enfrentarse a las pertenencias de un hombre muerto. Aquellos objetos sólo tienen utilidad mientras hay una vida para la que son útiles. Cuando esa vida termina, los objetos parecen no cambiar, pero en realidad lo hacen a un nivel esencial y profundo. Están y no están allí. Son como los restos de una civilización antigua, inútiles ya, pero testimonio aún de una conciencia. Registros corpóreos de la soledad con la que un hombre toma decisiones sobre su propia vida: usar una camisa u otra, teñirse el pelo, vivir o morir.
 ^^
 Y sólo ahora, por primera vez en todo el día, está cerca de las lágrimas.";
 new_line;
@@ -1837,6 +1861,13 @@ print "Un triceratops de juguete.";
 return true;
 2:	! Examine (B - la primera vez)
 print " No recuerda si ese dinosaurio era alguno de sus viejos juguetes o si se trata simplemente de algo que su padre había sacado de quién sabe dónde...";
+return true;
+}
+
+VentanaGimnasio: switch (n) {
+1:	! ##Examine
+print "Puede verse el mar extendiéndose hasta el horizonte, más allá de la ventana.";
+new_line;
 return true;
 }
 
